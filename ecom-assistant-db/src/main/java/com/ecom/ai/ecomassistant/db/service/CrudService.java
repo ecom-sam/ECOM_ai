@@ -1,4 +1,4 @@
-package com.ecom.ai.ecomassistant.service;
+package com.ecom.ai.ecomassistant.db.service;
 
 import org.springframework.data.repository.CrudRepository;
 

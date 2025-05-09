@@ -40,3 +40,7 @@ run with config
 | edit conifg                                    | add .env                                                   |
 |------------------------------------------------|------------------------------------------------------------|
 | ![edit_run_config](doc/md/edit_run_config.png) | ![edi_run_config_detail](doc/md/edi_run_config_detail.png) |
+
+
+## swagger
+http://localhost:8080/swagger-ui/index.html

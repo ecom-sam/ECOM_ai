@@ -1,4 +1,4 @@
-package com.ecom.ai.ecomassistant.model;
+package com.ecom.ai.ecomassistant.db.model;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.ecom.ai.ecomassistant.model;
+package com.ecom.ai.ecomassistant.ai.model;
 
 public record Book(
         int year,

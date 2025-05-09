@@ -1,7 +1,7 @@
 package com.ecom.ai.ecomassistant.controller;
 
-import com.ecom.ai.ecomassistant.model.Book;
-import com.ecom.ai.ecomassistant.service.AIChatService;
+import com.ecom.ai.ecomassistant.ai.model.Book;
+import com.ecom.ai.ecomassistant.ai.service.AIChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;

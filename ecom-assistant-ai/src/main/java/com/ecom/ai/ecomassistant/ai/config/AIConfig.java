@@ -1,4 +1,4 @@
-package com.ecom.ai.ecomassistant.config;
+package com.ecom.ai.ecomassistant.ai.config;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.context.annotation.Bean;

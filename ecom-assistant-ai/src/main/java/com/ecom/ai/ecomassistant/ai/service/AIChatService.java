@@ -1,6 +1,6 @@
-package com.ecom.ai.ecomassistant.service;
+package com.ecom.ai.ecomassistant.ai.service;
 
-import com.ecom.ai.ecomassistant.model.Book;
+import com.ecom.ai.ecomassistant.ai.model.Book;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;

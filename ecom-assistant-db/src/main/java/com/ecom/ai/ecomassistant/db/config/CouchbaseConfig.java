@@ -1,4 +1,4 @@
-package com.ecom.ai.ecomassistant.config;
+package com.ecom.ai.ecomassistant.db.config;
 
 import com.couchbase.client.core.error.UnambiguousTimeoutException;
 import com.couchbase.client.java.Cluster;
