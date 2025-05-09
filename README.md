@@ -39,5 +39,4 @@ run with config
 
 |||
 |--|--|
-|![edit_run_config](src/main/resources/static/md/edit_run_config.png)|![edi_run_config_detail](src/main/resources/static/md/edi_run_config_detail.png) |
-
+|![edit_run_config](doc/md/edit_run_config.png)|![edi_run_config_detail](doc/md/edi_run_config_detail.png) |

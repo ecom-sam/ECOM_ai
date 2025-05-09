@@ -11,6 +11,7 @@
 	<groupId>com.ecom.ai</groupId>
 	<artifactId>ecom-assistant</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
 	<name>ecom-assistant</name>
 	<description>ai assistant of ecom</description>
 	<url/>
@@ -20,6 +21,11 @@
 	<developers>
 		<developer/>
 	</developers>
+	<modules>
+		<module>ecom-assistant-db</module>
+		<module>ecom-assistant-api</module>
+		<module>ecom-assistant-ai</module>
+	</modules>
 	<scm>
 		<connection/>
 		<developerConnection/>
@@ -32,27 +38,6 @@
 		<mapstruct.version>1.6.3</mapstruct.version>
 	</properties>
 	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-couchbase</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.ai</groupId>
-			<artifactId>spring-ai-pdf-document-reader</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.ai</groupId>
-			<artifactId>spring-ai-starter-model-openai</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.ai</groupId>
-			<artifactId>spring-ai-starter-vector-store-couchbase</artifactId>
-			<version>${spring-ai.version}</version>
-		</dependency>
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
