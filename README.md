@@ -37,6 +37,6 @@ OPENAI_API_KEY=
 ### 2. 開發環境
 run with config
 
-|||
-|--|--|
-|![edit_run_config](doc/md/edit_run_config.png)|![edi_run_config_detail](doc/md/edi_run_config_detail.png) |
+| edit conifg                                    | add .env                                                   |
+|------------------------------------------------|------------------------------------------------------------|
+| ![edit_run_config](doc/md/edit_run_config.png) | ![edi_run_config_detail](doc/md/edi_run_config_detail.png) |
