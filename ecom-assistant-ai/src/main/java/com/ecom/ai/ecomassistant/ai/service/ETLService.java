@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.document.Document;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -24,6 +25,7 @@ public class ETLService {
     private final Map<String, EcomDocumentReader> readerMap;
     private final Map<String, EcomDocumentTransformer> transformerMap;
     private final ProcessingRuleResolver ruleResolver;
+    private final VectorStore vectorStore;
 
     public List<Document> processFile(String path) {
         List<Document> documents;
@@ -42,5 +44,9 @@ public class ETLService {
         }
 
         return documents;
+    }
+
+    public void save(List<Document> documents) {
+        vectorStore.add(documents);
     }
 }
