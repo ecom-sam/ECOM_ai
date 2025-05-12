@@ -1,0 +1,20 @@
+package com.ecom.ai.ecomassistant.ai.etl;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.util.Map;
+
+@Component
+@RequiredArgsConstructor
+public class ProcessingRuleResolver {
+
+    private final Map<String, FileProcessingRule> rules;
+    private final FileProcessingRule defaultFileProcessingRule;
+
+    public FileProcessingRule resolve(File file) {
+        return rules.getOrDefault("ruleName", defaultFileProcessingRule);
+    }
+}
