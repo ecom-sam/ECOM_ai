@@ -1,5 +1,6 @@
 package com.ecom.ai.ecomassistant.ai.service;
 
+import com.ecom.ai.ecomassistant.ai.DateTimeTools;
 import com.ecom.ai.ecomassistant.ai.model.Book;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,14 @@ import java.util.List;
 public class AIChatService {
 
     private final ChatClient chatClient;
+
+    public String toolTest() {
+        return chatClient
+                .prompt("我昨天 2020-05-01 14:00 買的產品保固日期到什麼時候？")
+                .tools(new DateTimeTools())
+                .call()
+                .content();
+    }
 
     public Flux<String> tellAJoke(String topic) {
         String prompt = """
