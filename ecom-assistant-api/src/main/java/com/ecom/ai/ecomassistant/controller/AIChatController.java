@@ -28,4 +28,9 @@ public class AIChatController {
     public List<Book> recommendBooks(@RequestParam String category, @RequestParam String year) {
         return aiService.recommendBooks(category, year);
     }
+
+    @GetMapping(value = "/tools")
+    public String toolTest() {
+        return aiService.toolTest();
+    }
 }
