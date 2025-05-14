@@ -1,5 +1,6 @@
  package com.ecom.ai.ecomassistant.ai.service;
 
+import com.ecom.ai.ecomassistant.resource.file.FileInfo;
 import com.ecom.ai.ecomassistant.ai.etl.FileProcessingRule;
 import com.ecom.ai.ecomassistant.ai.etl.ProcessingRuleResolver;
 import com.ecom.ai.ecomassistant.ai.etl.reader.EcomDocumentReader;
@@ -12,7 +13,6 @@ import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -27,12 +27,12 @@ public class ETLService {
     private final ProcessingRuleResolver ruleResolver;
     private final VectorStore vectorStore;
 
-    public List<Document> processFile(String path) {
+    public List<Document> processFile(FileInfo fileInfo) {
         List<Document> documents;
 
-        FileProcessingRule processingRule = ruleResolver.resolve(new File(path));
+        FileProcessingRule processingRule = ruleResolver.resolve(fileInfo);
         var reader = readerMap.get(processingRule.getReader());
-        documents = reader.read(path);
+        documents = reader.read(fileInfo);
 
         for (String transformerKey : processingRule.getTransformers()) {
             var transformer = transformerMap.get(transformerKey);

@@ -1,13 +1,11 @@
 package com.ecom.ai.ecomassistant.event.file;
 
+import com.ecom.ai.ecomassistant.resource.file.FileInfo;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public abstract class NewFileEvent {
-    protected String fileId;
-    protected String fileName;
-    protected String fullPath;
-    protected long timestamp;
+    protected FileInfo fileInfo;
 }

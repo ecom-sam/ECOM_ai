@@ -4,6 +4,7 @@ import com.ecom.ai.ecomassistant.ai.etl.transformer.DefaultDatasetInfoEnricher;
 import com.ecom.ai.ecomassistant.ai.service.ETLService;
 import com.ecom.ai.ecomassistant.context.DatasetContext;
 import com.ecom.ai.ecomassistant.event.file.AiFileUploadEvent;
+import com.ecom.ai.ecomassistant.resource.file.FileInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -26,11 +27,13 @@ public class AiFileEventListener {
     @SneakyThrows
     @EventListener
     public void onAiFileUploadEvent(AiFileUploadEvent event) {
-        String fullPath = event.getFullPath();
-        List<Document> documents = etlService.processFile(fullPath);
+        FileInfo fileInfo = event.getFileInfo();
+        List<Document> documents = etlService.processFile(fileInfo);
 
         try {
-            DatasetContext.setDatasetContextData(event.getDatasetId(), event.getDocumentId());
+            var datasetId = event.getDatasetId();
+            var documentId = event.getDocumentId();
+            DatasetContext.setDatasetContextData(datasetId, documentId);
             datasetInfoEnricher.transform(documents);
         } finally {
             DatasetContext.clear();
