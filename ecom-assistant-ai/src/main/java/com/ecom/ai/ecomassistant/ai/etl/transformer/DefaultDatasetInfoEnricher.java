@@ -1,5 +1,6 @@
 package com.ecom.ai.ecomassistant.ai.etl.transformer;
 
+import com.ecom.ai.ecomassistant.context.DatasetContext;
 import org.springframework.ai.document.Document;
 import org.springframework.stereotype.Component;
 
@@ -11,11 +12,12 @@ public class DefaultDatasetInfoEnricher implements EcomDocumentTransformer {
 
     @Override
     public List<Document> transform(List<Document> documents) {
+        var contextData = DatasetContext.getDatasetContextData();
         for (var document : documents) {
             var metadata = document.getMetadata();
             metadata.putAll(Map.of(
-                    "datasetId", "dataset-123",
-                    "documentId", "doc-123")
+                    "datasetId", contextData.datasetId(),
+                    "documentId", contextData.documentId())
             );
         }
         return documents;
