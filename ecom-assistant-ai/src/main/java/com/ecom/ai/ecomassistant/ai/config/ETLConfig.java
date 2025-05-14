@@ -30,14 +30,11 @@ public class ETLConfig {
     }
 
     @Bean
-    public FileProcessingRule defaultFileProcessingRule() {
+    public FileProcessingRule defaultFileProcessingRule(FileProcessingRuleConfig ruleConfig) {
         return FileProcessingRule.builder()
                 .name("default")
-                .reader("defaultPagePdfDocumentReader")
-                .transformers(List.of(
-                        "defaultTokenTextSplitter"
-                        //"defaultSummaryMetadataEnricher"
-                ))
+                .reader(ruleConfig.getReader())
+                .transformers(ruleConfig.getTransformers())
                 .build();
     }
 }
