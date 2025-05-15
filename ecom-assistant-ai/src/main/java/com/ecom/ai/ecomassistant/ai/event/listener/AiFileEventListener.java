@@ -1,7 +1,7 @@
 package com.ecom.ai.ecomassistant.ai.event.listener;
 
 import com.ecom.ai.ecomassistant.ai.etl.transformer.DefaultDatasetInfoEnricher;
-import com.ecom.ai.ecomassistant.ai.service.ETLService;
+import com.ecom.ai.ecomassistant.ai.service.EtlService;
 import com.ecom.ai.ecomassistant.context.DatasetContext;
 import com.ecom.ai.ecomassistant.event.file.AiFileUploadEvent;
 import com.ecom.ai.ecomassistant.resource.file.FileInfo;
@@ -20,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AiFileEventListener {
 
-    private final ETLService etlService;
+    private final EtlService etlService;
     private final DefaultDatasetInfoEnricher datasetInfoEnricher;
 
     @Async

@@ -17,7 +17,7 @@ import java.util.Map;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ETLService {
+public class EtlService {
 
     private final Map<String, EcomDocumentReader> readerMap;
     private final Map<String, EcomDocumentTransformer> transformerMap;

@@ -13,7 +13,7 @@ public class DefaultJsonDocumentReader implements EcomDocumentReader {
 
     @Override
     public List<Document> read(Resource resource) {
-        JsonReader jsonReader = new JsonReader(resource);
+        JsonReader jsonReader = new JsonReader(resource, new RawJsonMetadataGenerator());
         return jsonReader.get();
     }
 }

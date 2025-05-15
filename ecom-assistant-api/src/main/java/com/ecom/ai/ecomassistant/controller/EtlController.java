@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/etl")
-public class ETLController {
+public class EtlController {
 
     private final ApplicationEventPublisher publisher;
 
@@ -21,7 +21,7 @@ public class ETLController {
         event.setDatasetId("W-dset-123");
         event.setDocumentId("w-doc-123");
         event.setFileInfo(FileInfo.builder()
-                .fullPath("C:\\Users\\w1232_rxxlb\\OneDrive\\桌面\\pjl_2004.pdf")
+                .fullPath("/Users/willy/Desktop/test.json")
                 .build()
         );
         publisher.publishEvent(event);
