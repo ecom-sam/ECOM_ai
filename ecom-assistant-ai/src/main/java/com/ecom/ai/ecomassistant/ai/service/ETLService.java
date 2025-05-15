@@ -5,10 +5,8 @@ import com.ecom.ai.ecomassistant.ai.etl.FileProcessingRule;
 import com.ecom.ai.ecomassistant.ai.etl.ProcessingRuleResolver;
 import com.ecom.ai.ecomassistant.ai.etl.reader.EcomDocumentReader;
 import com.ecom.ai.ecomassistant.ai.etl.transformer.EcomDocumentTransformer;
-import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
@@ -21,7 +19,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ETLService {
 
-    private static final Logger log = LoggerFactory.getLogger(ETLService.class);
     private final Map<String, EcomDocumentReader> readerMap;
     private final Map<String, EcomDocumentTransformer> transformerMap;
     private final ProcessingRuleResolver ruleResolver;
