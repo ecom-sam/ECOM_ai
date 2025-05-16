@@ -2,9 +2,8 @@ package com.ecom.ai.ecomassistant.controller;
 
 import com.ecom.ai.ecomassistant.db.model.User;
 import com.ecom.ai.ecomassistant.facade.UserFacade;
-import com.ecom.ai.ecomassistant.model.dto.mapper.UserMapper;
 import com.ecom.ai.ecomassistant.model.dto.request.UserCreateRequest;
-import com.ecom.ai.ecomassistant.db.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +18,7 @@ public class UserController {
     private final UserFacade userFacade;
 
     @PostMapping
-    public User insert(@RequestBody UserCreateRequest userCreateRequest) {
+    public User insert(@RequestBody @Valid UserCreateRequest userCreateRequest) {
         return userFacade.createUser(userCreateRequest);
     }
 }
