@@ -33,4 +33,5 @@ public class AIChatController {
     public String toolTest() {
         return aiService.toolTest();
     }
+
 }

@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: ecom-assistant
+
+  couchbase:
+    connection-string: ${COUCHBASE_CONNECTION_STRINGS:localhost}
+    username: ${COUCHBASE_USERNAME:admin}
+    password: ${COUCHBASE_PASSWORD:couchbase}
+
+  data:
+    couchbase:
+      bucket-name: ${COUCHBASE_BUCKET_NAME:COMPANY}
+      scope-name: ${COUCHBASE_SCOPE_NAME:AI}
+      # auto-index: true  # 如果你需要啟用自動建立索引，取消註解這行
+
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      chat:
+        base-url: https://api.groq.com/openai
+        api-key: ${GROK_API_KEY}
+        options:
+          model: ${GROK_CHAT_MODEL:meta-llama/llama-4-maverick-17b-128e-instruct}
+      embedding:
+        options:
+          model: text-embedding-3-small
+
+    vectorstore:
+      couchbase:
+        initialize-schema: true
+        bucket-name: ${spring.data.couchbase.bucket-name}
+        scope-name: ${spring.data.couchbase.scope-name}
+        collection-name: ${COUCHBASE_VECTOR_COLLECTION_NAME:document}
+
+logging:
+  level:
+    org.springframework.ai.chat.client.advisor: DEBUG
+
+#etl:
+#  file-processing:
+#    default:
+#      reader: defaultPagePdfDocumentReader
+#      transformers: []
