@@ -1,6 +1,6 @@
 package com.ecom.ai.ecomassistant.config;
 
-import com.ecom.ai.ecomassistant.db.model.Permission;
+import com.ecom.ai.ecomassistant.resource.Permission;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 

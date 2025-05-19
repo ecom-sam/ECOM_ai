@@ -22,6 +22,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-couchbase</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.ecom.ai</groupId>
+            <artifactId>ecom-assistant-core</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

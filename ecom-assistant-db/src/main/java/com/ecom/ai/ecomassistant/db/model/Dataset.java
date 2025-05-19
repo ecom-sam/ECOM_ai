@@ -1,5 +1,6 @@
 package com.ecom.ai.ecomassistant.db.model;
 
+import com.ecom.ai.ecomassistant.resource.Permission;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

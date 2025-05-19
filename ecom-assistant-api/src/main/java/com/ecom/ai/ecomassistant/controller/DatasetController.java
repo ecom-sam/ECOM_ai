@@ -2,10 +2,13 @@ package com.ecom.ai.ecomassistant.controller;
 
 import com.ecom.ai.ecomassistant.db.config.FileStorageProperties;
 import com.ecom.ai.ecomassistant.db.model.Dataset;
+import com.ecom.ai.ecomassistant.db.model.Document;
 import com.ecom.ai.ecomassistant.db.service.DatasetService;
+import com.ecom.ai.ecomassistant.db.service.DocumentService;
 import com.ecom.ai.ecomassistant.event.file.AiFileUploadEvent;
 import com.ecom.ai.ecomassistant.model.dto.request.DatasetCreateRequest;
 import com.ecom.ai.ecomassistant.model.dto.request.FileUploadRequest;
+import com.ecom.ai.ecomassistant.resource.StorageType;
 import com.ecom.ai.ecomassistant.resource.file.FileInfo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +41,8 @@ public class DatasetController {
 
     private final DatasetService datasetService;
 
+    private final DocumentService documentService;
+
     private final FileStorageProperties fileStorageProperties;
 
     private final ApplicationEventPublisher eventPublisher;
@@ -55,13 +60,14 @@ public class DatasetController {
         return datasetService.createDataset(dataset);
     }
 
-    @PostMapping(value = "/{id}/with-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    //@Transactional
+    @PostMapping(value = "/{datasetId}/with-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadFile(
-            @PathVariable String id,
+            @PathVariable String datasetId,
             @Valid @ModelAttribute FileUploadRequest request
     ) throws IOException {
 
-        if (datasetService.findById(id).isEmpty()) {
+        if (datasetService.findById(datasetId).isEmpty()) {
             return ResponseEntity.badRequest().body("Dataset not found");
         }
 
@@ -70,19 +76,27 @@ public class DatasetController {
 
         //TODO get user from header
         String userId = "user-123";
-        Path uploadDirPath = Paths.get(fileStorageProperties.getUploadDir(), id, userId);
+        Path uploadDirPath = Paths.get(fileStorageProperties.getUploadDir(), datasetId, userId);
         Files.createDirectories(uploadDirPath);
 
         Path destinationFile = uploadDirPath.resolve(fileName);
         file.transferTo(destinationFile);
         String fullPath = destinationFile.toAbsolutePath().toString();
 
+        Document document = Document.builder()
+                .datasetId(datasetId)
+                .storageType(StorageType.LOCAL)
+                .fileName(fileName)
+                .fullPath(fullPath)
+                .build();
+        documentService.save(document);
+
         AiFileUploadEvent event = AiFileUploadEvent.builder()
-                .datasetId(id)
-                .documentId(UUID.randomUUID().toString())
+                .datasetId(datasetId)
+                .documentId(document.getId())
                 .userId(null) //TODO
                 .fileInfo(FileInfo.builder()
-                        .fileId("")
+                        .fileId(document.getId())
                         .fileName(fileName)
                         .fullPath(fullPath)
                         .build()
