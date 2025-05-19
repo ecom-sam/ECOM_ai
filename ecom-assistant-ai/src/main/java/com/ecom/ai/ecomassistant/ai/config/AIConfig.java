@@ -6,9 +6,10 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class AIConfig {
-
     @Bean
     ChatClient chatClient(ChatClient.Builder builder) {
         return builder.build();
     }
 }
+
+
