@@ -1,7 +1,15 @@
 package com.ecom.ai.ecomassistant.controller;
 
+import com.ecom.ai.ecomassistant.db.config.FileStorageProperties;
+import com.ecom.ai.ecomassistant.db.model.DatasetCreateRequest;
+import com.ecom.ai.ecomassistant.dto.FileUploadRequest;
+import com.ecom.ai.ecomassistant.event.file.AiFileUploadEvent;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import com.ecom.ai.ecomassistant.db.model.Dataset;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,8 +18,12 @@ import com.ecom.ai.ecomassistant.db.service.DatasetService;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,11 +32,20 @@ import java.util.UUID;
 public class DatasetController {
     private final DatasetService datasetService;
 
+    @Autowired
+    private FileStorageProperties fileStorageProperties;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
     @PostMapping
-    public Dataset createDataset(@RequestBody Dataset dataset) {
-        if (dataset.getId() == null || dataset.getId().isEmpty()) {
-            dataset.setId(UUID.randomUUID().toString());
-        }
+    public Dataset createDataset(@RequestBody DatasetCreateRequest datasetCreateRequest) {
+
+        Dataset dataset = new Dataset();
+        dataset.setUserId(datasetCreateRequest.getUserId());
+        dataset.setName(datasetCreateRequest.getName());
+        dataset.setDescription(datasetCreateRequest.getDescription());
+        dataset.setPermission(datasetCreateRequest.getPermission());
 
         return datasetService.createDataset(dataset);
     }
@@ -32,40 +53,55 @@ public class DatasetController {
     @PostMapping("/{id}/with-file")
     public ResponseEntity<String> uploadFile(
             @PathVariable String id,
-            @RequestParam("file") MultipartFile file,
-            @RequestParam("permission") String permission) {
+            @Valid @ModelAttribute FileUploadRequest request,
+            BindingResult bindingResult) {
 
-        if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body("No file uploaded.");
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(
+                    bindingResult.getAllErrors().get(0).getDefaultMessage()
+            );
         }
 
-        if (!("public".equals(permission) || "private".equals(permission) || "group".equals(permission))) {
-            return ResponseEntity.badRequest().body("Invalid permission value.");
-        }
-
-        try {
+        try
+        {
+            MultipartFile file = request.getFile();
             String fileName = file.getOriginalFilename();
 
-            String uploadDirPath = "C:/Users/AllenOoi/uploads";
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userId = authentication.getName();
+
+            String uploadDirPath = Paths.get(fileStorageProperties.getUploadDir(), id, userId).toString();
             File uploadDir = new File(uploadDirPath);
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();
             }
 
-            File filePath = new File(uploadDir, fileName);
-            file.transferTo(filePath);
+            File destinationFile = new File(uploadDir, fileName);
+            file.transferTo(destinationFile);
 
-            return ResponseEntity.ok("File uploaded successfully: " + filePath.getAbsolutePath() + datasetService.findById(id));
-        } catch (IOException e) {
+            AiFileUploadEvent event = new AiFileUploadEvent(
+                    userId,
+                    id,
+                    UUID.randomUUID().toString()
+            );
+
+            eventPublisher.publishEvent(event);
+
+            return ResponseEntity.ok("File uploaded successfully: " +
+                    destinationFile.getAbsolutePath() + datasetService.findById(id));
+        }
+        catch (IOException e)
+        {
             return ResponseEntity.status(500).body("Failed to upload file: " + e.getMessage());
         }
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Dataset> updateDataset(@PathVariable String id, @RequestBody Dataset updatedDataset) {
-
-        Dataset updated = datasetService.updateDataset(id, updatedDataset);
-        return ResponseEntity.ok(updated);
+    public Dataset updateDataset(
+            @PathVariable String id,
+            @Valid @RequestBody Dataset updatedDataset)
+    {
+        return datasetService.updateDataset(id, updatedDataset);
     }
 
     @DeleteMapping("/{id}")
@@ -80,8 +116,7 @@ public class DatasetController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Dataset>> getAllDatasets() {
-        List<Dataset> datasets = datasetService.getAllDatasets();  // Get all datasets via service
-        return ResponseEntity.ok(datasets);
+    public List<Dataset> getAllDatasets() {
+        return datasetService.findAll();
     }
 }

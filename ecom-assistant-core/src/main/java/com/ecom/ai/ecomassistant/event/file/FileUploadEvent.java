@@ -7,4 +7,10 @@ import lombok.Setter;
 @Setter
 public class FileUploadEvent extends NewFileEvent {
     protected String userId;
+
+    public FileUploadEvent(String userId) {
+        this.userId = userId;
+    }
+
+    public FileUploadEvent() {}
 }

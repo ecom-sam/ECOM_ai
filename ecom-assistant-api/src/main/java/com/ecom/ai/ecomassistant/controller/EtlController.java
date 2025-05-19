@@ -17,13 +17,23 @@ public class EtlController {
 
     @GetMapping
     public void test() {
-        var event = new AiFileUploadEvent();
-        event.setDatasetId("W-dset-123");
-        event.setDocumentId("w-doc-123");
+//        var event = new AiFileUploadEvent();
+//        event.setDatasetId("W-dset-123");
+//        event.setDocumentId("w-doc-123");
+//        event.setFileInfo(FileInfo.builder()
+//                .fullPath("/Users/willy/Desktop/test.json")
+//                .build()
+//        );
+        var event = new AiFileUploadEvent(
+                "dummy-user-id",
+                "W-dset-123",
+                "w-doc-123"
+        );
         event.setFileInfo(FileInfo.builder()
                 .fullPath("/Users/willy/Desktop/test.json")
                 .build()
         );
+
         publisher.publishEvent(event);
     }
 }

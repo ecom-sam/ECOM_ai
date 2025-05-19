@@ -32,6 +32,9 @@ spring:
         scope-name: ${spring.data.couchbase.scope-name}
         collection-name: ${COUCHBASE_VECTOR_COLLECTION_NAME:document}
 
+file:
+  upload-dir: ${FILE_UPLOAD_DIR:/tmp/uploads}
+
 logging:
   level:
     org.springframework.ai.chat.client.advisor: DEBUG
