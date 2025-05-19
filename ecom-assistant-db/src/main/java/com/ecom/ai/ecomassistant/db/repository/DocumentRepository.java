@@ -6,7 +6,11 @@ import org.springframework.data.couchbase.repository.CouchbaseRepository;
 import org.springframework.data.couchbase.repository.ScanConsistency;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @ScanConsistency(query = QueryScanConsistency.REQUEST_PLUS)
 public interface DocumentRepository extends CouchbaseRepository<Document, String> {
+
+    List<Document> findAllByDatasetId(String datasetId);
 }

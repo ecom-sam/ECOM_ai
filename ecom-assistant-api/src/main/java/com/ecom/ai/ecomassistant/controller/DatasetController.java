@@ -6,8 +6,10 @@ import com.ecom.ai.ecomassistant.db.model.Document;
 import com.ecom.ai.ecomassistant.db.service.DatasetService;
 import com.ecom.ai.ecomassistant.db.service.DocumentService;
 import com.ecom.ai.ecomassistant.event.file.AiFileUploadEvent;
+import com.ecom.ai.ecomassistant.exception.EntityNotFoundException;
 import com.ecom.ai.ecomassistant.model.dto.request.DatasetCreateRequest;
 import com.ecom.ai.ecomassistant.model.dto.request.FileUploadRequest;
+import com.ecom.ai.ecomassistant.model.dto.response.DatasetDetailResponse;
 import com.ecom.ai.ecomassistant.resource.StorageType;
 import com.ecom.ai.ecomassistant.resource.file.FileInfo;
 import jakarta.validation.Valid;
@@ -32,7 +34,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,6 +47,18 @@ public class DatasetController {
     private final FileStorageProperties fileStorageProperties;
 
     private final ApplicationEventPublisher eventPublisher;
+
+    @GetMapping("/{id}")
+    public DatasetDetailResponse getDatasetDetail(@PathVariable String id) {
+        Dataset dataset = datasetService
+                .findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Dataset not found"));
+
+        return DatasetDetailResponse.builder()
+                .dataset(dataset)
+                .documents(documentService.findAllByDatasetId(id))
+                .build();
+    }
 
     @PostMapping
     public Dataset createDataset(@RequestBody @Valid DatasetCreateRequest datasetCreateRequest) {
