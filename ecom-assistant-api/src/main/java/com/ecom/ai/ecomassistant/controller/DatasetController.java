@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -98,9 +99,10 @@ public class DatasetController {
 
         Document document = Document.builder()
                 .datasetId(datasetId)
-                .storageType(StorageType.LOCAL)
                 .fileName(fileName)
                 .fullPath(fullPath)
+                .timestamp(Instant.now().toEpochMilli())
+                .storageType(StorageType.LOCAL)
                 .build();
         documentService.save(document);
 
