@@ -6,10 +6,12 @@ import com.ecom.ai.ecomassistant.db.service.DatasetService;
 import com.ecom.ai.ecomassistant.event.file.AiFileUploadEvent;
 import com.ecom.ai.ecomassistant.model.dto.request.DatasetCreateRequest;
 import com.ecom.ai.ecomassistant.model.dto.request.FileUploadRequest;
+import com.ecom.ai.ecomassistant.resource.file.FileInfo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,36 +55,43 @@ public class DatasetController {
         return datasetService.createDataset(dataset);
     }
 
-    @PostMapping("/{id}/with-file")
+    @PostMapping(value = "/{id}/with-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadFile(
             @PathVariable String id,
             @Valid @ModelAttribute FileUploadRequest request
-    ) {
-        try {
-            MultipartFile file = request.getFile();
-            String fileName = file.getOriginalFilename();
+    ) throws IOException {
 
-            //TODO get user from header
-            String userId = "user-123";
-            Path uploadDirPath = Paths.get(fileStorageProperties.getUploadDir(), id, userId);
-            Files.createDirectories(uploadDirPath);
-
-            Path destinationFile = uploadDirPath.resolve(fileName);
-            file.transferTo(destinationFile);
-
-            AiFileUploadEvent event = new AiFileUploadEvent(
-                    userId,
-                    id,
-                    UUID.randomUUID().toString()
-            );
-
-            eventPublisher.publishEvent(event);
-
-            return ResponseEntity.ok("File uploaded successfully: " +
-                    destinationFile.toAbsolutePath() + datasetService.findById(id));
-        } catch (IOException e) {
-            return ResponseEntity.status(500).body("Failed to upload file: " + e.getMessage());
+        if (datasetService.findById(id).isEmpty()) {
+            return ResponseEntity.badRequest().body("Dataset not found");
         }
+
+        MultipartFile file = request.getFile();
+        String fileName = file.getOriginalFilename();
+
+        //TODO get user from header
+        String userId = "user-123";
+        Path uploadDirPath = Paths.get(fileStorageProperties.getUploadDir(), id, userId);
+        Files.createDirectories(uploadDirPath);
+
+        Path destinationFile = uploadDirPath.resolve(fileName);
+        file.transferTo(destinationFile);
+        String fullPath = destinationFile.toAbsolutePath().toString();
+
+        AiFileUploadEvent event = AiFileUploadEvent.builder()
+                .datasetId(id)
+                .documentId(UUID.randomUUID().toString())
+                .userId(null) //TODO
+                .fileInfo(FileInfo.builder()
+                        .fileId("")
+                        .fileName(fileName)
+                        .fullPath(fullPath)
+                        .build()
+                )
+                .build();
+
+        eventPublisher.publishEvent(event);
+
+        return ResponseEntity.ok("File uploaded successfully: " + fullPath);
     }
 
     @PatchMapping("/{id}")

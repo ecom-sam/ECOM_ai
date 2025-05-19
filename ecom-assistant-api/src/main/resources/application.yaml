@@ -2,6 +2,11 @@ spring:
   application:
     name: ecom-assistant
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
   couchbase:
     connection-string: ${COUCHBASE_CONNECTION_STRINGS:localhost}
     username: ${COUCHBASE_USERNAME:admin}
@@ -31,6 +36,8 @@ spring:
         bucket-name: ${spring.data.couchbase.bucket-name}
         scope-name: ${spring.data.couchbase.scope-name}
         collection-name: ${COUCHBASE_VECTOR_COLLECTION_NAME:document}
+
+
 
 file:
   upload-dir: ${FILE_UPLOAD_DIR:/tmp/uploads}
