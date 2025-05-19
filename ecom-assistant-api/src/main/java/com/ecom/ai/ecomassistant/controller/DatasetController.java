@@ -29,11 +29,9 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/datasets")
-
 public class DatasetController {
 
     private final DatasetService datasetService;
@@ -43,7 +41,7 @@ public class DatasetController {
     private final ApplicationEventPublisher eventPublisher;
 
     @PostMapping
-    public Dataset createDataset(@RequestBody DatasetCreateRequest datasetCreateRequest) {
+    public Dataset createDataset(@RequestBody @Valid DatasetCreateRequest datasetCreateRequest) {
 
         Dataset dataset = new Dataset();
         //TODO get user from header
@@ -63,7 +61,6 @@ public class DatasetController {
         try {
             MultipartFile file = request.getFile();
             String fileName = file.getOriginalFilename();
-
 
             //TODO get user from header
             String userId = "user-123";
