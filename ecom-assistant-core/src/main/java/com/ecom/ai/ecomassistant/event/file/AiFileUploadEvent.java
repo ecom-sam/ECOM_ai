@@ -11,14 +11,13 @@ public class AiFileUploadEvent extends FileUploadEvent implements AiNewFileEvent
     private String documentId;
 
     public AiFileUploadEvent(String userId, String datasetId, String documentId, FileInfo fileInfo) {
-        super(userId); // Call the constructor of FileUploadEvent
+        super(userId);
         this.datasetId = datasetId;
         this.documentId = documentId;
-        this.fileInfo = fileInfo; // Initialize the fileInfo from NewFileEvent
+        this.fileInfo = fileInfo;
     }
 
-    // Constructor for easier instantiation (without fileInfo)
     public AiFileUploadEvent(String userId, String datasetId, String documentId) {
-        this(userId, datasetId, documentId, null); // Optional: default fileInfo to null if not provided
+        this(userId, datasetId, documentId, null);
     }
 }

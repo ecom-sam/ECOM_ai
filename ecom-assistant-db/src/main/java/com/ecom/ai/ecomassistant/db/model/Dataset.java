@@ -9,7 +9,7 @@ import org.springframework.data.couchbase.core.mapping.id.GenerationStrategy;
 import org.springframework.data.couchbase.repository.Collection;
 
 @Data
-@Collection("Testing")
+@Collection("Dataset")
 public class Dataset {
     @Id
     @GeneratedValue(strategy = GenerationStrategy.UNIQUE)
