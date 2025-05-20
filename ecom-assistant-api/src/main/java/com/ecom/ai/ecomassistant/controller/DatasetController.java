@@ -101,7 +101,6 @@ public class DatasetController {
                 .datasetId(datasetId)
                 .fileName(fileName)
                 .fullPath(fullPath)
-                .timestamp(Instant.now().toEpochMilli())
                 .storageType(StorageType.LOCAL)
                 .build();
         documentService.save(document);
