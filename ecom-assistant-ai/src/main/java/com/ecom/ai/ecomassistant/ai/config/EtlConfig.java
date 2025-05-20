@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 @Configuration
-public class ETLConfig {
+public class EtlConfig {
 
     @Bean
     public SummaryMetadataEnricher summaryMetadata(OpenAiChatModel aiClient) {
