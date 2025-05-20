@@ -25,7 +25,8 @@
 		<module>ecom-assistant-db</module>
 		<module>ecom-assistant-api</module>
 		<module>ecom-assistant-ai</module>
-	</modules>
+        <module>ecom-assistant-core</module>
+    </modules>
 	<scm>
 		<connection/>
 		<developerConnection/>
@@ -34,11 +35,10 @@
 	</scm>
 	<properties>
 		<java.version>17</java.version>
-		<spring-ai.version>1.0.0-M8</spring-ai.version>
+		<spring-ai.version>1.0.0-RC1</spring-ai.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
 	</properties>
 	<dependencies>
-
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -48,6 +48,11 @@
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
 			<version>${mapstruct.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate.validator</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>8.0.2.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springdoc</groupId>
