@@ -1,4 +1,4 @@
-package com.ecom.ai.ecomassistant.db.config;
+package com.ecom.ai.ecomassistant.config;
 
 import lombok.Getter;
 import lombok.Setter;

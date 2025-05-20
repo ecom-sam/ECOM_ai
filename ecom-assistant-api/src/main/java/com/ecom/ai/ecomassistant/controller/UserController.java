@@ -19,7 +19,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public User insert(@RequestBody @Valid UserCreateRequest userCreateRequest) {
+    public User createUser(@RequestBody @Valid UserCreateRequest userCreateRequest) {
         User user = UserMapper.INSTANCE.toUser(userCreateRequest);
         return userService.createUser(user);
     }
