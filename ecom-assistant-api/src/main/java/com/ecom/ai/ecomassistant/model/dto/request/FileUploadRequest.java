@@ -1,6 +1,6 @@
 package com.ecom.ai.ecomassistant.model.dto.request;
 
-import com.ecom.ai.ecomassistant.db.model.Permission;
+import com.ecom.ai.ecomassistant.resource.Permission;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
