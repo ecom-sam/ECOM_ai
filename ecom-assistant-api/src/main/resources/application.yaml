@@ -9,13 +9,13 @@ spring:
 
   couchbase:
     connection-string: ${COUCHBASE_CONNECTION_STRINGS:localhost}
-    username: ${COUCHBASE_USERNAME:admin}
-    password: ${COUCHBASE_PASSWORD:couchbase}
+    username: ${COUCHBASE_USERNAME:Admin}
+    password: ${COUCHBASE_PASSWORD:123456}
 
   data:
     couchbase:
-      bucket-name: ${COUCHBASE_BUCKET_NAME:COMPANY}
-      scope-name: ${COUCHBASE_SCOPE_NAME:AI}
+      bucket-name: ${COUCHBASE_BUCKET_NAME:Embedding}
+      scope-name: ${COUCHBASE_SCOPE_NAME:Testing}
       # auto-index: true  # 如果你需要啟用自動建立索引，取消註解這行
 
   ai:
@@ -47,6 +47,8 @@ file:
 logging:
   level:
     org.springframework.ai.chat.client.advisor: DEBUG
+
+
 
 #etl:
 #  file-processing:
