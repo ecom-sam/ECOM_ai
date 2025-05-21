@@ -20,16 +20,6 @@
     <dependencies>
         <dependency>
             <groupId>com.ecom.ai</groupId>
-            <artifactId>ecom-assistant-db</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.ecom.ai</groupId>
-            <artifactId>ecom-assistant-ai</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.ecom.ai</groupId>
             <artifactId>ecom-assistant-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>

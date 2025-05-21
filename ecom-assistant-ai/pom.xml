@@ -19,6 +19,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.ecom.ai</groupId>
+            <artifactId>ecom-assistant-common</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-pdf-document-reader</artifactId>
         </dependency>
@@ -30,11 +35,6 @@
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-vector-store-couchbase</artifactId>
             <version>${spring-ai.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.ecom.ai</groupId>
-            <artifactId>ecom-assistant-core</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
     </dependencies>
 </project>

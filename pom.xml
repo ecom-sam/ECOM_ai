@@ -26,7 +26,8 @@
 		<module>ecom-assistant-api</module>
 		<module>ecom-assistant-ai</module>
         <module>ecom-assistant-core</module>
-    </modules>
+		<module>ecom-assistant-common</module>
+	</modules>
 	<scm>
 		<connection/>
 		<developerConnection/>

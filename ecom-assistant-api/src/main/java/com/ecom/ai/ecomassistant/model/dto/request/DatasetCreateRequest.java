@@ -1,6 +1,6 @@
 package com.ecom.ai.ecomassistant.model.dto.request;
 
-import com.ecom.ai.ecomassistant.resource.Permission;
+import com.ecom.ai.ecomassistant.common.resource.Permission;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 

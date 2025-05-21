@@ -1,10 +1,10 @@
  package com.ecom.ai.ecomassistant.ai.service;
 
-import com.ecom.ai.ecomassistant.resource.file.FileInfo;
 import com.ecom.ai.ecomassistant.ai.etl.FileProcessingRule;
 import com.ecom.ai.ecomassistant.ai.etl.ProcessingRuleResolver;
 import com.ecom.ai.ecomassistant.ai.etl.reader.EcomDocumentReader;
 import com.ecom.ai.ecomassistant.ai.etl.transformer.EcomDocumentTransformer;
+import com.ecom.ai.ecomassistant.common.resource.file.FileInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;

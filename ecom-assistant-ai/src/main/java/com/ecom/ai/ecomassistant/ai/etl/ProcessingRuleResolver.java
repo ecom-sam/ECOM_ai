@@ -1,6 +1,6 @@
 package com.ecom.ai.ecomassistant.ai.etl;
 
-import com.ecom.ai.ecomassistant.resource.file.FileInfo;
+import com.ecom.ai.ecomassistant.common.resource.file.FileInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
