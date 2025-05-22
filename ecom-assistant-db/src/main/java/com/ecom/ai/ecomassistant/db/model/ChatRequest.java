@@ -7,5 +7,4 @@ import lombok.Setter;
 @Setter
 public class ChatRequest {
     private String userInput;
-    private boolean resetHistory;
 }

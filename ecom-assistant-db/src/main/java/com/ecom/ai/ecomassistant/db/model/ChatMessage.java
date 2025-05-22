@@ -21,6 +21,9 @@ public class ChatMessage {
     @NotNull(message = "Username cannot be null")
     private String username;
 
+    @NotNull(message = "TopicId cannot be null")
+    private String topicId;
+
     @NotNull(message = "Contents cannot be null")
     @Valid
     private List<ContentItem> contents;
