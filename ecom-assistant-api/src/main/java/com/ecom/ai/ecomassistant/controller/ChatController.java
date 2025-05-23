@@ -1,23 +1,16 @@
 package com.ecom.ai.ecomassistant.controller;
 
-import com.ecom.ai.ecomassistant.db.model.ChatContentRequest;
+import com.ecom.ai.ecomassistant.ai.repository.CouchbaseChatMemoryRepository;
 import com.ecom.ai.ecomassistant.db.model.ChatMessage;
 import com.ecom.ai.ecomassistant.db.model.ChatRequest;
-import com.ecom.ai.ecomassistant.db.repository.ChatMessageRepository;
 import com.ecom.ai.ecomassistant.db.service.ChatMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.chat.messages.AssistantMessage;
-
-import org.springframework.ai.chat.messages.Message;
-import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.time.Instant;
 
@@ -25,38 +18,16 @@ import java.time.Instant;
 @RequestMapping("/api/v1/chat")
 @RequiredArgsConstructor
 public class ChatController {
-
     private final ChatClient chatClient;
     private final ChatMessageService chatMessageService;
     private final ChatMemory chatMemory;
-
-    @Autowired
-    private final ChatMessageRepository chatMessageRepository;
+    private final CouchbaseChatMemoryRepository chatMemoryRepository;
 
     @PostMapping("/ai/{username}/{topicId}")
     public String generate(@PathVariable String username, @PathVariable String topicId, @RequestBody ChatRequest request) {
-        String chatCollection = "Chat";
         String userInput = request.getUserInput();
 
-        List<ChatContentRequest> contentsList = chatMessageRepository.findRecentContents(username, topicId);
-        Collections.reverse(contentsList);
-
-        for (ChatContentRequest dto : contentsList) {
-            List<ChatMessage.ContentItem> items = dto.getContents();
-
-            UserMessage userMessage = new UserMessage(items.get(0).getMessage());
-            AssistantMessage assistantMessage = new AssistantMessage(items.get(1).getMessage());
-
-            chatMemory.add(topicId, userMessage);
-            chatMemory.add(topicId, assistantMessage);
-        }
-
-        List<Message> messages = chatMemory.get(topicId);
-        if (messages.size() > 10) {
-            List<Message> lastMessages = messages.subList(messages.size() - 10, messages.size());
-            chatMemory.clear(topicId);
-            chatMemory.add(topicId, lastMessages);
-        }
+        chatMemoryRepository.loadRecentMessagesIntoMemory(chatMemory, username, topicId);
 
         List<ChatMessage.ContentItem> contents = new ArrayList<>();
         Instant datetime = Instant.now();
