@@ -1,4 +1,4 @@
-package com.ecom.ai.ecomassistant.context;
+package com.ecom.ai.ecomassistant.common.context;
 
 
 public class DatasetContext {

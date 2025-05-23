@@ -1,6 +1,6 @@
 package com.ecom.ai.ecomassistant.ai.etl.reader;
 
-import com.ecom.ai.ecomassistant.resource.file.FileInfo;
+import com.ecom.ai.ecomassistant.common.resource.file.FileInfo;
 import org.springframework.ai.document.Document;
 import org.springframework.core.io.PathResource;
 import org.springframework.core.io.Resource;

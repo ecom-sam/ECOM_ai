@@ -1,10 +1,10 @@
-package com.ecom.ai.ecomassistant.ai.event.listener;
+package com.ecom.ai.ecomassistant.event.listener;
 
 import com.ecom.ai.ecomassistant.ai.etl.transformer.DefaultDatasetInfoEnricher;
 import com.ecom.ai.ecomassistant.ai.service.EtlService;
-import com.ecom.ai.ecomassistant.context.DatasetContext;
-import com.ecom.ai.ecomassistant.event.file.AiFileUploadEvent;
-import com.ecom.ai.ecomassistant.resource.file.FileInfo;
+import com.ecom.ai.ecomassistant.ai.event.file.AiFileUploadEvent;
+import com.ecom.ai.ecomassistant.common.context.DatasetContext;
+import com.ecom.ai.ecomassistant.common.resource.file.FileInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

@@ -1,6 +1,6 @@
 package com.ecom.ai.ecomassistant.db.model;
 
-import com.ecom.ai.ecomassistant.resource.StorageType;
+import com.ecom.ai.ecomassistant.common.resource.StorageType;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
