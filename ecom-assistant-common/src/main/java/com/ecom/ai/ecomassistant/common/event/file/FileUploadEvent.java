@@ -1,4 +1,4 @@
-package com.ecom.ai.ecomassistant.event.file;
+package com.ecom.ai.ecomassistant.common.event.file;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,6 +1,6 @@
 package com.ecom.ai.ecomassistant.ai.etl.transformer;
 
-import com.ecom.ai.ecomassistant.context.DatasetContext;
+import com.ecom.ai.ecomassistant.common.context.DatasetContext;
 import org.springframework.ai.document.Document;
 import org.springframework.stereotype.Component;
 

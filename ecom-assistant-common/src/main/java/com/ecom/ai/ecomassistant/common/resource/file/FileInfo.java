@@ -1,6 +1,6 @@
-package com.ecom.ai.ecomassistant.resource.file;
+package com.ecom.ai.ecomassistant.common.resource.file;
 
-import com.ecom.ai.ecomassistant.resource.StorageType;
+import com.ecom.ai.ecomassistant.common.resource.StorageType;
 import lombok.Builder;
 
 @Builder

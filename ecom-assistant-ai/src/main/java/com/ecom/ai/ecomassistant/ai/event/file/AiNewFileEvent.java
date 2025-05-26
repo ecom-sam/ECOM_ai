@@ -1,4 +1,4 @@
-package com.ecom.ai.ecomassistant.event.file;
+package com.ecom.ai.ecomassistant.ai.event.file;
 
 public interface AiNewFileEvent {
     void setDatasetId(String id);
