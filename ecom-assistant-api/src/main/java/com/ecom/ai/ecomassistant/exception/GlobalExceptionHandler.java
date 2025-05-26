@@ -25,4 +25,12 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse<?>> handelEntityNotFoundException(EntityNotFoundException ex) {
+        ErrorResponse<ValidationError> response =
+                new ErrorResponse<>(404, ex.getMessage(), null);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
 }

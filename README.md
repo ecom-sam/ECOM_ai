@@ -25,7 +25,7 @@ COUCHBASE_USERNAME=admin
 COUCHBASE_PASSWORD=couchbase
 COUCHBASE_BUCKET_NAME=ECOM
 COUCHBASE_SCOPE_NAME=AI
-COUCHBASE_VECTOR_COLLECTION_NAME=document
+COUCHBASE_VECTOR_COLLECTION_NAME=document-vector
 
 GROK_API_KEY=
 GROK_CHAT_MODEL=meta-llama/llama-4-maverick-17b-128e-instruct
@@ -42,5 +42,20 @@ run with config
 | ![edit_run_config](doc/md/edit_run_config.png) | ![edi_run_config_detail](doc/md/edi_run_config_detail.png) |
 
 
-## swagger
+#### swagger
 http://localhost:8080/swagger-ui/index.html
+
+
+### 3. module
+模組間不互相依賴, 如果db entity結構需要共用,
+entity還是保留在db module, 另外建立一個class在common,
+並使用mapstruct做mapper
+
+|        |                     |
+|--------|---------------------|
+| 名稱     | 說明                  |
+| ai     | ai相關的service        |
+| api    | RestApi             |
+| common | 共用資源                |
+| core   | 核心邏輯, 依賴所有其他模組      |
+| db     | db相關entity, service |
