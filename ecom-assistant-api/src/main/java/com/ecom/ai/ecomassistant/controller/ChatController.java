@@ -10,6 +10,8 @@ import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.web.bind.annotation.*;
 
+import com.ecom.ai.ecomassistant.customtools.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.time.Instant;
@@ -22,6 +24,11 @@ public class ChatController {
     private final ChatMessageService chatMessageService;
     private final ChatMemory chatMemory;
     private final CouchbaseChatMemoryRepository chatMemoryRepository;
+
+    private final MathTool mathTool;
+    private final DateTimeTool dateTimeTool;
+    private final MovieTool movieTool;
+    private final MusicTool musicTool;
 
     @PostMapping("/ai/{username}/{topicId}")
     public String generate(@PathVariable String username, @PathVariable String topicId, @RequestBody ChatRequest request) {
@@ -45,6 +52,7 @@ public class ChatController {
         String response = chatClient.prompt()
                 .advisors(MessageChatMemoryAdvisor.builder(chatMemory).conversationId(topicId).build())
                 .user(userInput)
+                .tools(mathTool, dateTimeTool, movieTool, musicTool)
                 .call()
                 .content();
 
@@ -58,3 +66,4 @@ public class ChatController {
     }
 }
 
+//curl -X POST http://localhost:8080/api/v1/chat/ai/allen/custom -H "Content-Type: application/json" -d "{\"userInput\": \"What day is today?\"}"
