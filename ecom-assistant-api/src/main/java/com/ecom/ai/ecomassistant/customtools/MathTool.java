@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import java.util.stream.IntStream;
 
 @Component
-public class MathTool {
+public class MathTool implements ChatToolMarker {
     @Tool(description = "Calculate the nth Fibonacci number (0-based index)")
     public long fibonacci(int n) {
         if (n < 0) throw new IllegalArgumentException("Index must be non-negative");

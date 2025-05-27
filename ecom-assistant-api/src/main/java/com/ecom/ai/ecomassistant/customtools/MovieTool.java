@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class MovieTool {
+public class MovieTool implements ChatToolMarker {
     private static final Map<String, String> MOVIE_DATABASE = new HashMap<>();
 
     static {

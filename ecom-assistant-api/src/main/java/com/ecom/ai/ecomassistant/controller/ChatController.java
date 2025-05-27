@@ -24,11 +24,7 @@ public class ChatController {
     private final ChatMessageService chatMessageService;
     private final ChatMemory chatMemory;
     private final CouchbaseChatMemoryRepository chatMemoryRepository;
-
-    private final MathTool mathTool;
-    private final DateTimeTool dateTimeTool;
-    private final MovieTool movieTool;
-    private final MusicTool musicTool;
+    private final List<ChatToolMarker> chatTools;
 
     @PostMapping("/ai/{username}/{topicId}")
     public String generate(@PathVariable String username, @PathVariable String topicId, @RequestBody ChatRequest request) {
@@ -52,7 +48,7 @@ public class ChatController {
         String response = chatClient.prompt()
                 .advisors(MessageChatMemoryAdvisor.builder(chatMemory).conversationId(topicId).build())
                 .user(userInput)
-                .tools(mathTool, dateTimeTool, movieTool, musicTool)
+                .tools(chatTools.toArray())
                 .call()
                 .content();
 

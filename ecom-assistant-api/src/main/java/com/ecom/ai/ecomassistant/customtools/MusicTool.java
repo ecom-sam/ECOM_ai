@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Random;
 
 @Component
-public class MusicTool {
+public class MusicTool implements ChatToolMarker {
     private static final Map<String, String[]> GENRE_SONGS = new HashMap<>();
     private static final Random RANDOM = new Random();
 

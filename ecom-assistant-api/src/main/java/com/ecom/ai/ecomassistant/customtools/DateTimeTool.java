@@ -8,7 +8,7 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 
 @Component
-public class DateTimeTool {
+public class DateTimeTool implements ChatToolMarker {
     @Tool(description = "Get the current date and time in the user's timezone")
     public String getCurrentDateTime() {
         ZoneId zone = LocaleContextHolder.getTimeZone().toZoneId();
