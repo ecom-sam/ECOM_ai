@@ -37,9 +37,8 @@
             <version>${spring-ai.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.ecom.ai</groupId>
-            <artifactId>ecom-assistant-core</artifactId>
-            <version>${project.parent.version}</version>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-advisors-vector-store</artifactId>
         </dependency>
     </dependencies>
 </project>

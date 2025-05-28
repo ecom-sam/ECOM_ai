@@ -2,7 +2,6 @@ package com.ecom.ai.ecomassistant.core.chat.memory;
 
 import com.ecom.ai.ecomassistant.db.model.ChatContentRequest;
 import com.ecom.ai.ecomassistant.db.model.ChatMessage;
-import com.ecom.ai.ecomassistant.db.model.ChatRecord;
 import com.ecom.ai.ecomassistant.db.repository.ChatMessageRepository;
 import com.ecom.ai.ecomassistant.db.repository.ChatRecordRepository;
 import lombok.RequiredArgsConstructor;
@@ -64,16 +63,14 @@ public class CouchbaseChatMemoryRepository implements ChatMemoryRepository {
                 .stream()
                 .flatMap(chatRecord -> {
                     Message userMessage = new UserMessage(
-                            Optional.of(chatRecord)
-                                    .map(ChatRecord::getUserMessage)
-                                    .map(ChatRecord.Message::getContent)
-                                    .orElse(Strings.EMPTY)
+                            chatRecord.getUserMessage() != null
+                                    ? chatRecord.getUserMessage().getContent()
+                                    : Strings.EMPTY
                     );
                     Message assistantMessage = new AssistantMessage(
-                            Optional.of(chatRecord)
-                                    .map(ChatRecord::getAiMessage)
-                                    .map(ChatRecord.Message::getContent)
-                                    .orElse(Strings.EMPTY)
+                            chatRecord.getAiMessage() != null
+                                    ? chatRecord.getAiMessage().getContent()
+                                    : Strings.EMPTY
                     );
                     return Stream.of(userMessage, assistantMessage);
                 })

@@ -63,13 +63,13 @@ public class ChatService {
         ChatRecord chatRecord = ChatRecord.builder()
                 .topicId(command.topicId())
                 .userId(command.userId())
-                .userMessage(ChatRecord.Message.userMessage(command.userMessage()))
+                .userMessage(ChatRecord.ChatMessage.fromUser(command.userMessage()))
                 .build();
         return chatRecordService.save(chatRecord);
     }
 
     protected void addAiMessage(ChatRecord chatRecord, String aiMessage) {
-        chatRecord.setAiMessage(ChatRecord.Message.aiMessage(aiMessage));
+        chatRecord.setAiMessage(ChatRecord.ChatMessage.fromAi(aiMessage));
         chatRecordService.save(chatRecord);
     }
 }
