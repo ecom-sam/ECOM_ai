@@ -2,9 +2,13 @@ package com.ecom.ai.ecomassistant.core.chat.memory;
 
 import com.ecom.ai.ecomassistant.db.model.ChatContentRequest;
 import com.ecom.ai.ecomassistant.db.model.ChatMessage;
+import com.ecom.ai.ecomassistant.db.model.ChatRecord;
 import com.ecom.ai.ecomassistant.db.repository.ChatMessageRepository;
+import com.ecom.ai.ecomassistant.db.repository.ChatRecordRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.memory.ChatMemoryRepository;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
@@ -13,13 +17,18 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Primary
 @Component
 @RequiredArgsConstructor
-public class CouchbaseChatMemoryRepository {
+public class CouchbaseChatMemoryRepository implements ChatMemoryRepository {
 
     private final ChatMessageRepository chatMessageRepository;
+
+    private final ChatRecordRepository chatRecordRepository;
 
     public void loadRecentMessagesIntoMemory(ChatMemory chatMemory, String username, String topicId) {
         List<ChatContentRequest> contentsList = chatMessageRepository.findRecentContents(username, topicId);
@@ -41,5 +50,43 @@ public class CouchbaseChatMemoryRepository {
             chatMemory.clear(topicId);
             chatMemory.add(topicId, trimmed);
         }
+    }
+
+
+    @Override
+    public List<String> findConversationIds() {
+        return List.of();
+    }
+
+    @Override
+    public List<Message> findByConversationId(String conversationId) {
+        return chatRecordRepository.findAllByTopicId(conversationId)
+                .stream()
+                .flatMap(chatRecord -> {
+                    Message userMessage = new UserMessage(
+                            Optional.of(chatRecord)
+                                    .map(ChatRecord::getUserMessage)
+                                    .map(ChatRecord.Message::getContent)
+                                    .orElse(Strings.EMPTY)
+                    );
+                    Message assistantMessage = new AssistantMessage(
+                            Optional.of(chatRecord)
+                                    .map(ChatRecord::getAiMessage)
+                                    .map(ChatRecord.Message::getContent)
+                                    .orElse(Strings.EMPTY)
+                    );
+                    return Stream.of(userMessage, assistantMessage);
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void saveAll(String conversationId, List<Message> messages) {
+        //empty
+    }
+
+    @Override
+    public void deleteByConversationId(String conversationId) {
+        //empty
     }
 }
