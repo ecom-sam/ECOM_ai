@@ -1,25 +1,25 @@
-package com.ecom.ai.ecomassistant.ai.repository;
+package com.ecom.ai.ecomassistant.core.chat.memory;
 
 import com.ecom.ai.ecomassistant.db.model.ChatContentRequest;
 import com.ecom.ai.ecomassistant.db.model.ChatMessage;
 import com.ecom.ai.ecomassistant.db.repository.ChatMessageRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.stereotype.Repository;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
 
-@Repository
-public class CouchbaseChatMemoryRepository  {
+@Primary
+@Component
+@RequiredArgsConstructor
+public class CouchbaseChatMemoryRepository {
 
     private final ChatMessageRepository chatMessageRepository;
-
-    public CouchbaseChatMemoryRepository(ChatMessageRepository repo) {
-        this.chatMessageRepository = repo;
-    }
 
     public void loadRecentMessagesIntoMemory(ChatMemory chatMemory, String username, String topicId) {
         List<ChatContentRequest> contentsList = chatMessageRepository.findRecentContents(username, topicId);

@@ -1,6 +1,6 @@
 package com.ecom.ai.ecomassistant.controller;
 
-import com.ecom.ai.ecomassistant.ai.repository.CouchbaseChatMemoryRepository;
+import com.ecom.ai.ecomassistant.core.chat.memory.CouchbaseChatMemoryRepository;
 import com.ecom.ai.ecomassistant.db.model.ChatMessage;
 import com.ecom.ai.ecomassistant.db.model.ChatRequest;
 import com.ecom.ai.ecomassistant.db.service.ChatMessageService;
