@@ -41,6 +41,11 @@ public class ChatService {
         return chatTopicService.findAllByUserId(userId);
     }
 
+    public List<ChatRecord> findRecordsByTopicBefore(String topicId, String chatRecordId, Integer inputLimit) {
+        int limit = inputLimit != null ? inputLimit : 10;
+        return chatRecordService.findByTopicBefore(topicId, chatRecordId, limit);
+    }
+
     public Flux<String> performAiChatFlow(SendUserMessageCommand command) {
 
         ChatRecord chatRecord = addUserMessage(command);

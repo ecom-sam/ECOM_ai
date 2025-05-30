@@ -3,6 +3,7 @@ package com.ecom.ai.ecomassistant.controller;
 import com.ecom.ai.ecomassistant.common.annotation.CurrentUserId;
 import com.ecom.ai.ecomassistant.core.command.SendUserMessageCommand;
 import com.ecom.ai.ecomassistant.core.service.chat.ChatService;
+import com.ecom.ai.ecomassistant.db.model.ChatRecord;
 import com.ecom.ai.ecomassistant.db.model.ChatTopic;
 import com.ecom.ai.ecomassistant.model.dto.mapper.MessageCommandMapper;
 import com.ecom.ai.ecomassistant.model.dto.request.ChatMessageRequest;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
@@ -30,7 +32,7 @@ public class AiChatController {
     private final ChatService chatService;
 
     @PostMapping("/topics")
-    public ChatTopic createChatTopic(@RequestBody @Valid ChatTopicCreateRequest createRequest, @CurrentUserId String userId) {
+    public ChatTopic createChatTopic(@CurrentUserId String userId, @RequestBody @Valid ChatTopicCreateRequest createRequest) {
         return chatService.createChatTopic(createRequest.getTopic(), userId);
     }
 
@@ -41,12 +43,23 @@ public class AiChatController {
 
     @PostMapping(value = "/topics/{topicId}/ask", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> sendMessageToBot(
+            @CurrentUserId String userId,
             @PathVariable String topicId,
-            @RequestBody @Valid ChatMessageRequest request,
-            @CurrentUserId String userId
+            @RequestBody @Valid ChatMessageRequest request
     ) {
         SendUserMessageCommand command = MessageCommandMapper.INSTANCE.toSendUserMessageCommand(request, topicId, userId);
         return chatService.performAiChatFlow(command);
+    }
+
+    @GetMapping("/topics/{topicId}/messages")
+    public List<ChatRecord> findRecentChatRecord(
+            @CurrentUserId String userId,
+            @PathVariable String topicId,
+            @RequestParam(required = false) String lastChatRecordId,
+            @RequestParam(required = false) Integer limit
+    ) {
+        //check user is topic owner??
+        return chatService.findRecordsByTopicBefore(topicId, lastChatRecordId, limit);
     }
 
 }

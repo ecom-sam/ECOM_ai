@@ -16,4 +16,11 @@ public interface ChatRecordRepository extends CouchbaseRepository<ChatRecord, St
     @Query("#{#n1ql.selectEntity} WHERE topicId = $1 ORDER BY chatRecordId ASC LIMIT 10")
     List<ChatRecord> findLatestChatByTopicId(String topicId);
 
+    @Query("#{#n1ql.selectEntity} " +
+            "WHERE topicId = $topicId " +
+            "AND ( $chatRecordId is null or chatRecordId < $chatRecordId ) " +
+            "ORDER BY datetime DESC " +
+            "LIMIT $limit"
+    )
+    List<ChatRecord> findByTopicBefore(String topicId, String chatRecordId, int limit);
 }
