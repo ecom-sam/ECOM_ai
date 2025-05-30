@@ -15,12 +15,8 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class AiConfig {
 
-    private final ChatMemoryRepository chatMemoryRepository;
-
-    private final VectorStore vectorStore;
-
     @Bean
-    ChatClient chatClient(ChatClient.Builder builder) {
+    ChatClient chatClient(ChatClient.Builder builder, ChatMemoryRepository chatMemoryRepository) {
 
         ChatMemory chatMemory = MessageWindowChatMemory.builder()
                 .chatMemoryRepository(chatMemoryRepository)
@@ -29,10 +25,14 @@ public class AiConfig {
 
         return builder
                 .defaultAdvisors(
-                        PromptChatMemoryAdvisor.builder(chatMemory).build(),
-                        QuestionAnswerAdvisor.builder(vectorStore).build()
+                        PromptChatMemoryAdvisor.builder(chatMemory).build()
                 )
                 .build();
+    }
+
+    @Bean
+    QuestionAnswerAdvisor questionAnswerAdvisor(VectorStore vectorStore) {
+        return QuestionAnswerAdvisor.builder(vectorStore).build();
     }
 }
 

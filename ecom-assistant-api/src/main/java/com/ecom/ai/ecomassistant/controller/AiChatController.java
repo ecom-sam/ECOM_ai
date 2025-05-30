@@ -4,6 +4,7 @@ import com.ecom.ai.ecomassistant.common.annotation.CurrentUserId;
 import com.ecom.ai.ecomassistant.core.command.SendUserMessageCommand;
 import com.ecom.ai.ecomassistant.core.service.chat.ChatService;
 import com.ecom.ai.ecomassistant.db.model.ChatTopic;
+import com.ecom.ai.ecomassistant.model.dto.mapper.MessageCommandMapper;
 import com.ecom.ai.ecomassistant.model.dto.request.ChatMessageRequest;
 import com.ecom.ai.ecomassistant.model.dto.request.ChatTopicCreateRequest;
 import jakarta.validation.Valid;
@@ -34,21 +35,17 @@ public class AiChatController {
     }
 
     @GetMapping("/topics")
-    public List<ChatTopic> getAllChatTopicsByUser(@CurrentUserId String userId) {
+    public List<ChatTopic> findAllChatTopicsByUser(@CurrentUserId String userId) {
         return chatService.findAllChatTopicsByUser(userId);
     }
 
-    @PostMapping(value = "/topics/{topicId}/messages/ask", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @PostMapping(value = "/topics/{topicId}/ask", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> sendMessageToBot(
             @PathVariable String topicId,
             @RequestBody @Valid ChatMessageRequest request,
             @CurrentUserId String userId
     ) {
-        SendUserMessageCommand command = new SendUserMessageCommand(
-                topicId,
-                userId,
-                request.message()
-        );
+        SendUserMessageCommand command = MessageCommandMapper.INSTANCE.toSendUserMessageCommand(request, topicId, userId);
         return chatService.performAiChatFlow(command);
     }
 

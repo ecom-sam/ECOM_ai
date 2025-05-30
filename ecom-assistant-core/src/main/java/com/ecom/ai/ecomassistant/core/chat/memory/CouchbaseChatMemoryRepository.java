@@ -12,7 +12,6 @@ import com.ecom.ai.ecomassistant.db.repository.ChatRecordRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.ChatMemoryRepository;
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -29,7 +28,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Primary
 @Component
@@ -91,26 +89,23 @@ public class CouchbaseChatMemoryRepository implements ChatMemoryRepository {
         if (CollectionUtils.isEmpty(storedMessages)) {
             return List.of();
         } else {
+            storedMessages.removeLast();
             chatMemoryCache.put(conversationId, storedMessages);
             return storedMessages;
         }
     }
 
     private List<Message> findByConversationIdInternal(String conversationId) {
-        return chatRecordRepository.findTop10ByTopicId(conversationId)
+        return chatRecordRepository.findLatestChatByTopicId(conversationId)
                 .stream()
-                .flatMap(chatRecord -> {
-                    Message userMessage = new UserMessage(
-                            chatRecord.getUserMessage() != null
-                                    ? chatRecord.getUserMessage().getContent()
-                                    : Strings.EMPTY
-                    );
-                    Message assistantMessage = new AssistantMessage(
-                            chatRecord.getAiMessage() != null
-                                    ? chatRecord.getAiMessage().getContent()
-                                    : Strings.EMPTY
-                    );
-                    return Stream.of(userMessage, assistantMessage);
+                .map(chatRecord -> {
+                    String content = chatRecord.getContent();
+                    String role = chatRecord.getRole();
+                    return switch (role) {
+                        case "USER" -> new UserMessage(content);
+                        case "ASSISTANT" -> new AssistantMessage(content);
+                        default -> throw new RuntimeException();
+                    };
                 })
                 .collect(Collectors.toList());
     }

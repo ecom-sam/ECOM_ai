@@ -14,6 +14,6 @@ public class ChatTopicService extends CrudService<ChatTopic, String, ChatTopicRe
     }
 
     public List<ChatTopic> findAllByUserId(String userId) {
-        return repository.findAllByUserId(userId);
+        return repository.findAllByUserIdOrderByCreateDateTimeDesc(userId);
     }
 }
