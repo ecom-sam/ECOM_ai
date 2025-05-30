@@ -18,6 +18,11 @@ spring:
       scope-name: ${COUCHBASE_SCOPE_NAME:Testing}
       # auto-index: true  # 如果你需要啟用自動建立索引，取消註解這行
 
+  cache:
+    couchbase:
+      scope-name: AI
+      collection-name: cache
+
   ai:
     openai:
       api-key: ${OPENAI_API_KEY}
