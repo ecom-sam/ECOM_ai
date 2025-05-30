@@ -12,6 +12,6 @@ import java.util.List;
 @ScanConsistency(query = QueryScanConsistency.REQUEST_PLUS)
 public interface ChatRecordRepository extends CouchbaseRepository<ChatRecord, String> {
 
-    List<ChatRecord> findAllByTopicId(String topicId);
+    List<ChatRecord> findTop10ByTopicId(String topicId);
 
 }
