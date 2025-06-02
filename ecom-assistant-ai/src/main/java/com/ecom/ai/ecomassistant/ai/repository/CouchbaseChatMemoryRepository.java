@@ -43,3 +43,5 @@ public class CouchbaseChatMemoryRepository  {
         }
     }
 }
+
+//curl -X POST http://localhost:8080/api/v1/chat/ai/allen/philosophy -H "Content-Type: application/json" -d "{ \"userInput\": \"Who is Donald Davidson\"}"
