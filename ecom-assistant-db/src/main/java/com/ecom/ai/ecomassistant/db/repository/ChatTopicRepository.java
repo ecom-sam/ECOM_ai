@@ -13,6 +13,6 @@ import java.util.List;
 @ScanConsistency(query = QueryScanConsistency.REQUEST_PLUS)
 public interface ChatTopicRepository extends CouchbaseRepository<ChatTopic, String> {
 
-    List<ChatTopic> findAllByUserIdOrderByCreateDateTimeDesc(String userId);
+    List<ChatTopic> findAllByUserIdOrderByCreatedDateTimeDesc(String userId);
 
 }
