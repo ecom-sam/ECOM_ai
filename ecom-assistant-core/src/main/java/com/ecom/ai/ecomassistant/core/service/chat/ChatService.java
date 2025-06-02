@@ -11,11 +11,13 @@ import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvi
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.messages.MessageType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Flux;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -40,8 +42,17 @@ public class ChatService {
                 .user(command.message())
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, command.topicId()));
 
-        if (command.withRag() == Boolean.TRUE) {
-            requestSpec.advisors(questionAnswerAdvisor);
+        List<String> datasetIds = command.datasetIds();
+        if (command.withRag() == Boolean.TRUE && !CollectionUtils.isEmpty(datasetIds)) {
+            String datasetIdString = datasetIds.stream()
+                    .map(s -> String.format("'%s'", s))
+                    .collect(Collectors.joining(", "));
+            requestSpec
+                    .advisors(questionAnswerAdvisor)
+                    .advisors(a -> a.param(
+                            QuestionAnswerAdvisor.FILTER_EXPRESSION,
+                            String.format("datasetId IN [%s]", datasetIdString)
+                    ));
         }
 
         List<String> responseBuffer = new ArrayList<>();

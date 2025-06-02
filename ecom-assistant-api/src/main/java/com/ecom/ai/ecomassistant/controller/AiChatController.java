@@ -38,7 +38,7 @@ public class AiChatController {
 
     @PostMapping("/topics")
     public ChatTopic createChatTopic(@CurrentUserId String userId, @RequestBody @Valid ChatTopicCreateRequest createRequest) {
-        ChatTopic chatTopic = ChatTopicMapper.INSTANCE.toChatTopic(createRequest);
+        ChatTopic chatTopic = ChatTopicMapper.INSTANCE.toChatTopic(createRequest, userId);
         return chatTopicService.save(chatTopic);
     }
 
@@ -46,10 +46,10 @@ public class AiChatController {
     public List<ChatTopic> findAllChatTopicsByUser(@CurrentUserId String userId) {
         return chatTopicService.findAllByUserId(userId);
     }
-    
+
     @PatchMapping("/topics/{topicId}")
     public ChatTopic updateChatTopic(@CurrentUserId String userId, @RequestBody @Valid ChatTopicUpdateRequest updateRequest) {
-        ChatTopic chatTopic = ChatTopicMapper.INSTANCE.toChatTopic(updateRequest);
+        ChatTopic chatTopic = ChatTopicMapper.INSTANCE.toChatTopic(updateRequest, userId);
         return chatTopicService.save(chatTopic);
     }
 

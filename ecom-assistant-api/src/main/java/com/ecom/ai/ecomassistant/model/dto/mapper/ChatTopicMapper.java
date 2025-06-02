@@ -4,6 +4,7 @@ import com.ecom.ai.ecomassistant.db.model.ChatTopic;
 import com.ecom.ai.ecomassistant.model.dto.request.ChatTopicCreateRequest;
 import com.ecom.ai.ecomassistant.model.dto.request.ChatTopicUpdateRequest;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
@@ -12,7 +13,9 @@ public interface ChatTopicMapper {
 
     ChatTopicMapper INSTANCE = Mappers.getMapper(ChatTopicMapper.class);
 
-    ChatTopic toChatTopic(ChatTopicCreateRequest createRequest);
+    @Mapping(source = "userId", target = "userId")
+    ChatTopic toChatTopic(ChatTopicCreateRequest createRequest, String userId);
 
-    ChatTopic toChatTopic(ChatTopicUpdateRequest updateRequest);
+    @Mapping(source = "userId", target = "userId")
+    ChatTopic toChatTopic(ChatTopicUpdateRequest updateRequest, String userId);
 }
