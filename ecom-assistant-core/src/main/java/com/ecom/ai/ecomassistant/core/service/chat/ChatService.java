@@ -2,9 +2,7 @@ package com.ecom.ai.ecomassistant.core.service.chat;
 
 import com.ecom.ai.ecomassistant.core.command.SendUserMessageCommand;
 import com.ecom.ai.ecomassistant.db.model.ChatRecord;
-import com.ecom.ai.ecomassistant.db.model.ChatTopic;
 import com.ecom.ai.ecomassistant.db.service.ChatRecordService;
-import com.ecom.ai.ecomassistant.db.service.ChatTopicService;
 import com.github.f4b6a3.ulid.UlidCreator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,33 +11,23 @@ import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvi
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.messages.MessageType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Flux;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatService {
 
-    private final ChatTopicService chatTopicService;
     private final ChatRecordService chatRecordService;
     private final ChatClient chatClient;
     private final QuestionAnswerAdvisor questionAnswerAdvisor;
 
-    public ChatTopic createChatTopic(String topic, String userId) {
-        ChatTopic chatTopic = new ChatTopic();
-        chatTopic.setTopic(topic);
-        chatTopic.setUserId(userId);
-        chatTopic.setCreateDateTime(Instant.now());
-        return chatTopicService.save(chatTopic);
-    }
-
-    public List<ChatTopic> findAllChatTopicsByUser(String userId) {
-        return chatTopicService.findAllByUserId(userId);
-    }
 
     public List<ChatRecord> findRecordsByTopicBefore(String topicId, String chatRecordId, Integer inputLimit) {
         int limit = inputLimit != null ? inputLimit : 10;
@@ -54,8 +42,17 @@ public class ChatService {
                 .user(command.message())
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, command.topicId()));
 
-        if (command.withRag() == Boolean.TRUE) {
-            requestSpec.advisors(questionAnswerAdvisor);
+        List<String> datasetIds = command.datasetIds();
+        if (command.withRag() == Boolean.TRUE && !CollectionUtils.isEmpty(datasetIds)) {
+            String datasetIdString = datasetIds.stream()
+                    .map(s -> String.format("'%s'", s))
+                    .collect(Collectors.joining(", "));
+            requestSpec
+                    .advisors(questionAnswerAdvisor)
+                    .advisors(a -> a.param(
+                            QuestionAnswerAdvisor.FILTER_EXPRESSION,
+                            String.format("datasetId IN [%s]", datasetIdString)
+                    ));
         }
 
         List<String> responseBuffer = new ArrayList<>();

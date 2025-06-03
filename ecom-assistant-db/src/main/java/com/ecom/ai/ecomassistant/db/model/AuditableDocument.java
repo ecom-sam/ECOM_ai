@@ -17,12 +17,12 @@ public abstract class AuditableDocument {
     private String createdBy;
 
     @CreatedDate
-    private Instant createdDate;
+    private Instant createdDateTime;
 
     @LastModifiedBy
     private String lastModifiedBy;
 
     @LastModifiedDate
-    private Instant lastModifiedDate;
+    private Instant lastModifiedDateTime;
 
 }

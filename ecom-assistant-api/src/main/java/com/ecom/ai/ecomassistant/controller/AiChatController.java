@@ -5,14 +5,18 @@ import com.ecom.ai.ecomassistant.core.command.SendUserMessageCommand;
 import com.ecom.ai.ecomassistant.core.service.chat.ChatService;
 import com.ecom.ai.ecomassistant.db.model.ChatRecord;
 import com.ecom.ai.ecomassistant.db.model.ChatTopic;
+import com.ecom.ai.ecomassistant.db.service.ChatTopicService;
+import com.ecom.ai.ecomassistant.model.dto.mapper.ChatTopicMapper;
 import com.ecom.ai.ecomassistant.model.dto.mapper.MessageCommandMapper;
 import com.ecom.ai.ecomassistant.model.dto.request.ChatMessageRequest;
 import com.ecom.ai.ecomassistant.model.dto.request.ChatTopicCreateRequest;
+import com.ecom.ai.ecomassistant.model.dto.request.ChatTopicUpdateRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,15 +34,23 @@ import java.util.List;
 public class AiChatController {
 
     private final ChatService chatService;
+    private final ChatTopicService chatTopicService;
 
     @PostMapping("/topics")
     public ChatTopic createChatTopic(@CurrentUserId String userId, @RequestBody @Valid ChatTopicCreateRequest createRequest) {
-        return chatService.createChatTopic(createRequest.getTopic(), userId);
+        ChatTopic chatTopic = ChatTopicMapper.INSTANCE.toChatTopic(createRequest, userId);
+        return chatTopicService.save(chatTopic);
     }
 
     @GetMapping("/topics")
     public List<ChatTopic> findAllChatTopicsByUser(@CurrentUserId String userId) {
-        return chatService.findAllChatTopicsByUser(userId);
+        return chatTopicService.findAllByUserId(userId);
+    }
+
+    @PatchMapping("/topics/{topicId}")
+    public ChatTopic updateChatTopic(@CurrentUserId String userId, @RequestBody @Valid ChatTopicUpdateRequest updateRequest) {
+        ChatTopic chatTopic = ChatTopicMapper.INSTANCE.toChatTopic(updateRequest, userId);
+        return chatTopicService.save(chatTopic);
     }
 
     @PostMapping(value = "/topics/{topicId}/ask", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
@@ -59,7 +71,9 @@ public class AiChatController {
             @RequestParam(required = false) Integer limit
     ) {
         //check user is topic owner??
-        return chatService.findRecordsByTopicBefore(topicId, lastChatRecordId, limit);
+        return chatService
+                .findRecordsByTopicBefore(topicId, lastChatRecordId, limit)
+                .reversed();
     }
 
 }
