@@ -1,5 +1,6 @@
-package com.ecom.ai.ecomassistant.event.file;
+package com.ecom.ai.ecomassistant.ai.event.file;
 
+import com.ecom.ai.ecomassistant.common.event.file.FileUploadEvent;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;

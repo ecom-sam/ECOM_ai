@@ -16,4 +16,5 @@ public interface ChatMessageRepository extends CouchbaseRepository<ChatMessage, 
 
     @Query("#{#n1ql.selectEntity} WHERE username = $1 AND topicId = $2 ORDER BY datetime DESC LIMIT 4")
     List<ChatContentRequest> findRecentContents(String username, String topicId);
+
 }

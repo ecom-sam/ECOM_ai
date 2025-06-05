@@ -24,7 +24,7 @@
         </dependency>
         <dependency>
             <groupId>com.ecom.ai</groupId>
-            <artifactId>ecom-assistant-core</artifactId>
+            <artifactId>ecom-assistant-common</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
     </dependencies>

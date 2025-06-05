@@ -4,8 +4,8 @@ spring:
 
   servlet:
     multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
+      max-file-size: 50MB
+      max-request-size: 50MB
 
   couchbase:
     connection-string: ${COUCHBASE_CONNECTION_STRINGS:localhost}
@@ -17,6 +17,11 @@ spring:
       bucket-name: ${COUCHBASE_BUCKET_NAME:Embedding}
       scope-name: ${COUCHBASE_SCOPE_NAME:Testing}
       # auto-index: true  # 如果你需要啟用自動建立索引，取消註解這行
+
+  cache:
+    couchbase:
+      scope-name: AI
+      collection-name: cache
 
   ai:
     openai:
@@ -47,6 +52,8 @@ file:
 logging:
   level:
     org.springframework.ai.chat.client.advisor: DEBUG
+    org.springframework.data.couchbase: DEBUG
+
 
 
 

@@ -1,17 +1,17 @@
 package com.ecom.ai.ecomassistant.controller;
 
+import com.ecom.ai.ecomassistant.common.resource.StorageType;
+import com.ecom.ai.ecomassistant.common.resource.file.FileInfo;
 import com.ecom.ai.ecomassistant.config.FileStorageProperties;
 import com.ecom.ai.ecomassistant.db.model.Dataset;
 import com.ecom.ai.ecomassistant.db.model.Document;
 import com.ecom.ai.ecomassistant.db.service.DatasetService;
 import com.ecom.ai.ecomassistant.db.service.DocumentService;
-import com.ecom.ai.ecomassistant.event.file.AiFileUploadEvent;
+import com.ecom.ai.ecomassistant.ai.event.file.AiFileUploadEvent;
 import com.ecom.ai.ecomassistant.exception.EntityNotFoundException;
 import com.ecom.ai.ecomassistant.model.dto.request.DatasetCreateRequest;
 import com.ecom.ai.ecomassistant.model.dto.request.FileUploadRequest;
 import com.ecom.ai.ecomassistant.model.dto.response.DatasetDetailResponse;
-import com.ecom.ai.ecomassistant.resource.StorageType;
-import com.ecom.ai.ecomassistant.resource.file.FileInfo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
