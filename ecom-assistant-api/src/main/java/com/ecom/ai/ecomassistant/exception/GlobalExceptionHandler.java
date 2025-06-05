@@ -1,5 +1,6 @@
 package com.ecom.ai.ecomassistant.exception;
 
+import com.ecom.ai.ecomassistant.common.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

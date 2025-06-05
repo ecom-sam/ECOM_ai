@@ -1,4 +1,4 @@
-package com.ecom.ai.ecomassistant.exception;
+package com.ecom.ai.ecomassistant.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

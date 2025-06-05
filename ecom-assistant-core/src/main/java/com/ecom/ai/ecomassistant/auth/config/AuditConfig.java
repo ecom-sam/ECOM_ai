@@ -1,4 +1,4 @@
-package com.ecom.ai.ecomassistant.config;
+package com.ecom.ai.ecomassistant.auth.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

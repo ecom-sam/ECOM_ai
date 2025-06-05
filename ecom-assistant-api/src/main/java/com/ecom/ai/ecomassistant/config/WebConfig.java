@@ -1,7 +1,7 @@
 package com.ecom.ai.ecomassistant.config;
 
 import com.ecom.ai.ecomassistant.common.resource.Permission;
-import com.ecom.ai.ecomassistant.core.resolver.CurrentUserIdArgumentResolver;
+import com.ecom.ai.ecomassistant.auth.resolver.CurrentUserIdArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;

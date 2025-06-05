@@ -1,7 +1,7 @@
-package com.ecom.ai.ecomassistant.core.resolver;
+package com.ecom.ai.ecomassistant.auth.resolver;
 
 import com.ecom.ai.ecomassistant.common.annotation.CurrentUserId;
-import com.ecom.ai.ecomassistant.common.util.JWTUtil;
+import com.ecom.ai.ecomassistant.auth.util.JwtUtil;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -25,6 +25,6 @@ public class CurrentUserIdArgumentResolver implements HandlerMethodArgumentResol
             NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory
     ) throws Exception {
-        return JWTUtil.getUserId();
+        return JwtUtil.getUserId();
     }
 }
