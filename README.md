@@ -86,5 +86,18 @@ entity還是保留在db module, 另外建立一個class在common,
 ### 3. build
 #### docker
 ```shell
+docker build -t ecom-assistant .
+```
 
+**apple silicon**
+**建立並啟用 buildx builder（只需做一次）**
+```shell
+docker buildx create --name multiarch-builder --use
+```
+
+```shell
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  -t willyliang/ecom-assistant:latest \
+  .
 ```

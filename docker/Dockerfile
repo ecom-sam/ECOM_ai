@@ -5,7 +5,7 @@ FROM maven:3.9.6-eclipse-temurin-21 AS builder
 WORKDIR /app
 
 # 複製所有專案檔案到容器
-COPY . .
+COPY .. .
 
 # 編譯並打包，指定只打包 API 模組
 RUN mvn clean install -DskipTests
