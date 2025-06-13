@@ -12,9 +12,12 @@ import com.ecom.ai.ecomassistant.exception.EntityNotFoundException;
 import com.ecom.ai.ecomassistant.model.dto.request.DatasetCreateRequest;
 import com.ecom.ai.ecomassistant.model.dto.request.FileUploadRequest;
 import com.ecom.ai.ecomassistant.model.dto.response.DatasetDetailResponse;
+import com.ecom.ai.ecomassistant.model.dto.response.PageResponse;
+import com.ecom.ai.ecomassistant.util.PageUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +29,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -140,7 +144,15 @@ public class DatasetController {
     }
 
     @GetMapping
-    public List<Dataset> getAllDatasets() {
-        return datasetService.findAll();
+    public PageResponse<Dataset> findDatasetsByName(
+            @RequestParam(defaultValue = "") String name,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "createdDateTime") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ) {
+        Pageable pageable = PageUtil.buildPageable(page, limit, sortBy, sortDir);
+        var pageResult = datasetService.search(name, pageable);
+        return PageResponse.of(pageResult);
     }
 }
