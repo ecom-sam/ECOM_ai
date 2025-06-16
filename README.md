@@ -33,8 +33,30 @@ GROK_CHAT_MODEL=meta-llama/llama-4-maverick-17b-128e-instruct
 OPENAI_API_KEY=
 ```
 
+### 2. couchbase set up
+```shell
+docker run -d \
+  --name couchbase-ai \
+  --hostname couchbase.local \
+  --add-host couchbase.local:127.0.0.1 \
+  -p 8091-8097:8091-8097 \
+  -p 9123:9123 \
+  -p 11210:11210 \
+  -p 11280:11280 \
+  -p 18091-18097:18091-18097 \
+  couchbase:enterprise-7.6.5
+```
 
-### 2. 開發環境
+**run schema/v0.0_init**
+
+**run api service with docker**
+```shell
+docker run --env-file .env -p 8080:8080 --name ecom-assistant willyliang/ecom-assistant
+```
+
+
+
+## 開發環境
 run with config
 
 | edit conifg                                    | add .env                                                   |
@@ -42,11 +64,11 @@ run with config
 | ![edit_run_config](doc/md/edit_run_config.png) | ![edi_run_config_detail](doc/md/edi_run_config_detail.png) |
 
 
-#### swagger
+#### 1. swagger
 http://localhost:8080/swagger-ui/index.html
 
 
-### 3. module
+### 2. module
 模組間不互相依賴, 如果db entity結構需要共用,
 entity還是保留在db module, 另外建立一個class在common,
 並使用mapstruct做mapper
@@ -59,3 +81,23 @@ entity還是保留在db module, 另外建立一個class在common,
 | common | 共用資源                |
 | core   | 核心邏輯, 依賴所有其他模組      |
 | db     | db相關entity, service |
+
+
+### 3. build
+#### docker
+```shell
+docker build -t ecom-assistant .
+```
+
+**apple silicon**
+**建立並啟用 buildx builder（只需做一次）**
+```shell
+docker buildx create --name multiarch-builder --use
+```
+
+```shell
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  -t willyliang/ecom-assistant:latest \
+  .
+```

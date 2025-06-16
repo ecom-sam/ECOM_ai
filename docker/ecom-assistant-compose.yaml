@@ -1,0 +1,9 @@
+services:
+  ecom-assistant:
+    image: willyliang/ecom-assistant
+    container_name: ecom-assistant
+    ports:
+      - "8080:8080"
+    env_file:
+      - dev.env
+    restart: unless-stopped
