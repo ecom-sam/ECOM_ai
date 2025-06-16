@@ -1,5 +1,6 @@
-package com.ecom.ai.ecomassistant.db.model;
+package com.ecom.ai.ecomassistant.db.model.auth;
 
+import com.ecom.ai.ecomassistant.db.model.AuditableDocument;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,13 +11,13 @@ import org.springframework.data.couchbase.core.mapping.id.GeneratedValue;
 import org.springframework.data.couchbase.core.mapping.id.GenerationStrategy;
 import org.springframework.data.couchbase.repository.Collection;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
-@Builder
 @Document
-@Collection("User")
+@Collection("user")
 public class User extends AuditableDocument {
         @Id
         @GeneratedValue(strategy = GenerationStrategy.UNIQUE)
@@ -24,12 +25,13 @@ public class User extends AuditableDocument {
         private String id;
 
         @Schema( description = "使用者顯示名稱", example = "willy")
-        private String name;
+        private String username;
 
-        @Schema( description = "使用者群組", example = """
-                ["sales", "engineer"]""")
-        private List<String> groups;
+        private String email;
 
-        @Schema( description = "使用者角色")
-        private List<Role> roles;
+        private String password;
+
+        private Set<String> systemRoles = new HashSet<>();
+
+        private Set<String> teamMembershipIds = new HashSet<>();
 }

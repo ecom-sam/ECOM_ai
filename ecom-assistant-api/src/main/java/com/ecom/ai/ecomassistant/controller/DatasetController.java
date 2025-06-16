@@ -68,7 +68,6 @@ public class DatasetController {
         //dataset.setUserId();
         dataset.setName(datasetCreateRequest.getName());
         dataset.setDescription(datasetCreateRequest.getDescription());
-        dataset.setPermission(datasetCreateRequest.getPermission());
 
         return datasetService.createDataset(dataset);
     }

@@ -6,6 +6,6 @@ import jakarta.validation.constraints.NotBlank;
 public record UserCreateRequest(
         @Schema( description = "使用者顯示名稱", example = "willy")
         @NotBlank
-        String name
+        String username
 ) {
 }

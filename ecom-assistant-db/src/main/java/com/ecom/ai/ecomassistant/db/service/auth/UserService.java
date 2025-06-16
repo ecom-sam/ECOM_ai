@@ -1,7 +1,8 @@
-package com.ecom.ai.ecomassistant.db.service;
+package com.ecom.ai.ecomassistant.db.service.auth;
 
-import com.ecom.ai.ecomassistant.db.model.User;
-import com.ecom.ai.ecomassistant.db.repository.UserRepository;
+import com.ecom.ai.ecomassistant.db.model.auth.User;
+import com.ecom.ai.ecomassistant.db.repository.auth.UserRepository;
+import com.ecom.ai.ecomassistant.db.service.CrudService;
 import org.springframework.stereotype.Service;
 
 @Service

@@ -1,8 +1,5 @@
-package com.ecom.ai.ecomassistant.db.model;
+package com.ecom.ai.ecomassistant.db.model.auth;
 
-import com.ecom.ai.ecomassistant.common.resource.Permission;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -17,26 +14,16 @@ import java.util.Set;
 @Getter
 @Setter
 @Document
-@Collection("dataset")
-public class Dataset extends AuditableDocument {
-
-    public enum AccessType {
-        PUBLIC, PRIVATE, GROUP
-    }
+@Collection("team-role")
+public class TeamRole {
 
     @Id
     @GeneratedValue(strategy = GenerationStrategy.UNIQUE)
     private String id;
 
-    @NotNull(message = "Name cannot be null")
     private String name;
 
-    @NotEmpty(message = "Description cannot be empty")
     private String description;
 
-    private String teamId;
-
-    private AccessType accessType = AccessType.PRIVATE;
-
-    private Set<String> authorizedGroupIds = new HashSet<>();
+    private Set<String> permissions = new HashSet<>();
 }

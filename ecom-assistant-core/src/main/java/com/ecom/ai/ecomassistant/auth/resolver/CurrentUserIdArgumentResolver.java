@@ -2,6 +2,7 @@ package com.ecom.ai.ecomassistant.auth.resolver;
 
 import com.ecom.ai.ecomassistant.common.annotation.CurrentUserId;
 import com.ecom.ai.ecomassistant.auth.util.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -25,6 +26,9 @@ public class CurrentUserIdArgumentResolver implements HandlerMethodArgumentResol
             NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory
     ) throws Exception {
-        return JwtUtil.getUserId();
+        HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+        assert request != null;
+        String token = request.getHeader("Authorization");
+        return JwtUtil.getUserId(token);
     }
 }
