@@ -1,6 +1,8 @@
 package com.ecom.ai.ecomassistant.exception;
 
 import com.ecom.ai.ecomassistant.common.dto.ErrorResponse;
+import com.ecom.ai.ecomassistant.core.exception.EntityNotFoundException;
+import org.apache.shiro.authz.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,6 +14,17 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse<String>> handleAuthorizationException() {
+        ErrorResponse<String> response = new ErrorResponse<>(
+                403,
+                "沒有權限執行此操作",
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse<ValidationError>> handleValidationException(MethodArgumentNotValidException ex) {

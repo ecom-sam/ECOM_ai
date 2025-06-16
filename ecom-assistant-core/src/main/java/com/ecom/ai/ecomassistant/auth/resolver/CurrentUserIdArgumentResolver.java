@@ -28,7 +28,7 @@ public class CurrentUserIdArgumentResolver implements HandlerMethodArgumentResol
     ) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         assert request != null;
-        String token = request.getHeader("Authorization");
+        String token = JwtUtil.getTokenFromHeader(request);
         return JwtUtil.getUserId(token);
     }
 }

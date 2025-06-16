@@ -21,6 +21,8 @@ public class TeamRole {
     @GeneratedValue(strategy = GenerationStrategy.UNIQUE)
     private String id;
 
+    private String teamId;
+
     private String name;
 
     private String description;

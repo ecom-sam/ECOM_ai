@@ -5,6 +5,8 @@ import com.ecom.ai.ecomassistant.db.repository.auth.UserRepository;
 import com.ecom.ai.ecomassistant.db.service.CrudService;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UserService extends CrudService<User, String, UserRepository> {
 
@@ -15,5 +17,9 @@ public class UserService extends CrudService<User, String, UserRepository> {
     public User createUser(User user) {
         //checking
         return repository.save(user);
+    }
+
+    public Optional<User> findByEmail(String email) {
+        return repository.findByEmail(email);
     }
 }

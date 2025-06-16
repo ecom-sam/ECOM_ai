@@ -1,4 +1,4 @@
-package com.ecom.ai.ecomassistant.exception;
+package com.ecom.ai.ecomassistant.core.exception;
 
 public class EntityNotFoundException extends RuntimeException {
     public EntityNotFoundException(String message) {

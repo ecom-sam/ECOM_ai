@@ -1,8 +1,8 @@
 package com.ecom.ai.ecomassistant.auth.realm;
 
+import com.ecom.ai.ecomassistant.auth.SystemRole;
 import com.ecom.ai.ecomassistant.auth.filter.JwtToken;
 import com.ecom.ai.ecomassistant.auth.util.JwtUtil;
-import com.ecom.ai.ecomassistant.db.model.auth.SystemRole;
 import com.ecom.ai.ecomassistant.db.model.auth.Team;
 import com.ecom.ai.ecomassistant.db.model.auth.TeamMembership;
 import com.ecom.ai.ecomassistant.db.model.auth.TeamRole;
@@ -58,7 +58,7 @@ public class CouchbaseRealm extends AuthorizingRealm {
             throw new AuthenticationException("JWT token does not contain userId");
         }
 
-        return new SimpleAuthenticationInfo(userId, jwt, getName());
+        return new SimpleAuthenticationInfo(jwt, jwt, getName());
     }
 
     @Override
@@ -72,16 +72,16 @@ public class CouchbaseRealm extends AuthorizingRealm {
         Set<String> permissions = new HashSet<>();
 
         // 添加系統角色和權限
-        for (String systemRoleId : user.getSystemRoles()) {
-            SystemRole systemRole = systemRoleService.findById(systemRoleId).orElse(null);
+        for (String systemRoleName : user.getSystemRoles()) {
+            SystemRole systemRole = SystemRole.fromName(systemRoleName).orElse(null);
 
             if (systemRole == null) {
-                log.warn("systemRole: {} not found.", systemRoleId);
+                log.warn("systemRole: {} not found.", systemRoleName);
                 continue;
             }
 
-            roles.add("system:" + systemRole.getName());
-            permissions.addAll(systemRole.getPermissions());
+            roles.add("system:" + systemRole.name());
+            permissions.addAll(systemRole.getPermissionCodes());
         }
 
         // 添加團隊角色和權限

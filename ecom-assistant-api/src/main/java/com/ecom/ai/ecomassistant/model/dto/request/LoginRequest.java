@@ -12,7 +12,7 @@ public class LoginRequest {
 
     @Email
     @NotBlank
-    @Schema(example = "system_admin@ecom.com.tw")
+    @Schema(example = "super_admin@example.com")
     private String email;
 
     @NotBlank

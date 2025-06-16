@@ -1,5 +1,6 @@
 package com.ecom.ai.ecomassistant.auth.filter;
 
+import com.ecom.ai.ecomassistant.auth.util.JwtUtil;
 import com.ecom.ai.ecomassistant.auth.util.ResponseUtil;
 import com.ecom.ai.ecomassistant.common.dto.ErrorResponse;
 import jakarta.servlet.ServletRequest;
@@ -27,8 +28,7 @@ public class JwtFilter extends BearerHttpAuthenticationFilter {
 
     @Override
     protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
-        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        String token = httpServletRequest.getHeader("Authorization");
+        String token = JwtUtil.getTokenFromHeader((HttpServletRequest) request);
 
         JwtToken jwt = new JwtToken(token);
         getSubject(request, response).login(jwt);

@@ -6,8 +6,10 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.ecom.ai.ecomassistant.db.model.auth.User;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class JwtUtil {
 
@@ -47,5 +49,10 @@ public class JwtUtil {
         } catch (JWTVerificationException e) {
             return false;
         }
+    }
+
+    public static String getTokenFromHeader(HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        return Objects.nonNull(token) ? token.substring(7) : null;
     }
 }

@@ -1,0 +1,56 @@
+UPSERT INTO `ECOM`.`AI`.`user` (KEY, VALUE)
+VALUES (
+  "user-001",
+  {
+    "id": "user-001",
+    "username": "super_admin",
+    "email": "super_admin@example.com",
+    "password": "super_admin",
+    "systemRoles": ["USER_ADMIN"],
+    "teamMembershipIds": [],
+    "createdAt": "2024-06-16T10:00:00Z",
+    "createdBy": "system",
+    "updatedAt": "2024-06-16T10:00:00Z",
+    "updatedBy": "system",
+    "_class": "com.ecom.ai.ecomassistant.db.model.auth.User"
+  }
+);
+
+
+UPSERT INTO `ECOM`.`AI`.`user` (KEY, VALUE)
+VALUES (
+  "user_admin",
+  {
+    "id": "user-002",
+    "username": "user_admin",
+    "email": "user_admin@example.com",
+    "password": "user_admin",
+    "systemRoles": ["USER_ADMIN"],
+    "teamMembershipIds": [],
+    "createdAt": "2024-06-16T10:00:00Z",
+    "createdBy": "system",
+    "updatedAt": "2024-06-16T10:00:00Z",
+    "updatedBy": "system",
+    "_class": "com.ecom.ai.ecomassistant.db.model.auth.User"
+  }
+);
+
+
+
+UPSERT INTO `ECOM`.`AI`.`user` (KEY, VALUE)
+VALUES (
+  "team_admin",
+  {
+    "id": "user-003",
+    "username": "team_admin",
+    "email": "team_admin@example.com",
+    "password": "team_admin",
+    "systemRoles": ["TEAM_ADMIN"],
+    "teamMembershipIds": [],
+    "createdAt": "2024-06-16T10:00:00Z",
+    "createdBy": "system",
+    "updatedAt": "2024-06-16T10:00:00Z",
+    "updatedBy": "system",
+    "_class": "com.ecom.ai.ecomassistant.db.model.auth.User"
+  }
+);
