@@ -1,6 +1,6 @@
 package com.ecom.ai.ecomassistant.model.dto.mapper;
 
-import com.ecom.ai.ecomassistant.core.command.SendUserMessageCommand;
+import com.ecom.ai.ecomassistant.core.dto.command.SendUserMessageCommand;
 import com.ecom.ai.ecomassistant.model.dto.request.ChatMessageRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

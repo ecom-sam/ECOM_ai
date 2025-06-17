@@ -1,13 +1,17 @@
 package com.ecom.ai.ecomassistant.controller;
 
-import com.ecom.ai.ecomassistant.auth.AuthService;
-import com.ecom.ai.ecomassistant.db.model.auth.User;
-import com.ecom.ai.ecomassistant.db.service.auth.UserService;
-import com.ecom.ai.ecomassistant.model.dto.mapper.UserMapper;
+import com.ecom.ai.ecomassistant.auth.Permission;
+import com.ecom.ai.ecomassistant.common.annotation.CurrentUserId;
+import com.ecom.ai.ecomassistant.core.service.UserManager;
+import com.ecom.ai.ecomassistant.model.dto.mapper.UserRequestMapper;
 import com.ecom.ai.ecomassistant.model.dto.request.LoginRequest;
-import com.ecom.ai.ecomassistant.model.dto.request.UserCreateRequest;
+import com.ecom.ai.ecomassistant.model.dto.request.UserActivateRequest;
+import com.ecom.ai.ecomassistant.model.dto.request.UserInviteRequest;
+import com.ecom.ai.ecomassistant.core.dto.response.UserDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,17 +22,27 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
-    private final AuthService authService;
+    private final UserManager userManager;
 
-    @PostMapping
-    public User createUser(@RequestBody @Valid UserCreateRequest userCreateRequest) {
-        User user = UserMapper.INSTANCE.toUser(userCreateRequest);
-        return userService.createUser(user);
+    @GetMapping("/me")
+    public UserDto me(@CurrentUserId String userId) {
+        return userManager.getUserDetail(userId);
+    }
+
+    @PostMapping("/invite")
+    @RequiresPermissions({"system:user:invite"})
+    public UserDto inviteUser(@RequestBody @Valid UserInviteRequest userInviteRequest) {
+        return userManager.inviteUser(userInviteRequest.email());
+    }
+
+    @PostMapping("/activate")
+    public UserDto activateUser(@RequestBody @Valid UserActivateRequest userActivateRequest) {
+        var command = UserRequestMapper.INSTANCE.toUserActivateCommand(userActivateRequest);
+        return userManager.activateUser(command);
     }
 
     @PostMapping("/login")
     public String login(@RequestBody @Valid LoginRequest loginRequest) {
-        return authService.login(loginRequest.getEmail(), loginRequest.getPassword());
+        return userManager.login(loginRequest.getEmail(), loginRequest.getPassword());
     }
 }

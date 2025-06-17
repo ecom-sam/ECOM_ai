@@ -1,4 +1,4 @@
-package com.ecom.ai.ecomassistant.core.command;
+package com.ecom.ai.ecomassistant.core.dto.command;
 
 import java.util.List;
 

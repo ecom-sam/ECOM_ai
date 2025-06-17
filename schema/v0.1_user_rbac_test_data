@@ -1,12 +1,12 @@
 UPSERT INTO `ECOM`.`AI`.`user` (KEY, VALUE)
 VALUES (
-  "user-001",
+  "super_admin",
   {
-    "id": "user-001",
-    "username": "super_admin",
+    "name": "super_admin",
     "email": "super_admin@example.com",
-    "password": "super_admin",
-    "systemRoles": ["USER_ADMIN"],
+    "password": "$2a$10$zMZV6dqULUBrmpMvIVqwwuKPflehTqzG.O//VtXNoBLwnyULBawJS",
+    "status": "ACTIVE",
+    "systemRoles": ["SUPER_ADMIN"],
     "teamMembershipIds": [],
     "createdAt": "2024-06-16T10:00:00Z",
     "createdBy": "system",
@@ -21,10 +21,10 @@ UPSERT INTO `ECOM`.`AI`.`user` (KEY, VALUE)
 VALUES (
   "user_admin",
   {
-    "id": "user-002",
-    "username": "user_admin",
+    "name": "user_admin",
     "email": "user_admin@example.com",
-    "password": "user_admin",
+    "password": "$2a$10$w5hq6A2EM9Jr/70R/skvSewiAZx7wOCZwuyaw6mlaIQh0ByEhe19u",
+    "status": "ACTIVE",
     "systemRoles": ["USER_ADMIN"],
     "teamMembershipIds": [],
     "createdAt": "2024-06-16T10:00:00Z",
@@ -41,10 +41,10 @@ UPSERT INTO `ECOM`.`AI`.`user` (KEY, VALUE)
 VALUES (
   "team_admin",
   {
-    "id": "user-003",
-    "username": "team_admin",
+    "name": "team_admin",
     "email": "team_admin@example.com",
-    "password": "team_admin",
+    "password": "$2a$10$oYG.W3902kHxOiUk2dO.ZOQbPveCcN5XKDgh4myyBYuFJJbADbzNO",
+    "status": "ACTIVE",
     "systemRoles": ["TEAM_ADMIN"],
     "teamMembershipIds": [],
     "createdAt": "2024-06-16T10:00:00Z",

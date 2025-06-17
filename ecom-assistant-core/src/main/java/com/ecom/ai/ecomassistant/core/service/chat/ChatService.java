@@ -1,6 +1,6 @@
 package com.ecom.ai.ecomassistant.core.service.chat;
 
-import com.ecom.ai.ecomassistant.core.command.SendUserMessageCommand;
+import com.ecom.ai.ecomassistant.core.dto.command.SendUserMessageCommand;
 import com.ecom.ai.ecomassistant.db.model.ChatRecord;
 import com.ecom.ai.ecomassistant.db.service.ChatRecordService;
 import com.github.f4b6a3.ulid.UlidCreator;

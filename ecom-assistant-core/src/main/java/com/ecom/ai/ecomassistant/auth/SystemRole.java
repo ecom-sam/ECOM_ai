@@ -2,7 +2,6 @@ package com.ecom.ai.ecomassistant.auth;
 
 import lombok.Getter;
 
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,8 +17,8 @@ public enum SystemRole {
             Permission.SYSTEM_TEAM_ADMIN)
     ),
     TEAM_MANAGER("system team manager", "",  Set.of(
-            Permission.SYSTEM_TEAM_MANAGE,
-            Permission.SYSTEM_TEAM_VIEW
+            Permission.SYSTEM_TEAM_VIEW,
+            Permission.SYSTEM_TEAM_MANAGE
     )),
     TEAM_VIEWER("system team viewer", "",  Set.of(
             Permission.SYSTEM_TEAM_VIEW

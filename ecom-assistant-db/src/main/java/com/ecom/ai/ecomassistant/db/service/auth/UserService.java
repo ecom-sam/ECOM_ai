@@ -14,11 +14,6 @@ public class UserService extends CrudService<User, String, UserRepository> {
         super(repository);
     }
 
-    public User createUser(User user) {
-        //checking
-        return repository.save(user);
-    }
-
     public Optional<User> findByEmail(String email) {
         return repository.findByEmail(email);
     }

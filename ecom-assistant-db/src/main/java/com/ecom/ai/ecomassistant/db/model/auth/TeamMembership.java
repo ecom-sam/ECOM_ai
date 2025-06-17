@@ -1,6 +1,7 @@
 package com.ecom.ai.ecomassistant.db.model.auth;
 
 import com.ecom.ai.ecomassistant.db.model.AuditableDocument;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -15,6 +16,7 @@ import java.util.Set;
 
 @Getter
 @Setter
+@Builder
 @Document
 @Collection("team-membership")
 public class TeamMembership extends AuditableDocument {
@@ -27,9 +29,6 @@ public class TeamMembership extends AuditableDocument {
 
     private String teamId;
 
-    private Set<String> teamRoles = new HashSet<>();
+    private Set<String> teamRoles;
 
-    private LocalDateTime joinedAt;
-
-    private String addedByUserId;
 }

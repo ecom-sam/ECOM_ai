@@ -1,7 +1,7 @@
 package com.ecom.ai.ecomassistant.controller;
 
 import com.ecom.ai.ecomassistant.common.annotation.CurrentUserId;
-import com.ecom.ai.ecomassistant.core.command.SendUserMessageCommand;
+import com.ecom.ai.ecomassistant.core.dto.command.SendUserMessageCommand;
 import com.ecom.ai.ecomassistant.core.service.chat.ChatService;
 import com.ecom.ai.ecomassistant.db.model.ChatRecord;
 import com.ecom.ai.ecomassistant.db.model.ChatTopic;

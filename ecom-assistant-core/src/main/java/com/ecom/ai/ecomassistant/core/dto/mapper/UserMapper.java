@@ -1,6 +1,6 @@
-package com.ecom.ai.ecomassistant.model.dto.mapper;
+package com.ecom.ai.ecomassistant.core.dto.mapper;
 
-import com.ecom.ai.ecomassistant.model.dto.request.UserCreateRequest;
+import com.ecom.ai.ecomassistant.core.dto.response.UserDto;
 import com.ecom.ai.ecomassistant.db.model.auth.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
@@ -11,5 +11,5 @@ public interface UserMapper {
 
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-    User toUser(UserCreateRequest userCreateRequest);
+    UserDto toDto(User user);
 }
