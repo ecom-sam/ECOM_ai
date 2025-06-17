@@ -5,6 +5,7 @@ import com.ecom.ai.ecomassistant.common.UserStatus;
 import java.util.Set;
 
 public record UserDto(
+        String id,
         String name,
         String email,
         UserStatus status,

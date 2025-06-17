@@ -20,6 +20,7 @@ public enum Permission {
     SYSTEM_TEAM_GRANT_ADMIN("system:team:grant-admin", "system"),
 
     SYSTEM_USER_ADMIN("system:user:*", "system"),
+    SYSTEM_USER_LIST("system:user:list", "system"),
     SYSTEM_USER_VIEW("system:user:view", "system"),
     SYSTEM_USER_INVITE("system:user:invite", "system"),
     SYSTEM_USER_MANAGE("system:user:manage", "system");

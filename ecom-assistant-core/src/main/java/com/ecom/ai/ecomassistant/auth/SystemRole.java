@@ -25,11 +25,13 @@ public enum SystemRole {
     )),
 
     USER_ADMIN("system user admin", "", Set.of(
-            Permission.SYSTEM_USER_ADMIN)
-    ),
+            Permission.SYSTEM_USER_ADMIN
+    )),
     USER_MANAGER("system user manager", "", Set.of(
-            Permission.SYSTEM_USER_MANAGE)
-    ),
+            Permission.SYSTEM_USER_MANAGE,
+            Permission.SYSTEM_USER_VIEW,
+            Permission.SYSTEM_USER_INVITE
+    )),
     USER("user", "", Set.of());
 
     private final String displayName;

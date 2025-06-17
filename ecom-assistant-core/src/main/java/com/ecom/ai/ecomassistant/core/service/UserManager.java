@@ -2,6 +2,7 @@ package com.ecom.ai.ecomassistant.core.service;
 
 import com.ecom.ai.ecomassistant.auth.SystemRole;
 import com.ecom.ai.ecomassistant.auth.util.JwtUtil;
+import com.ecom.ai.ecomassistant.common.UserStatus;
 import com.ecom.ai.ecomassistant.core.dto.command.UserActivateCommand;
 import com.ecom.ai.ecomassistant.core.dto.mapper.UserMapper;
 import com.ecom.ai.ecomassistant.core.dto.response.UserDto;
@@ -11,6 +12,8 @@ import com.ecom.ai.ecomassistant.db.model.auth.User;
 import com.ecom.ai.ecomassistant.db.service.auth.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.shiro.authz.UnauthenticatedException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +52,7 @@ public class UserManager {
         User user = getUserById(command.id());
         user.setName(command.name());
         user.setPassword(passwordEncoder.encode(command.password()));
+        user.setStatus(UserStatus.ACTIVE);
         userService.save(user);
 
         return UserMapper.INSTANCE.toDto(user);
@@ -69,6 +73,13 @@ public class UserManager {
 
         // 登入成功產生token
         return JwtUtil.generateToken(user);
+    }
+
+
+    public Page<UserDto> search(String filter, Pageable pageable) {
+        return userService
+                .searchByCriteria(filter, pageable)
+                .map(UserMapper.INSTANCE::toDto);
     }
 
     protected User getUserById(String id) {
