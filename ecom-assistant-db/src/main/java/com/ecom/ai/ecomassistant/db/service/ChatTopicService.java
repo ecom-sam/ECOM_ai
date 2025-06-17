@@ -2,6 +2,8 @@ package com.ecom.ai.ecomassistant.db.service;
 
 import com.ecom.ai.ecomassistant.db.model.ChatTopic;
 import com.ecom.ai.ecomassistant.db.repository.ChatTopicRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,5 +17,9 @@ public class ChatTopicService extends CrudService<ChatTopic, String, ChatTopicRe
 
     public List<ChatTopic> findAllByUserId(String userId) {
         return repository.findAllByUserIdOrderByCreatedDateTimeDesc(userId);
+    }
+
+    public Page<ChatTopic> search(String userId, String topic, Pageable pageable) {
+        return repository.searchByCriteria(userId, topic, pageable);
     }
 }
