@@ -35,8 +35,9 @@ public class ShiroConfig {
         chain.addPathDefinition("/swagger-ui/**", "anon");
         chain.addPathDefinition("/v3/api-docs/**", "anon");
 
-        //user login
+        //user
         chain.addPathDefinition("/**/users/login", "anon");
+        chain.addPathDefinition("/**/users/activate", "anon");
 
         //api use custom jwt filter
         chain.addPathDefinition("/**", "jwt");

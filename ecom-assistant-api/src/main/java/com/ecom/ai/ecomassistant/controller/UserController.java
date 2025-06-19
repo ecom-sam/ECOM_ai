@@ -1,8 +1,9 @@
 package com.ecom.ai.ecomassistant.controller;
 
 import com.ecom.ai.ecomassistant.common.annotation.CurrentUserId;
+import com.ecom.ai.ecomassistant.core.dto.response.LoginResponse;
+import com.ecom.ai.ecomassistant.core.dto.response.UserDetailDto;
 import com.ecom.ai.ecomassistant.core.service.UserManager;
-import com.ecom.ai.ecomassistant.db.service.auth.UserService;
 import com.ecom.ai.ecomassistant.model.dto.mapper.UserRequestMapper;
 import com.ecom.ai.ecomassistant.model.dto.request.LoginRequest;
 import com.ecom.ai.ecomassistant.model.dto.request.UserActivateRequest;
@@ -27,10 +28,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserManager userManager;
-    private final UserService userService;
 
     @GetMapping("/me")
-    public UserDto me(@CurrentUserId String userId) {
+    public UserDetailDto me(@CurrentUserId String userId) {
         return userManager.getUserDetail(userId);
     }
 
@@ -47,7 +47,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody @Valid LoginRequest loginRequest) {
+    public LoginResponse login(@RequestBody @Valid LoginRequest loginRequest) {
         return userManager.login(loginRequest.getEmail(), loginRequest.getPassword());
     }
 

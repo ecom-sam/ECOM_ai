@@ -1,8 +1,9 @@
 package com.ecom.ai.ecomassistant.controller;
 
+import com.ecom.ai.ecomassistant.common.annotation.CurrentUserId;
+import com.ecom.ai.ecomassistant.core.dto.response.TeamListDto;
 import com.ecom.ai.ecomassistant.core.service.TeamManager;
 import com.ecom.ai.ecomassistant.db.model.auth.Team;
-import com.ecom.ai.ecomassistant.db.service.auth.TeamService;
 import com.ecom.ai.ecomassistant.model.dto.mapper.TeamRequestMapper;
 import com.ecom.ai.ecomassistant.model.dto.request.TeamCreateRequest;
 import jakarta.validation.Valid;
@@ -15,19 +16,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/teams")
 @RequiredArgsConstructor
 public class TeamController {
 
-    private final TeamService teamService;
     private final TeamManager teamManager;
 
+    public record TeamListGroupDto(List<TeamListDto> myTeams, List<TeamListDto> managedTeams) { }
     @GetMapping
-    @RequiresPermissions({"system:team:view"})
-    public List<Team> search() {
-        return teamService.findAll();
+    public TeamListGroupDto list(@CurrentUserId String currentUserId) {
+        List<TeamListDto> allTeams = teamManager.list(currentUserId);
+
+        Map<Boolean, List<TeamListDto>> partitioned = allTeams.stream()
+                .collect(Collectors.partitioningBy(TeamListDto::isMember));
+
+        return new TeamListGroupDto(
+                partitioned.get(true),  // my teams
+                partitioned.get(false)  // managed teams
+        );
     }
 
     @PostMapping

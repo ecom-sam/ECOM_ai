@@ -10,8 +10,6 @@ import org.springframework.data.couchbase.core.mapping.id.GeneratedValue;
 import org.springframework.data.couchbase.core.mapping.id.GenerationStrategy;
 import org.springframework.data.couchbase.repository.Collection;
 
-import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
 
 @Getter

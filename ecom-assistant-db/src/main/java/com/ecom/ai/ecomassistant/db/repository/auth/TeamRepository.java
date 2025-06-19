@@ -6,7 +6,12 @@ import org.springframework.data.couchbase.repository.CouchbaseRepository;
 import org.springframework.data.couchbase.repository.ScanConsistency;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Set;
+
 @Repository
 @ScanConsistency(query = QueryScanConsistency.REQUEST_PLUS)
 public interface TeamRepository extends CouchbaseRepository<Team, String> {
+
+    List<Team> findAllById(Set<String> ids);
 }

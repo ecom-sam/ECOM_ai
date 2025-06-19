@@ -5,6 +5,8 @@ import com.ecom.ai.ecomassistant.auth.util.JwtUtil;
 import com.ecom.ai.ecomassistant.common.UserStatus;
 import com.ecom.ai.ecomassistant.core.dto.command.UserActivateCommand;
 import com.ecom.ai.ecomassistant.core.dto.mapper.UserMapper;
+import com.ecom.ai.ecomassistant.core.dto.response.LoginResponse;
+import com.ecom.ai.ecomassistant.core.dto.response.UserDetailDto;
 import com.ecom.ai.ecomassistant.core.dto.response.UserDto;
 import com.ecom.ai.ecomassistant.core.exception.EntityExistException;
 import com.ecom.ai.ecomassistant.core.exception.EntityNotFoundException;
@@ -18,6 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,9 +30,9 @@ public class UserManager {
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public UserDto getUserDetail(String id) {
+    public UserDetailDto getUserDetail(String id) {
         User user = getUserById(id);
-        return UserMapper.INSTANCE.toDto(user);
+        return UserMapper.INSTANCE.toUserDetailDto(user);
     }
 
     public UserDto inviteUser(String email) {
@@ -63,16 +66,20 @@ public class UserManager {
         return userService.findByEmail(email).isPresent();
     }
 
-    public String login(String email, String password) {
+    public LoginResponse login(String email, String password) {
         User user = getUserByEmail(email);
 
         boolean isCorrectPassword = passwordEncoder.matches(password, user.getPassword());
         if (!isCorrectPassword) {
-            throw new UnauthenticatedException("wrong password");
+            throw new UnauthenticatedException("login failed");
         }
 
-        // 登入成功產生token
-        return JwtUtil.generateToken(user);
+        Set<String> permissions = getUserPermissionCodes(user);
+
+        return new LoginResponse(
+                JwtUtil.generateToken(user),
+                UserMapper.INSTANCE.toPermissionDto(user, permissions)
+        );
     }
 
 
@@ -92,6 +99,13 @@ public class UserManager {
         return userService
                 .findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
+    }
+
+    protected Set<String> getUserPermissionCodes(User user) {
+        return user.getSystemRoles().stream()
+                .map(SystemRole::valueOf)
+                .flatMap(role -> role.getPermissionCodes().stream())
+                .collect(Collectors.toSet());
     }
 
 }
