@@ -1,7 +1,9 @@
 package com.ecom.ai.ecomassistant.db.model.dto;
 
-public record TeamUserCount(
-        String teamId,
-        Integer count
-) {
+import lombok.Data;
+
+@Data
+public class TeamUserCount {
+    private String teamId;
+    private Integer count;
 }

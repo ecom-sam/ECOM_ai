@@ -4,6 +4,8 @@ import com.ecom.ai.ecomassistant.common.annotation.CurrentUserId;
 import com.ecom.ai.ecomassistant.core.dto.response.LoginResponse;
 import com.ecom.ai.ecomassistant.core.dto.response.UserDetailDto;
 import com.ecom.ai.ecomassistant.core.service.UserManager;
+import com.ecom.ai.ecomassistant.db.model.dto.UserInfo;
+import com.ecom.ai.ecomassistant.db.repository.auth.UserRepository;
 import com.ecom.ai.ecomassistant.model.dto.mapper.UserRequestMapper;
 import com.ecom.ai.ecomassistant.model.dto.request.LoginRequest;
 import com.ecom.ai.ecomassistant.model.dto.request.UserActivateRequest;
@@ -22,12 +24,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserManager userManager;
+    private final UserRepository userRepository;
 
     @GetMapping("/me")
     public UserDetailDto me(@CurrentUserId String userId) {
@@ -49,6 +54,14 @@ public class UserController {
     @PostMapping("/login")
     public LoginResponse login(@RequestBody @Valid LoginRequest loginRequest) {
         return userManager.login(loginRequest.getEmail(), loginRequest.getPassword());
+    }
+
+    @GetMapping("/emails")
+    @RequiresPermissions({"system:user:list"})
+    public List<UserInfo> searchEmail(
+            @RequestParam(defaultValue = "") String filter
+    ) {
+        return userRepository.listEmail(filter);
     }
 
     @GetMapping

@@ -33,6 +33,10 @@ public abstract class CrudService<T, ID, R extends CrudRepository<T, ID>> {
         return (List<T>) repository.findAll();
     }
 
+    public List<T> findAllById(Iterable<ID> ids) {
+        return (List<T>) repository.findAllById(ids);
+    }
+
     public long count() {
         return repository.count();
     }

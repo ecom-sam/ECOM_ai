@@ -1,12 +1,15 @@
 package com.ecom.ai.ecomassistant.core.service;
 
+import com.ecom.ai.ecomassistant.core.dto.DtoUtil;
 import com.ecom.ai.ecomassistant.core.dto.command.TeamCreateCommand;
 import com.ecom.ai.ecomassistant.core.dto.mapper.TeamMapper;
+import com.ecom.ai.ecomassistant.db.model.dto.TeamDetailDto;
 import com.ecom.ai.ecomassistant.core.dto.response.TeamListDto;
 import com.ecom.ai.ecomassistant.core.exception.EntityNotFoundException;
 import com.ecom.ai.ecomassistant.db.model.auth.Team;
 import com.ecom.ai.ecomassistant.db.model.auth.TeamMembership;
 import com.ecom.ai.ecomassistant.db.model.auth.User;
+import com.ecom.ai.ecomassistant.db.model.dto.TeamMemberDto;
 import com.ecom.ai.ecomassistant.db.model.dto.TeamUserCount;
 import com.ecom.ai.ecomassistant.db.service.auth.TeamMembershipService;
 import com.ecom.ai.ecomassistant.db.service.auth.TeamService;
@@ -15,14 +18,15 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -51,13 +55,13 @@ public class TeamManager {
         // 統計 team 成員數
         Map<String, Integer> userCountMap = teamMembershipService
                 .countGroupedByTeamId(teamIds).stream()
-                .collect(Collectors.toMap(TeamUserCount::teamId, TeamUserCount::count));
+                .collect(Collectors.toMap(TeamUserCount::getTeamId, TeamUserCount::getCount));
 
         // 建立 DTO 清單
         return teams.stream()
                 .map(team -> TeamMapper.INSTANCE.toListDto(
                         team,
-                        userId.equals(team.getAdminUserId()),               // isOwner
+                        userId.equals(team.getOwnerUserId()),               // isOwner
                         userTeamIds.contains(team.getId()),                // isMember
                         userCountMap.getOrDefault(team.getId(), 0)         // userCount
                 ))
@@ -86,25 +90,54 @@ public class TeamManager {
         return new UserTeamContext(membershipMap, teams);
     }
 
-    @Transactional
     public Team createTeam(TeamCreateCommand command) {
-        var adminUser = userService
-                .findByEmail(command.adminEmail())
+        var teamOwner = userService
+                .findByEmail(command.ownerEmail())
                 .orElseThrow(() -> new EntityNotFoundException("admin user not found"));
 
         Team team = TeamMapper.INSTANCE.toTeam(command);
-        team.setAdminUserId(adminUser.getId());
+        team.setOwnerUserId(teamOwner.getId());
         teamService.save(team);
 
         TeamMembership adminMembership = TeamMembership.builder()
                 .teamId(team.getId())
-                .userId(adminUser.getId())
+                .userId(teamOwner.getId())
                 .build();
         teamMembershipService.save(adminMembership);
 
-        adminUser.getTeamMembershipIds().add(adminMembership.getId());
-        userService.save(adminUser);
+        teamOwner.getTeamMembershipIds().add(adminMembership.getId());
+        userService.save(teamOwner);
 
         return team;
     }
+
+    public TeamDetailDto getTeamDetail(String teamId) {
+        Team team = getTeam(teamId);
+        TeamDetailDto dto = TeamMapper.INSTANCE.toDetailDto(team);
+
+        Set<String> userIds = Stream.of(dto.getOwnerId(), dto.getCreatedBy(), dto.getLastModifiedBy())
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        Map<String, String> userMap = userService
+                .findAllById(userIds).stream()
+                .collect(Collectors.toMap(User::getId, User::getName));
+
+        DtoUtil.setUserName(userMap, dto::getOwnerId, dto::setOwnerName);
+        DtoUtil.setUserName(userMap, dto::getCreatedBy, dto::setCreatedByDisplayName);
+        DtoUtil.setUserName(userMap, dto::getLastModifiedBy, dto::setLastModifiedByDisplayName);
+
+        return dto;
+    }
+
+    public List<TeamMemberDto> getTeamMembers(String teamId) {
+        return teamMembershipService.findAllByTeamId(teamId);
+    }
+
+    protected Team getTeam(String teamId) {
+        return teamService
+                .findById(teamId)
+                .orElseThrow(() -> new EntityNotFoundException("Team not found"));
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.ecom.ai.ecomassistant.db.service.auth;
 
 import com.ecom.ai.ecomassistant.db.model.auth.TeamMembership;
+import com.ecom.ai.ecomassistant.db.model.dto.TeamMemberDto;
 import com.ecom.ai.ecomassistant.db.model.dto.TeamUserCount;
 import com.ecom.ai.ecomassistant.db.repository.auth.TeamMembershipRepository;
 import com.ecom.ai.ecomassistant.db.service.CrudService;
@@ -22,4 +23,9 @@ public class TeamMembershipService extends CrudService<TeamMembership, String, T
     public List<TeamUserCount> countGroupedByTeamId(Set<String> teamIds) {
         return repository.countGroupedByTeamId(teamIds);
     }
+
+    public List<TeamMemberDto> findAllByTeamId(String teamId) {
+        return repository.findAllByTeamId(teamId);
+    }
+
 }

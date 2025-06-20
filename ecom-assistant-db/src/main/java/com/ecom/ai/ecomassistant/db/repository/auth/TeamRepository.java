@@ -12,6 +12,4 @@ import java.util.Set;
 @Repository
 @ScanConsistency(query = QueryScanConsistency.REQUEST_PLUS)
 public interface TeamRepository extends CouchbaseRepository<Team, String> {
-
-    List<Team> findAllById(Set<String> ids);
 }

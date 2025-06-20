@@ -1,6 +1,7 @@
 package com.ecom.ai.ecomassistant.core.dto.mapper;
 
 import com.ecom.ai.ecomassistant.core.dto.command.TeamCreateCommand;
+import com.ecom.ai.ecomassistant.db.model.dto.TeamDetailDto;
 import com.ecom.ai.ecomassistant.core.dto.response.TeamListDto;
 import com.ecom.ai.ecomassistant.db.model.auth.Team;
 import org.mapstruct.Mapper;
@@ -18,4 +19,6 @@ public interface TeamMapper {
     @Mapping(source = "userCount", target = "userCount")
     @Mapping(source = "isOwner", target = "isOwner")
     TeamListDto toListDto(Team team, boolean isOwner, boolean isMember, Integer userCount);
+
+    TeamDetailDto toDetailDto(Team team);
 }

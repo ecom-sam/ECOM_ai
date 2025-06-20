@@ -20,13 +20,13 @@ import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
-import org.apache.shiro.authz.UnauthenticatedException;
-import org.apache.shiro.lang.util.ByteSource;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
@@ -106,14 +106,15 @@ public class CouchbaseRealm extends AuthorizingRealm {
             }
 
             // 當前team管理員
-            if (team.getAdminUserId().equals(user.getId())) {
+            if (Objects.equals(team.getOwnerUserId(), user.getId())) {
                 roles.add("team:" + teamId + ":admin");
                 permissions.add("team:" + team.getId() + ":*");
                 continue;
             }
 
             // 當前team其他角色
-            for (String teamRoleId : membership.getTeamRoles()) {
+            Set<String> teamRoles = Optional.ofNullable(membership.getTeamRoles()).orElse(new HashSet<>());
+            for (String teamRoleId : teamRoles) {
                 TeamRole teamRole = teamRoleService.findById(teamRoleId).orElse(null);
 
                 if (teamRole == null) {

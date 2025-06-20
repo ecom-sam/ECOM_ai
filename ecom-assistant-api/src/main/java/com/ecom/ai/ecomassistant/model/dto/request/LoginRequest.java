@@ -16,5 +16,6 @@ public class LoginRequest {
     private String email;
 
     @NotBlank
+    @Schema(example = "super_admin")
     private String password;
 }

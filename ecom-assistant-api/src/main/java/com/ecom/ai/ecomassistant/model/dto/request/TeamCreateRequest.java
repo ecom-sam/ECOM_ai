@@ -7,6 +7,6 @@ public record TeamCreateRequest(
         String name,
 
         @NotBlank
-        String adminUserEmail
+        String ownerEmail
 ) {
 }
