@@ -15,7 +15,11 @@ public class TeamService extends CrudService<Team, String, TeamRepository> {
         super(repository);
     }
 
-    public List<Team> findAllById(Set<String> ids) {
-        return repository.findAllById(ids);
+    public List<Team> findAllByIdWithSort(Set<String> ids) {
+        return repository.findAllWithSort(ids);
+    }
+
+    public List<Team> findAllWithSort() {
+        return repository.findAllWithSort();
     }
 }

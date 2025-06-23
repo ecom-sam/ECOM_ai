@@ -26,11 +26,12 @@ public interface TeamMembershipRepository extends CouchbaseRepository<TeamMember
     List<TeamUserCount> countGroupedByTeamId(Set<String> teamIds);
 
     @Query("""
-           SELECT '' as __id, tm.teamId AS teamId,
+           SELECT '' as __id, tm.teamId AS teamId, tm.teamRoles AS teamRoles,
            {
              "id": META(u).id,
              "name": u.name,
-             "email": u.email
+             "email": u.email,
+             "status": u.status
            } AS user
            FROM `team-membership` tm
            JOIN `user` u ON KEYS tm.userId

@@ -10,6 +10,7 @@ import org.springframework.data.couchbase.core.mapping.id.GeneratedValue;
 import org.springframework.data.couchbase.core.mapping.id.GenerationStrategy;
 import org.springframework.data.couchbase.repository.Collection;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -27,6 +28,7 @@ public class TeamMembership extends AuditableDocument {
 
     private String teamId;
 
-    private Set<String> teamRoles;
+    @Builder.Default
+    private Set<String> teamRoles = new HashSet<>();
 
 }

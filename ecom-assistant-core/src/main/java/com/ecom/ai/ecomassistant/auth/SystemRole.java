@@ -1,5 +1,6 @@
 package com.ecom.ai.ecomassistant.auth;
 
+import com.ecom.ai.ecomassistant.auth.permission.SystemPermission;
 import lombok.Getter;
 
 import java.util.Optional;
@@ -10,27 +11,24 @@ import java.util.stream.Collectors;
 public enum SystemRole {
 
     SUPER_ADMIN("system super admin", "", Set.of(
-            Permission.SYSTEM_SUPER_ADMIN)
+            SystemPermission.SYSTEM_SUPER_ADMIN)
     ),
 
     TEAM_ADMIN("system team admin", "",  Set.of(
-            Permission.SYSTEM_TEAM_ADMIN)
-    ),
-    TEAM_MANAGER("system team manager", "",  Set.of(
-            Permission.SYSTEM_TEAM_VIEW,
-            Permission.SYSTEM_TEAM_MANAGE
+            SystemPermission.SYSTEM_TEAM_ADMIN,
+            SystemPermission.SYSTEM_USER_LIST
     )),
     TEAM_VIEWER("system team viewer", "",  Set.of(
-            Permission.SYSTEM_TEAM_VIEW
+            SystemPermission.SYSTEM_TEAM_VIEW
     )),
 
     USER_ADMIN("system user admin", "", Set.of(
-            Permission.SYSTEM_USER_ADMIN
+            SystemPermission.SYSTEM_USER_ADMIN
     )),
     USER_MANAGER("system user manager", "", Set.of(
-            Permission.SYSTEM_USER_MANAGE,
-            Permission.SYSTEM_USER_VIEW,
-            Permission.SYSTEM_USER_INVITE
+            SystemPermission.SYSTEM_USER_MANAGE,
+            SystemPermission.SYSTEM_USER_VIEW,
+            SystemPermission.SYSTEM_USER_INVITE
     )),
     USER("user", "", Set.of());
 
@@ -38,11 +36,11 @@ public enum SystemRole {
     private final String description;
     private final Set<String> permissionCodes;
 
-    SystemRole(String name, String description, Set<Permission> permissions) {
+    SystemRole(String name, String description, Set<SystemPermission> permissions) {
         this.displayName = name;
         this.description = description;
         this.permissionCodes = permissions.stream()
-                .map(Permission::getCode)
+                .map(SystemPermission::getCode)
                 .collect(Collectors.toUnmodifiableSet());
     }
 

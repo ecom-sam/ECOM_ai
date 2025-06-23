@@ -23,7 +23,7 @@ public class Team extends AuditableDocument {
 
     private String description;
 
-    private String ownerUserId;
+    private String ownerId;
 
     private boolean active = true;
 }

@@ -1,5 +1,7 @@
 package com.ecom.ai.ecomassistant.controller;
 
+import com.ecom.ai.ecomassistant.auth.permission.PermissionDefinition;
+import com.ecom.ai.ecomassistant.auth.permission.PermissionRegistry;
 import com.ecom.ai.ecomassistant.auth.util.PermissionUtil;
 import com.ecom.ai.ecomassistant.common.annotation.CurrentUserId;
 import com.ecom.ai.ecomassistant.db.model.dto.TeamDetailDto;
@@ -71,4 +73,8 @@ public class TeamController {
         return teamManager.getTeamMembers(teamId);
     }
 
+    @GetMapping("/{teamId}/roles")
+    public void teamRoles() {
+        //TODO
+    }
 }

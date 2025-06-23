@@ -21,11 +21,13 @@ public class TeamRole {
     @GeneratedValue(strategy = GenerationStrategy.UNIQUE)
     private String id;
 
-    private String teamId;
+    private String teamId; // 若為 SYSTEM 則為 null
 
     private String name;
 
     private String description;
 
     private Set<String> permissions = new HashSet<>();
+
+    private boolean isSystemRole = false;
 }

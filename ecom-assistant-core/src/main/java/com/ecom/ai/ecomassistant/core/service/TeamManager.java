@@ -44,7 +44,7 @@ public class TeamManager {
         // 判斷權限
         Subject subject = SecurityUtils.getSubject();
         List<Team> teams = subject.isPermitted("system:team:view")
-                ? teamService.findAll()
+                ? teamService.findAllWithSort()
                 : context.teams(); // 無權限時，只能看自己加入的團隊
 
         // 抓出所有 teamId 以查人數
@@ -61,7 +61,7 @@ public class TeamManager {
         return teams.stream()
                 .map(team -> TeamMapper.INSTANCE.toListDto(
                         team,
-                        userId.equals(team.getOwnerUserId()),               // isOwner
+                        userId.equals(team.getOwnerId()),               // isOwner
                         userTeamIds.contains(team.getId()),                // isMember
                         userCountMap.getOrDefault(team.getId(), 0)         // userCount
                 ))
@@ -86,7 +86,7 @@ public class TeamManager {
         Map<String, TeamMembership> membershipMap = memberships.stream()
                 .collect(Collectors.toMap(TeamMembership::getTeamId, tm -> tm));
 
-        List<Team> teams = teamService.findAllById(membershipMap.keySet());
+        List<Team> teams = teamService.findAllByIdWithSort(membershipMap.keySet());
         return new UserTeamContext(membershipMap, teams);
     }
 
@@ -96,7 +96,7 @@ public class TeamManager {
                 .orElseThrow(() -> new EntityNotFoundException("admin user not found"));
 
         Team team = TeamMapper.INSTANCE.toTeam(command);
-        team.setOwnerUserId(teamOwner.getId());
+        team.setOwnerId(teamOwner.getId());
         teamService.save(team);
 
         TeamMembership adminMembership = TeamMembership.builder()

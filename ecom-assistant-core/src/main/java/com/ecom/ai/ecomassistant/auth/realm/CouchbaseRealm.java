@@ -106,7 +106,7 @@ public class CouchbaseRealm extends AuthorizingRealm {
             }
 
             // 當前team管理員
-            if (Objects.equals(team.getOwnerUserId(), user.getId())) {
+            if (Objects.equals(team.getOwnerId(), user.getId())) {
                 roles.add("team:" + teamId + ":admin");
                 permissions.add("team:" + team.getId() + ":*");
                 continue;
