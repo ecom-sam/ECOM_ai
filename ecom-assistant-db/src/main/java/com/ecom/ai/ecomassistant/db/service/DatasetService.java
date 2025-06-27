@@ -33,7 +33,6 @@ public class DatasetService extends CrudService<Dataset, String, DatasetReposito
 
         existingDataset.setName(updatedDataset.getName());
         existingDataset.setDescription(updatedDataset.getDescription());
-        existingDataset.setPermission(updatedDataset.getPermission());
 
         return repository.save(existingDataset);
     }

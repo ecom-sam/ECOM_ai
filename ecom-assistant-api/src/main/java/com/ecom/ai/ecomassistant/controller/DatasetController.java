@@ -8,7 +8,7 @@ import com.ecom.ai.ecomassistant.db.model.Document;
 import com.ecom.ai.ecomassistant.db.service.DatasetService;
 import com.ecom.ai.ecomassistant.db.service.DocumentService;
 import com.ecom.ai.ecomassistant.ai.event.file.AiFileUploadEvent;
-import com.ecom.ai.ecomassistant.exception.EntityNotFoundException;
+import com.ecom.ai.ecomassistant.core.exception.EntityNotFoundException;
 import com.ecom.ai.ecomassistant.model.dto.request.DatasetCreateRequest;
 import com.ecom.ai.ecomassistant.model.dto.request.FileUploadRequest;
 import com.ecom.ai.ecomassistant.model.dto.response.DatasetDetailResponse;
@@ -72,7 +72,6 @@ public class DatasetController {
         //dataset.setUserId();
         dataset.setName(datasetCreateRequest.getName());
         dataset.setDescription(datasetCreateRequest.getDescription());
-        dataset.setPermission(datasetCreateRequest.getPermission());
 
         return datasetService.createDataset(dataset);
     }
