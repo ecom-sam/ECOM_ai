@@ -1,0 +1,45 @@
+[
+  {
+    "_class": "com.ecom.ai.ecomassistant.db.model.auth.TeamRole",
+    "id": "team-admin",
+    "name": "團隊管理者",
+    "description": "團隊管理者",
+    "isSystemRole": true,
+    "permissions": [
+      "team:*",
+      "dataset:*"
+    ]
+  },
+  {
+    "_class": "com.ecom.ai.ecomassistant.db.model.auth.TeamRole",
+    "id": "dataset-manager",
+    "name": "知識庫管理者",
+    "description": "可執行所有知識庫操作",
+    "isSystemRole": true,
+    "permissions": [
+      "dataset:*"
+    ]
+  },
+  {
+    "_class": "com.ecom.ai.ecomassistant.db.model.auth.TeamRole",
+    "id": "dataset-contributor",
+    "name": "知識庫貢獻者",
+    "description": "知識庫貢獻者",
+    "isSystemRole": true,
+    "permissions": [
+      "dataset:view",
+      "dataset:file:upload"
+    ]
+  },
+  {
+    "_class": "com.ecom.ai.ecomassistant.db.model.auth.TeamRole",
+    "id": "team-member",
+    "name": "團隊成員",
+    "description": "一般成員",
+    "isSystemRole": true,
+    "permissions": [
+      "team:view",
+      "dataset:view"
+    ]
+  }
+]

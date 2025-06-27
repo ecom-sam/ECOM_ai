@@ -39,9 +39,6 @@ public class ShiroConfig {
         chain.addPathDefinition("/**/users/login", "anon");
         chain.addPathDefinition("/**/users/activate", "anon");
 
-        //permissions
-        chain.addPathDefinition("/**/permissions/**", "anon");
-
         //api use custom jwt filter
         chain.addPathDefinition("/**", "jwt");
         return chain;

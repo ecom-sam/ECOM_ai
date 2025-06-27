@@ -9,6 +9,7 @@ public record UserPermissionDto(
         String name,
         String email,
         UserStatus status,
+        Set<String> roles,
         Set<String> permissions
 ) { }
 

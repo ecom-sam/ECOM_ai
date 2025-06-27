@@ -3,6 +3,7 @@ package com.ecom.ai.ecomassistant.core.dto.mapper;
 import com.ecom.ai.ecomassistant.core.dto.response.UserDetailDto;
 import com.ecom.ai.ecomassistant.core.dto.response.UserDto;
 import com.ecom.ai.ecomassistant.core.dto.response.UserPermissionDto;
+import com.ecom.ai.ecomassistant.core.service.UserManager;
 import com.ecom.ai.ecomassistant.db.model.auth.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -20,6 +21,7 @@ public interface UserMapper {
 
     UserDetailDto toUserDetailDto(User user);
 
-    @Mapping(source = "permissions", target = "permissions")
-    UserPermissionDto toPermissionDto(User user, Set<String> permissions);
+    @Mapping(source = "context.roles", target = "roles")
+    @Mapping(source = "context.permissions", target = "permissions")
+    UserPermissionDto toPermissionDto(User user, UserManager.UserRoleContext context);
 }

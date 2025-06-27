@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
-public enum SystemRole {
+public enum SystemRole implements Role {
 
     SUPER_ADMIN("system super admin", "", Set.of(
             SystemPermission.SYSTEM_SUPER_ADMIN)
@@ -39,9 +39,7 @@ public enum SystemRole {
     SystemRole(String name, String description, Set<SystemPermission> permissions) {
         this.displayName = name;
         this.description = description;
-        this.permissionCodes = permissions.stream()
-                .map(SystemPermission::getCode)
-                .collect(Collectors.toUnmodifiableSet());
+        this.permissionCodes = permissionToCodes(permissions);
     }
 
     public static Optional<SystemRole> fromName(String name) {

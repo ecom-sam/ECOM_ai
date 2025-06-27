@@ -1,14 +1,10 @@
 package com.ecom.ai.ecomassistant.controller;
 
-import com.ecom.ai.ecomassistant.auth.permission.PermissionDefinition;
-import com.ecom.ai.ecomassistant.auth.permission.PermissionRegistry;
-import com.ecom.ai.ecomassistant.auth.util.PermissionUtil;
 import com.ecom.ai.ecomassistant.common.annotation.CurrentUserId;
 import com.ecom.ai.ecomassistant.db.model.dto.TeamDetailDto;
 import com.ecom.ai.ecomassistant.core.dto.response.TeamListDto;
 import com.ecom.ai.ecomassistant.core.service.TeamManager;
 import com.ecom.ai.ecomassistant.db.model.auth.Team;
-import com.ecom.ai.ecomassistant.db.model.dto.TeamMemberDto;
 import com.ecom.ai.ecomassistant.model.dto.mapper.TeamRequestMapper;
 import com.ecom.ai.ecomassistant.model.dto.request.TeamCreateRequest;
 import jakarta.validation.Valid;
@@ -23,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -57,24 +52,6 @@ public class TeamController {
 
     @GetMapping("/{teamId}")
     public TeamDetailDto teamDetail(@PathVariable String teamId) {
-        PermissionUtil.checkAnyPermission(Set.of(
-                "system:team:view",
-                "team:"+teamId+":detail:view"
-        ));
         return teamManager.getTeamDetail(teamId);
-    }
-
-    @GetMapping("/{teamId}/members")
-    public List<TeamMemberDto> teamMembers(@PathVariable String teamId) {
-        PermissionUtil.checkAnyPermission(Set.of(
-                "system:team:view",
-                "team:"+teamId+":members:view"
-        ));
-        return teamManager.getTeamMembers(teamId);
-    }
-
-    @GetMapping("/{teamId}/roles")
-    public void teamRoles() {
-        //TODO
     }
 }

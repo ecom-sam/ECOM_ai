@@ -1,6 +1,7 @@
 package com.ecom.ai.ecomassistant.auth.permission;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class PermissionRegistry {
@@ -9,20 +10,25 @@ public class PermissionRegistry {
         List<PermissionDefinition> result = new ArrayList<>();
 
         for (Permission p : SystemPermission.values()) {
-            result.add(new PermissionDefinition(p.getCode(), p.getGroup(), p.getLabel()));
+            result.add(new PermissionDefinition(p.getCode(), p.getLabel()));
         }
 
         return result;
     }
 
-    public static List<PermissionDefinition> getTeamLevelPermissions() {
-        List<PermissionDefinition> result = new ArrayList<>();
-        for (Permission p : TeamPermission.values()) {
-            result.add(new PermissionDefinition(p.getCode(), p.getGroup(), p.getLabel()));
-        }
-        for (Permission p : DatasetPermission.values()) {
-            result.add(new PermissionDefinition(p.getCode(), p.getGroup(), p.getLabel()));
-        }
-        return result;
+    public record TeamPermissionGroup(
+            List<PermissionDefinition> team,
+            List<PermissionDefinition> dataset
+    ) {}
+
+    public static TeamPermissionGroup getTeamLevelPermissions() {
+        return new TeamPermissionGroup(
+                Arrays.stream(TeamPermission.values())
+                        .map(p -> new PermissionDefinition(p.getCode(), p.getLabel()))
+                        .toList(),
+                Arrays.stream(DatasetPermission.values())
+                        .map(p -> new PermissionDefinition(p.getCode(), p.getLabel()))
+                        .toList()
+        );
     }
 }

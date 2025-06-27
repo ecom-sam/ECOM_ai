@@ -9,7 +9,6 @@ import com.ecom.ai.ecomassistant.core.exception.EntityNotFoundException;
 import com.ecom.ai.ecomassistant.db.model.auth.Team;
 import com.ecom.ai.ecomassistant.db.model.auth.TeamMembership;
 import com.ecom.ai.ecomassistant.db.model.auth.User;
-import com.ecom.ai.ecomassistant.db.model.dto.TeamMemberDto;
 import com.ecom.ai.ecomassistant.db.model.dto.TeamUserCount;
 import com.ecom.ai.ecomassistant.db.service.auth.TeamMembershipService;
 import com.ecom.ai.ecomassistant.db.service.auth.TeamService;
@@ -19,10 +18,8 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -74,22 +71,20 @@ public class TeamManager {
     ) {}
 
     private UserTeamContext getUserTeamContext(String userId) {
-        User user = userService.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found: " + userId));
 
-        Set<String> membershipIds = user.getTeamMembershipIds();
-        if (membershipIds == null || membershipIds.isEmpty()) {
-            return new UserTeamContext(Collections.emptyMap(), Collections.emptyList());
-        }
-
-        List<TeamMembership> memberships = teamMembershipService.findAllById(membershipIds);
-        Map<String, TeamMembership> membershipMap = memberships.stream()
+        Map<String, TeamMembership> membershipMap = teamMembershipService
+                .findAllByUserId(userId).stream()
                 .collect(Collectors.toMap(TeamMembership::getTeamId, tm -> tm));
 
         List<Team> teams = teamService.findAllByIdWithSort(membershipMap.keySet());
+
         return new UserTeamContext(membershipMap, teams);
     }
 
+    /***
+     * create team and assign owner
+     * @return team entity
+     */
     public Team createTeam(TeamCreateCommand command) {
         var teamOwner = userService
                 .findByEmail(command.ownerEmail())
@@ -105,9 +100,6 @@ public class TeamManager {
                 .build();
         teamMembershipService.save(adminMembership);
 
-        teamOwner.getTeamMembershipIds().add(adminMembership.getId());
-        userService.save(teamOwner);
-
         return team;
     }
 
@@ -119,9 +111,9 @@ public class TeamManager {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
-        Map<String, String> userMap = userService
+        Map<String, User> userMap = userService
                 .findAllById(userIds).stream()
-                .collect(Collectors.toMap(User::getId, User::getName));
+                .collect(Collectors.toMap(User::getId, user -> user));
 
         DtoUtil.setUserName(userMap, dto::getOwnerId, dto::setOwnerName);
         DtoUtil.setUserName(userMap, dto::getCreatedBy, dto::setCreatedByDisplayName);
@@ -130,14 +122,9 @@ public class TeamManager {
         return dto;
     }
 
-    public List<TeamMemberDto> getTeamMembers(String teamId) {
-        return teamMembershipService.findAllByTeamId(teamId);
-    }
-
-    protected Team getTeam(String teamId) {
+    public Team getTeam(String teamId) {
         return teamService
                 .findById(teamId)
                 .orElseThrow(() -> new EntityNotFoundException("Team not found"));
     }
-
 }

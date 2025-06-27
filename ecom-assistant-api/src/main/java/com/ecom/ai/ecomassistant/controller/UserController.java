@@ -70,8 +70,8 @@ public class UserController {
             @RequestParam(defaultValue = "") String filter,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int limit,
-            @RequestParam(defaultValue = "createdDateTime") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir
+            @RequestParam(defaultValue = "email") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir
     ) {
         Pageable pageable = PageUtil.buildPageable(page, limit, sortBy, sortDir);
         var pageResult = userManager.search(filter, pageable);

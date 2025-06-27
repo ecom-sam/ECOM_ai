@@ -10,22 +10,14 @@ import org.springframework.data.couchbase.repository.ScanConsistency;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
 @ScanConsistency(query = QueryScanConsistency.REQUEST_PLUS)
 public interface TeamMembershipRepository extends CouchbaseRepository<TeamMembership, String>  {
 
-    @Query("""
-            SELECT '' AS __id, tm.teamId AS teamId, COUNT(*) AS count
-            FROM #{#n1ql.collection} tm
-            WHERE #{#n1ql.filter}
-            AND tm.teamId IN $teamIds
-            GROUP BY tm.teamId
-            """)
-    List<TeamUserCount> countGroupedByTeamId(Set<String> teamIds);
-
-    @Query("""
+    String teamMemberDtoQuery = """
            SELECT '' as __id, tm.teamId AS teamId, tm.teamRoles AS teamRoles,
            {
              "id": META(u).id,
@@ -35,7 +27,28 @@ public interface TeamMembershipRepository extends CouchbaseRepository<TeamMember
            } AS user
            FROM `team-membership` tm
            JOIN `user` u ON KEYS tm.userId
-           WHERE tm.teamId = $1
-           """)
-    List<TeamMemberDto> findAllByTeamId(String teamId);
+           WHERE tm.teamId = $teamId
+           """;
+
+    @Query("""
+            SELECT '' AS __id, tm.teamId AS teamId, COUNT(*) AS count
+            FROM #{#n1ql.collection} tm
+            WHERE #{#n1ql.filter}
+            AND tm.teamId IN $teamIds
+            GROUP BY tm.teamId
+            """
+    )
+    List<TeamUserCount> countGroupedByTeamId(Set<String> teamIds);
+
+    @Query(teamMemberDtoQuery)
+    List<TeamMemberDto> findAllDtoByTeamId(String teamId);
+
+    @Query(teamMemberDtoQuery + " AND tm.userId = $userId")
+    List<TeamMemberDto> findDtoByTeamIdAndUserId(String teamId, String userId);
+
+    List<TeamMembership> findAllByUserId(String userId);
+
+    Optional<TeamMembership> findByTeamIdAndUserId(String teamId, String userId);
+
+    List<TeamMembership> findAllByTeamIdAndUserIdIn(String teamId, List<String> userIds);
 }

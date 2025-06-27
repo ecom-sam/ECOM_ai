@@ -1,0 +1,13 @@
+CREATE COLLECTION `ECOM`.`AI`.`team-role` IF NOT EXISTS;
+CREATE INDEX adv_class_teamId_name_description_permissions_isSystemRole ON `default`:`ECOM`.`AI`.`team-role`(`_class`,`teamId`,``,`name`,`description`,`permissions`,`isSystemRole`)
+
+docker cp ecom-assistant-core/src/main/resources/default_system_team_role.json couchbase-spring-ai:/tmp/team-roles.json
+
+docker exec couchbase-spring-ai cbimport json \
+  --cluster couchbase://localhost \
+  -u admin -p couchbase \
+  --bucket ECOM \
+  --scope-collection-exp AI.team-role \
+  --format list \
+  --dataset file:///tmp/team-roles.json \
+  --generate-key %id%

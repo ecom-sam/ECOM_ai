@@ -8,6 +8,7 @@ import com.ecom.ai.ecomassistant.db.service.CrudService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -20,12 +21,31 @@ public class TeamMembershipService extends CrudService<TeamMembership, String, T
         return repository.findAllById(ids);
     }
 
+    public List<TeamMembership> findAllByUserId(String ids) {
+        return repository.findAllByUserId(ids);
+    }
+
     public List<TeamUserCount> countGroupedByTeamId(Set<String> teamIds) {
         return repository.countGroupedByTeamId(teamIds);
     }
 
-    public List<TeamMemberDto> findAllByTeamId(String teamId) {
-        return repository.findAllByTeamId(teamId);
+    public List<TeamMemberDto> findDtoByTeamIdAndUserId(String teamId, String userId) {
+        return repository.findDtoByTeamIdAndUserId(teamId, userId);
     }
 
+    public List<TeamMemberDto> findAllByTeamId(String teamId) {
+        return repository.findAllDtoByTeamId(teamId);
+    }
+
+    public Optional<TeamMembership> findByTeamIdAndUserId(String teamId, String userId) {
+        return repository.findByTeamIdAndUserId(teamId, userId);
+    }
+
+    public List<TeamMembership> findAllByTeamIdAndUserId(String teamId, Set<String> userIds) {
+        return repository.findAllByTeamIdAndUserIdIn(teamId, userIds.stream().toList());
+    }
+
+    public void deleteAll(List<TeamMembership> memberships) {
+        repository.deleteAll(memberships);
+    }
 }

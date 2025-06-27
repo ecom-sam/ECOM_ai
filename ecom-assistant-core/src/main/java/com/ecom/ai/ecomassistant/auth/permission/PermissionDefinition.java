@@ -7,6 +7,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class PermissionDefinition {
     private String code;
-    private String group;
     private String label;
 }

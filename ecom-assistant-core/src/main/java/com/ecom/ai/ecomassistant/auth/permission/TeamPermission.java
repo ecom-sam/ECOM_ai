@@ -13,9 +13,14 @@ public enum TeamPermission implements Permission {
 
     TEAM_VIEW("team:view", "team", "檢視團隊資訊"),
     TEAM_EDIT("team:edit", "team", "編輯團隊"),
-    TEAM_INVITE_MEMBERS("team:invite-members", "team", "邀請團隊成員"),
-    TEAM_MANAGE_MEMBERS("team:manage-members", "team", "管理團隊成員"),
-    TEAM_DELETE("team:delete", "team", "刪除團隊");
+    //TEAM_DELETE("team:delete", "team", "刪除團隊"),
+
+    TEAM_MEMBERS_VIEW("members:view", "team", "查看團隊成員"),
+    TEAM_MEMBERS_INVITE("members:invite", "team", "邀請團隊成員"),
+    TEAM_MEMBERS_MANAGE("members:manage", "team", "管理團隊成員"),
+
+    TEAM_ROLES_VIEW("roles:view", "team", "查看團隊角色"),
+    TEAM_ROLES_MANAGE("roles:manage", "team", "管理團隊角色");
 
     private final String code;
     private final String group;
@@ -31,5 +36,9 @@ public enum TeamPermission implements Permission {
 
     public static Optional<TeamPermission> fromName(String name) {
         return Permission.fromName(TeamPermission.class, name);
+    }
+
+    public String getCodeWithTeamId(String teamId) {
+        return String.format("team:%s:%s", teamId, code);
     }
 }

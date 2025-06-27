@@ -10,23 +10,37 @@ import com.ecom.ai.ecomassistant.core.dto.response.UserDetailDto;
 import com.ecom.ai.ecomassistant.core.dto.response.UserDto;
 import com.ecom.ai.ecomassistant.core.exception.EntityExistException;
 import com.ecom.ai.ecomassistant.core.exception.EntityNotFoundException;
+import com.ecom.ai.ecomassistant.db.model.auth.Team;
+import com.ecom.ai.ecomassistant.db.model.auth.TeamMembership;
+import com.ecom.ai.ecomassistant.db.model.auth.TeamRole;
 import com.ecom.ai.ecomassistant.db.model.auth.User;
+import com.ecom.ai.ecomassistant.db.service.auth.TeamMembershipService;
+import com.ecom.ai.ecomassistant.db.service.auth.TeamRoleService;
+import com.ecom.ai.ecomassistant.db.service.auth.TeamService;
 import com.ecom.ai.ecomassistant.db.service.auth.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserManager {
 
     private final UserService userService;
+    private final TeamService teamService;
+    private final TeamMembershipService teamMembershipService;
+    private final TeamRoleService teamRoleService;
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -74,11 +88,11 @@ public class UserManager {
             throw new UnauthenticatedException("login failed");
         }
 
-        Set<String> permissions = getUserPermissionCodes(user);
+        UserRoleContext userRoleContext = getUserRoleContext(user);
 
         return new LoginResponse(
                 JwtUtil.generateToken(user),
-                UserMapper.INSTANCE.toPermissionDto(user, permissions)
+                UserMapper.INSTANCE.toPermissionDto(user, userRoleContext)
         );
     }
 
@@ -101,11 +115,62 @@ public class UserManager {
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
     }
 
-    protected Set<String> getUserPermissionCodes(User user) {
-        return user.getSystemRoles().stream()
-                .map(SystemRole::valueOf)
-                .flatMap(role -> role.getPermissionCodes().stream())
-                .collect(Collectors.toSet());
+    public record UserRoleContext(
+            Set<String> roles,
+            Set<String> permissions
+    ) {}
+
+    public UserRoleContext getUserRoleContext(User user) {
+        Set<String> roles = new HashSet<>();
+        Set<String> permissions = new HashSet<>();
+
+        for (String systemRoleName : user.getSystemRoles()) {
+            SystemRole systemRole = SystemRole.fromName(systemRoleName).orElse(null);
+
+            if (systemRole == null) {
+                log.warn("systemRole: {} not found.", systemRoleName);
+                continue;
+            }
+
+            roles.add("system:" + systemRole.name());
+            permissions.addAll(systemRole.getPermissionCodes());
+        }
+
+        // 添加團隊角色和權限
+        List<TeamMembership> userTeamMemberships = teamMembershipService.findAllByUserId(user.getId());
+        for (var membership : userTeamMemberships) {
+
+            String teamId = membership.getTeamId();
+            Team team = teamService.findById(teamId).orElse(null);
+            if (team == null) {
+                log.warn("team: {} not found.", teamId);
+                continue;
+            }
+
+            // 當前team管理員
+            if (Objects.equals(team.getOwnerId(), user.getId())) {
+                permissions.add("team:" + team.getId() + ":*");
+                continue;
+            }
+
+            // 當前team其他角色
+            Set<String> teamRoles = Optional.ofNullable(membership.getTeamRoles()).orElse(new HashSet<>());
+            for (String teamRoleId : teamRoles) {
+                TeamRole teamRole = teamRoleService.findById(teamRoleId).orElse(null);
+
+                if (teamRole == null) {
+                    log.warn("teamRole: {} not found.", teamRoleId);
+                    continue;
+                }
+
+                roles.add("team:" + team.getId() + ":" + teamRole.getName());
+                for (String permission : teamRole.getPermissions()) {
+                    permissions.add("team:" + team.getId() + ":" + permission);
+                }
+            }
+        }
+
+        return new UserRoleContext(roles, permissions);
     }
 
 }

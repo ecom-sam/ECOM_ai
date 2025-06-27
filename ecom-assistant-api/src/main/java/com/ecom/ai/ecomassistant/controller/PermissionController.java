@@ -21,7 +21,7 @@ public class PermissionController {
     }
 
     @GetMapping("/team")
-    public List<PermissionDefinition> getTeamPermissions() {
+    public PermissionRegistry.TeamPermissionGroup getTeamPermissions() {
         return PermissionRegistry.getTeamLevelPermissions();
     }
 }

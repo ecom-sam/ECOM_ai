@@ -1,6 +1,9 @@
 package com.ecom.ai.ecomassistant.core.dto;
 
+import com.ecom.ai.ecomassistant.db.model.auth.User;
+
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -13,11 +16,11 @@ public class DtoUtil {
      * @param idGetter      e.g. dto::getOwnerId
      * @param nameSetter    e.g. dto::setOwnerName
      */
-    public static void setUserName(Map<String, String> userMap,
+    public static void setUserName(Map<String, User> userMap,
                                    Supplier<String> idGetter,
                                    Consumer<String> nameSetter) {
         String id = idGetter.get();
-        String name = userMap.getOrDefault(id, "");
+        String name = Optional.of(userMap.get(id)).map(User::getName).orElse("");
         nameSetter.accept(name);
     }
 }

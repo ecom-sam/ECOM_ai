@@ -29,5 +29,5 @@ public class TeamRole {
 
     private Set<String> permissions = new HashSet<>();
 
-    private boolean isSystemRole = false;
+    private Boolean isSystemRole = false;
 }
