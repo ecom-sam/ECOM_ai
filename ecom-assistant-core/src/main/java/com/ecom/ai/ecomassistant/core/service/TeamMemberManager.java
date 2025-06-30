@@ -1,13 +1,17 @@
 package com.ecom.ai.ecomassistant.core.service;
 
 import com.ecom.ai.ecomassistant.core.dto.command.TeamMembersInviteCommand;
+import com.ecom.ai.ecomassistant.core.dto.response.TeamInviteCandidateDto;
 import com.ecom.ai.ecomassistant.core.exception.EntityExistException;
 import com.ecom.ai.ecomassistant.core.exception.EntityNotFoundException;
 import com.ecom.ai.ecomassistant.db.model.auth.TeamMembership;
 import com.ecom.ai.ecomassistant.db.model.auth.TeamRole;
+import com.ecom.ai.ecomassistant.db.model.auth.User;
 import com.ecom.ai.ecomassistant.db.model.dto.TeamMemberDto;
+import com.ecom.ai.ecomassistant.db.model.dto.UserInfo;
 import com.ecom.ai.ecomassistant.db.service.auth.TeamMembershipService;
 import com.ecom.ai.ecomassistant.db.service.auth.TeamRoleService;
+import com.ecom.ai.ecomassistant.db.service.auth.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +27,7 @@ public class TeamMemberManager {
 
     private final TeamMembershipService teamMembershipService;
     private final TeamRoleService teamRoleService;
+    private final UserService userService;
 
     public List<TeamMemberDto> getTeamMembers(String teamId) {
         return teamMembershipService.findAllByTeamId(teamId);
@@ -59,6 +65,25 @@ public class TeamMemberManager {
         teamMembershipService.saveAll(membershipList);
 
         return membershipList;
+    }
+
+    public List<TeamInviteCandidateDto> searchInviteCandidates(String teamId, String filter, int limit) {
+        // 1. 找出 email/name 吻合的使用者
+        List<User> users = userService.search(filter, limit);
+
+        // 查出此 team 已有的 userId 清單
+        Set<String> memberUserIds = teamMembershipService.findAllByTeamId(teamId)
+                .stream()
+                .map(TeamMemberDto::getUser)
+                .map(UserInfo::getId)
+                .collect(Collectors.toSet());
+
+        return users.stream().map(user -> new TeamInviteCandidateDto(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                memberUserIds.contains(user.getId())
+        )).collect(Collectors.toList());
     }
 
     protected void checkValidTeamRoles(String teamId, Set<String> roleIds) {

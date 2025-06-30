@@ -37,4 +37,8 @@ public class PermissionUtil {
         }
     }
 
+    public static void forbidden() {
+        throw new UnauthorizedException("缺少必要權限");
+    }
+
 }

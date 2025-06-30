@@ -23,7 +23,9 @@ public enum SystemPermission implements Permission {
     SYSTEM_USER_LIST("system:user:list", "system", "使用者清單"),
     SYSTEM_USER_VIEW("system:user:view", "system", "檢視使用者"),
     SYSTEM_USER_INVITE("system:user:invite", "system", "邀請使用者"),
-    SYSTEM_USER_MANAGE("system:user:manage", "system", "管理使用者");
+    SYSTEM_USER_MANAGE("system:user:manage", "system", "管理使用者"),
+
+    SYSTEM_DATASET_ADMIN("system:dataset:*", "system", "知識庫管理員");
 
     private final String code;
     private final String group;

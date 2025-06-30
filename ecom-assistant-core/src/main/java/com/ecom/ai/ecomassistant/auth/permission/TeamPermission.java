@@ -20,7 +20,9 @@ public enum TeamPermission implements Permission {
     TEAM_MEMBERS_MANAGE("members:manage", "team", "管理團隊成員"),
 
     TEAM_ROLES_VIEW("roles:view", "team", "查看團隊角色"),
-    TEAM_ROLES_MANAGE("roles:manage", "team", "管理團隊角色");
+    TEAM_ROLES_MANAGE("roles:manage", "team", "管理團隊角色"),
+
+    TEAM_DATASET_VIEW("dataset:view", "team", "查看知識庫");
 
     private final String code;
     private final String group;

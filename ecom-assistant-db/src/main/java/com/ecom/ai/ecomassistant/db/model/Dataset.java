@@ -36,7 +36,7 @@ public class Dataset extends AuditableDocument {
 
     private String teamId;
 
-    private AccessType accessType = AccessType.PRIVATE;
+    private AccessType accessType = AccessType.GROUP;
 
     private Set<String> authorizedGroupIds = new HashSet<>();
 }

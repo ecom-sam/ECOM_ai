@@ -17,22 +17,26 @@ import java.util.Optional;
 @ScanConsistency(query = QueryScanConsistency.REQUEST_PLUS)
 public interface UserRepository extends CouchbaseRepository<User, String> {
 
+    String userQuery = "#{#n1ql.selectEntity} " +
+            "WHERE #{#n1ql.filter} " +
+            "AND ( " +
+            "contains(lower(`name`), $filter) OR contains(lower(`email`), $filter) " +
+            ")";
+
     @Query("SELECT META().id as __id, name, email, status " +
             "FROM #{#n1ql.collection} " +
             "WHERE #{#n1ql.filter} " +
             "AND contains(lower(`email`), $filter) " +
             "LIMIT 20"
     )
-
     List<UserInfo> listEmail(String filter);
 
     Optional<User> findByEmail(String email);
 
-    @Query("#{#n1ql.selectEntity} " +
-            "WHERE #{#n1ql.filter} " +
-            "AND ( " +
-            "contains(lower(`name`), $filter) OR contains(lower(`email`), $filter) " +
-            ")"
-    )
+
+    @Query(userQuery + " LIMIT $limit")
+    List<User> search(String filter, int limit);
+
+    @Query(userQuery)
     Page<User> searchByCriteria(String filter, Pageable pageable);
 }

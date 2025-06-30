@@ -1,5 +1,6 @@
 package com.ecom.ai.ecomassistant.controller;
 
+import com.ecom.ai.ecomassistant.auth.util.PermissionUtil;
 import com.ecom.ai.ecomassistant.common.resource.StorageType;
 import com.ecom.ai.ecomassistant.common.resource.file.FileInfo;
 import com.ecom.ai.ecomassistant.config.FileStorageProperties;
@@ -37,7 +38,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import static com.ecom.ai.ecomassistant.auth.permission.SystemPermission.SYSTEM_DATASET_ADMIN;
+import static com.ecom.ai.ecomassistant.auth.permission.TeamPermission.TEAM_DATASET_VIEW;
 
 @RestController
 @RequiredArgsConstructor
@@ -57,6 +62,19 @@ public class DatasetController {
         Dataset dataset = datasetService
                 .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Dataset not found"));
+
+        // check permission
+        Dataset.AccessType accessType = Optional.ofNullable(dataset.getAccessType()).orElse(Dataset.AccessType.PRIVATE);
+        switch (accessType) {
+            case PRIVATE -> PermissionUtil.forbidden();
+            case GROUP -> PermissionUtil.checkAnyPermission(Set.of(
+                    SYSTEM_DATASET_ADMIN.getCode(),
+                    TEAM_DATASET_VIEW.getCodeWithTeamId(dataset.getTeamId())
+            ));
+            case PUBLIC -> {
+                // do nothing, public access
+            }
+        }
 
         return DatasetDetailResponse.builder()
                 .dataset(dataset)
