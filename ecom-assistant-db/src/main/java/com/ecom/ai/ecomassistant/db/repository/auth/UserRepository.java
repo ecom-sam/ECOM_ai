@@ -17,7 +17,7 @@ import java.util.Optional;
 @ScanConsistency(query = QueryScanConsistency.REQUEST_PLUS)
 public interface UserRepository extends CouchbaseRepository<User, String> {
 
-    @Query("SELECT META().id as __id, name, email " +
+    @Query("SELECT META().id as __id, name, email, status " +
             "FROM #{#n1ql.collection} " +
             "WHERE #{#n1ql.filter} " +
             "AND contains(lower(`email`), $filter) " +
