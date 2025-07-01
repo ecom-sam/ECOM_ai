@@ -31,6 +31,8 @@ public class EtlService {
         var reader = readerMap.get(processingRule.getReader());
         documents = reader.read(fileInfo);
 
+        EcomDocumentTransformer.transform(documents, fileInfo);
+
         for (String transformerKey : processingRule.getTransformers()) {
             var transformer = transformerMap.get(transformerKey);
             if (transformer == null) {

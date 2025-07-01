@@ -7,6 +7,7 @@ import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvi
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.ChatMemoryRepository;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
+import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @RequiredArgsConstructor
 public class AiConfig {
+
+    @Bean
+    ChatClient imageChatClient(ChatClient.Builder builder) {
+        return builder
+                .defaultOptions(ChatOptions
+                        .builder()
+                        .model("gpt-4.1-nano")
+                        .build())
+                .build();
+    }
 
     @Bean
     ChatClient chatClient(ChatClient.Builder builder, ChatMemoryRepository chatMemoryRepository) {
