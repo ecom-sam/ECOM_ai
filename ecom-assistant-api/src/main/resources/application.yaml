@@ -32,7 +32,7 @@ spring:
         api-key: ${OPENAI_API_KEY}
         options:
 #          model: ${GROK_CHAT_MODEL:meta-llama/llama-4-maverick-17b-128e-instruct}
-           model: gpt-4o-mini
+           model: gpt-4.1-mini
       embedding:
         options:
           model: text-embedding-3-small

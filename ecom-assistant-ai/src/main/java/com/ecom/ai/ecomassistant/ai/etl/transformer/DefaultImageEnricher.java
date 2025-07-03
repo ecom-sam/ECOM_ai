@@ -22,22 +22,22 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DefaultImageEnricher implements EcomDocumentTransformer {
 
-    private final ChatClient imageChatClient;
+    private final ChatClient helperChatClient;
 
     private final long minImageSize = 10 * 1024L;
 
-    private final ExecutorService imageProcessingExecutor = Executors.newFixedThreadPool(30);
+    private final ExecutorService imageProcessingExecutor = Executors.newFixedThreadPool(32);
 
     private final String imageDescriptionTemplate = """
-            請協助辨識維護手冊中的圖片，內容可能包含流程圖，純文字，機械結構圖，螢幕截圖。
-            
-            - 如果為流程圖，使用原始語言，列出所有步驟，不要加入描述。
-            - 如果為文字，保留原始文字，並且不要加入任何描述。
-            - 如果為機械結構圖，簡短描述元件，並取得各個元件的標記。
-            - 如果為其他圖片，簡短描述圖片元素。
-            
-            並以Markdown格式輸出。
-            """;
+           **Please help identify the content of the image from a maintenance manual. The image may include a flowchart, plain text, mechanical structure diagram, or a screenshot.**
+           
+           - If the image is a **flowchart**, **list all steps using the original language** found in the image. **Do not add any descriptions.**
+           - If the image contains **plain text**, **preserve the exact original text**, without adding any interpretation or description.
+           - If the image is a **mechanical structure diagram**, provide a **brief description of each component** and **extract all labels or part names** shown.
+           - If the image falls under **other categories**, provide a **short description of the visual elements** present.
+
+           **Please output the result in Markdown format, and ensure all original text on the image is accurately preserved.**
+           """;
 
     @Override
     public List<Document> transform(List<Document> documents) {
@@ -116,7 +116,7 @@ public class DefaultImageEnricher implements EcomDocumentTransformer {
                     .text(imageDescriptionTemplate)
                     .build();
 
-            return this.imageChatClient
+            return this.helperChatClient
                     .prompt()
                     .messages(userMessage)
                     .call()

@@ -7,16 +7,26 @@ import com.github.f4b6a3.ulid.UlidCreator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
+import org.springframework.ai.chat.client.ChatClientResponse;
 import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.MessageType;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.model.Generation;
+import org.springframework.ai.document.Document;
+import org.springframework.ai.rag.advisor.RetrievalAugmentationAdvisor;
+import org.springframework.ai.rag.retrieval.search.VectorStoreDocumentRetriever;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Signal;
+import reactor.core.publisher.Sinks;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -26,8 +36,7 @@ public class ChatService {
 
     private final ChatRecordService chatRecordService;
     private final ChatClient chatClient;
-    private final QuestionAnswerAdvisor questionAnswerAdvisor;
-
+    private final RetrievalAugmentationAdvisor retrievalAugmentationAdvisor;
 
     public List<ChatRecord> findRecordsByTopicBefore(String topicId, String chatRecordId, Integer inputLimit) {
         int limit = inputLimit != null ? inputLimit : 10;
@@ -48,9 +57,9 @@ public class ChatService {
                     .map(s -> String.format("'%s'", s))
                     .collect(Collectors.joining(", "));
             requestSpec
-                    .advisors(questionAnswerAdvisor)
+                    .advisors(retrievalAugmentationAdvisor)
                     .advisors(a -> a.param(
-                            QuestionAnswerAdvisor.FILTER_EXPRESSION,
+                            VectorStoreDocumentRetriever.FILTER_EXPRESSION,
                             String.format("datasetId IN [%s]", datasetIdString)
                     ));
         }
@@ -58,7 +67,8 @@ public class ChatService {
         List<String> responseBuffer = new ArrayList<>();
         Flux<String> aiStream = requestSpec
                 .stream()
-                .content()
+                .chatClientResponse()
+                .switchOnFirst((this::processFirstResponse))
                 .doOnNext(responseBuffer::add)
                 .doOnComplete(() -> {
                     String aiMessage = String.join("", responseBuffer);
@@ -70,7 +80,6 @@ public class ChatService {
                 aiStream
         );
     }
-
 
     protected ChatRecord addUserMessage(SendUserMessageCommand command) {
         ChatRecord chatRecord = ChatRecord.builder()
@@ -95,5 +104,46 @@ public class ChatService {
                 .datetime(Instant.now())
                 .build();
         chatRecordService.save(aiChatRecord);
+    }
+
+    protected Flux<String> processFirstResponse(
+            Signal<? extends ChatClientResponse> signal,
+            Flux<ChatClientResponse> flux
+    ) {
+        // 提取 context 並發送
+        String contextIds = getAndSetChatContext(signal);
+
+        // 建立包含 context 的 Flux
+        Flux<String> contextFlux = contextIds != null ?
+                Flux.just("context:" + contextIds) : Flux.empty();
+
+        // 處理 AI 回應的 Flux
+        Flux<String> responseFlux = flux
+                .mapNotNull(r -> Optional.ofNullable(r.chatResponse())
+                        .map(ChatResponse::getResult)
+                        .map(Generation::getOutput)
+                        .map(AssistantMessage::getText)
+                        .orElse(null))
+                .filter(StringUtils::hasLength);
+
+        return Flux.concat(contextFlux, responseFlux);
+    }
+
+    protected String getAndSetChatContext(
+            Signal<? extends ChatClientResponse> signal
+    ) {
+        return Optional.ofNullable(signal.hasValue() ? signal.get() : null)
+                .map(ChatClientResponse::context)
+                .map(ctx -> ctx.get(RetrievalAugmentationAdvisor.DOCUMENT_CONTEXT))
+                .filter(obj -> obj instanceof List<?>)
+                .map(obj -> {
+                    List<?> list = (List<?>) obj;
+                    return list.stream()
+                            .filter(item -> item instanceof Document)
+                            .map(item -> ((Document) item).getId())
+                            .collect(Collectors.toList());
+                })
+                .map(ids -> String.join(",", ids))
+                .orElse(null);
     }
 }

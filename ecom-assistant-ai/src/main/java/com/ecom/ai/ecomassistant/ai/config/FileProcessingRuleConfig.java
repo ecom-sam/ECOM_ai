@@ -15,8 +15,9 @@ public class FileProcessingRuleConfig {
 
     private String reader = "defaultPagePdfDocumentReader";
     private List<String> transformers = List.of(
-            "defaultTokenTextSplitter",
-            "defaultPdfImageExtractor",
-            "defaultImageEnricher"
+//            "defaultPdfImageExtractor",
+//            "defaultImageEnricher",
+//            "defaultImageContentRemover",
+            "defaultTokenTextSplitter"
     );
 }
