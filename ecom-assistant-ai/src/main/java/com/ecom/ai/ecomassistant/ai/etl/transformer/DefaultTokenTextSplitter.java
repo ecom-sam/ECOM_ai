@@ -11,7 +11,14 @@ public class DefaultTokenTextSplitter implements EcomDocumentTransformer {
 
     @Override
     public List<Document> transform(List<Document> documents) {
-        TokenTextSplitter splitter = new TokenTextSplitter(1000, 400, 10, 5000, false);
+        TokenTextSplitter splitter = new TokenTextSplitter(
+                1500,
+                200,
+                20,
+                8000,
+                true
+        );
+
         return splitter.apply(documents);
     }
 }
