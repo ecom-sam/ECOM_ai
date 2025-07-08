@@ -44,8 +44,7 @@ public interface TeamRoleRepository extends CouchbaseRepository<TeamRole, String
 
 
     @Query("""
-               SELECT '' AS __id,
-                  META(r).id AS id,
+               SELECT META(r).id AS __id,
                   r.name AS name,
                   r.description AS description,
                   r.permissions AS permissions,
@@ -54,8 +53,8 @@ public interface TeamRoleRepository extends CouchbaseRepository<TeamRole, String
            FROM `team-role` r
            LEFT JOIN `team-membership` m
              ON ARRAY_CONTAINS(m.teamRoles, META(r).id)
-           WHERE r.isSystemRole = true
              AND m.teamId = $teamId
+           WHERE r.isSystemRole = true
            GROUP BY
                META(r).id,
                r.name,

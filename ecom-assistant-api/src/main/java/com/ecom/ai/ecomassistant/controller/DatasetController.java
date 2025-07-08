@@ -1,8 +1,11 @@
 package com.ecom.ai.ecomassistant.controller;
 
+import com.ecom.ai.ecomassistant.auth.util.PermissionUtil;
+import com.ecom.ai.ecomassistant.common.annotation.CurrentUserId;
 import com.ecom.ai.ecomassistant.common.resource.StorageType;
 import com.ecom.ai.ecomassistant.common.resource.file.FileInfo;
 import com.ecom.ai.ecomassistant.config.FileStorageProperties;
+import com.ecom.ai.ecomassistant.core.service.DatasetManager;
 import com.ecom.ai.ecomassistant.db.model.Dataset;
 import com.ecom.ai.ecomassistant.db.model.Document;
 import com.ecom.ai.ecomassistant.db.service.DatasetService;
@@ -37,7 +40,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import static com.ecom.ai.ecomassistant.auth.permission.DatasetPermission.DATASET_VIEW;
+import static com.ecom.ai.ecomassistant.auth.permission.SystemPermission.SYSTEM_DATASET_ADMIN;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,6 +52,8 @@ import java.util.List;
 public class DatasetController {
 
     private final DatasetService datasetService;
+
+    private final DatasetManager datasetManager;
 
     private final DocumentService documentService;
 
@@ -57,6 +66,19 @@ public class DatasetController {
         Dataset dataset = datasetService
                 .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Dataset not found"));
+
+        // check permission
+        Dataset.AccessType accessType = Optional.ofNullable(dataset.getAccessType()).orElse(Dataset.AccessType.PRIVATE);
+        switch (accessType) {
+            case PRIVATE -> PermissionUtil.forbidden();
+            case GROUP -> PermissionUtil.checkAnyPermission(Set.of(
+                    SYSTEM_DATASET_ADMIN.getCode(),
+                    DATASET_VIEW.getCodeWithTeamId(dataset.getTeamId())
+            ));
+            case PUBLIC -> {
+                // do nothing, public access
+            }
+        }
 
         return DatasetDetailResponse.builder()
                 .dataset(dataset)
@@ -148,10 +170,11 @@ public class DatasetController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int limit,
             @RequestParam(defaultValue = "createdDateTime") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir
+            @RequestParam(defaultValue = "desc") String sortDir,
+            @CurrentUserId String userId
     ) {
         Pageable pageable = PageUtil.buildPageable(page, limit, sortBy, sortDir);
-        var pageResult = datasetService.search(name, pageable);
+        var pageResult = datasetManager.findVisibleDatasets(userId, name, pageable);
         return PageResponse.of(pageResult);
     }
 }

@@ -9,6 +9,7 @@ public interface Permission {
     String getCode();
     String getGroup();
     String getLabel();
+    String getDescription();
 
     static <T extends Enum<T> & Permission> Optional<T> fromCode(Class<T> enumClass, String code) {
         return Arrays.stream(enumClass.getEnumConstants())

@@ -50,16 +50,23 @@ public class UserManager {
     }
 
     public UserDto inviteUser(String email) {
-        if (isUserExist(email)) {
-            throw new EntityExistException("user exist");
-        }
+        return inviteUser(Set.of(email)).getFirst();
+    }
 
-        User user = new User();
-        user.setEmail(email);
-        user.setSystemRoles(Set.of(SystemRole.USER.name()));
-        userService.save(user);
+    public List<UserDto> inviteUser(Set<String> emails) {
 
-        return UserMapper.INSTANCE.toDto(user);
+        List<User> users = emails.stream()
+                .filter(email -> !this.isUserExist(email))
+                .map(email -> User.builder()
+                        .name(email)
+                        .email(email)
+                        .systemRoles(Set.of(SystemRole.USER.name()))
+                        .build()
+                ).toList();
+
+        userService.saveAll(users);
+
+        return users.stream().map(UserMapper.INSTANCE::toDto).toList();
     }
 
     public UserDto activateUser(UserActivateCommand command) {

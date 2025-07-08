@@ -1,6 +1,7 @@
 package com.ecom.ai.ecomassistant.controller;
 
 import com.ecom.ai.ecomassistant.auth.util.PermissionUtil;
+import com.ecom.ai.ecomassistant.core.dto.response.TeamInviteCandidateDto;
 import com.ecom.ai.ecomassistant.core.service.TeamMemberManager;
 import com.ecom.ai.ecomassistant.db.model.auth.TeamMembership;
 import com.ecom.ai.ecomassistant.db.model.dto.TeamMemberDto;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -39,34 +41,45 @@ public class TeamMemberController {
         return teamMemberManager.getTeamMembers(teamId);
     }
 
-
     @PostMapping("/invitations")
     public List<TeamMembership> inviteMembers(
             @PathVariable String teamId,
-            @RequestBody @Valid TeamMembersInviteRequest inviteRequest) {
+            @RequestBody @Valid TeamMembersInviteRequest inviteRequest
+    ) {
         var command = TeamMemberRequestMapper.INSTANCE.toInviteCommand(inviteRequest, teamId);
         return teamMemberManager.inviteMembers(command);
     }
 
-    @PatchMapping("/{userId}/role")
+    @GetMapping("/invite-candidates")
+    public List<TeamInviteCandidateDto> searchInviteCandidates(
+            @PathVariable String teamId,
+            @RequestParam(required = false, defaultValue = "") String filter,
+            @RequestParam(required = false, defaultValue = "20") int limit
+    ) {
+        return teamMemberManager.searchInviteCandidates(teamId, filter, limit);
+    }
+
+    @PatchMapping("/{userId}/roles")
     public List<TeamMemberDto> updateMemberRole(
             @PathVariable String teamId,
             @PathVariable String userId,
-            @RequestBody TeamMemberRoleUpdateRequest updateRequest) {
-        teamMemberManager.updateTeamMemberRoles(teamId, userId, updateRequest.roleIds());
+            @RequestBody @Valid TeamMemberRoleUpdateRequest updateRequest
+    ) {
+        teamMemberManager.updateTeamMemberRoles(teamId, userId, updateRequest.roles());
         return teamMembershipService.findDtoByTeamIdAndUserId(teamId, userId);
     }
 
 
-    @DeleteMapping
-    public int removeMembers(
+    @DeleteMapping("/{userId}")
+    public void removeMembers(
             @PathVariable String teamId,
-            @RequestBody TeamMemberRemoveRequest removeRequest) {
+            @PathVariable String userId
+    ) {
         PermissionUtil.checkAnyPermission(Set.of(
                 SYSTEM_TEAM_MANAGE.getCode(),
                 TEAM_MEMBERS_MANAGE.getCodeWithTeamId(teamId)
         ));
-        return teamMemberManager.removeMember(teamId, removeRequest.userIds());
+        teamMemberManager.removeMember(teamId, userId);
     }
 
 

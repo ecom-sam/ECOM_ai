@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,6 +19,10 @@ public class UserService extends CrudService<User, String, UserRepository> {
 
     public Optional<User> findByEmail(String email) {
         return repository.findByEmail(email);
+    }
+
+    public List<User> search(String filter, int limit) {
+        return repository.search(Optional.ofNullable(filter).orElse(""), limit);
     }
 
     public Page<User> searchByCriteria(String filter, Pageable pageable) {

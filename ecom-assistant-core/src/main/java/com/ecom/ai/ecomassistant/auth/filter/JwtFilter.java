@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.web.filter.authc.BearerHttpAuthenticationFilter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,7 +40,15 @@ public class JwtFilter extends BearerHttpAuthenticationFilter {
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         if (isLoginAttempt(request, response)) {
-            return executeLogin(request, response);
+            try {
+                return executeLogin(request, response);
+            } catch (AuthenticationException e) {
+                log.warn("JWT authentication failed: {}", e.getMessage());
+                response401(response, e.getMessage());
+            } catch (Exception e) {
+                log.error("Unexpected error during login", e);
+                response401(response, "Internal error during authentication");
+            }
         }
         return false;
     }
@@ -50,16 +59,20 @@ public class JwtFilter extends BearerHttpAuthenticationFilter {
         return false;
     }
 
+    private void response401(ServletResponse response) throws IOException {
+        response401(response, "Token is missing or invalid");
+    }
+
     @SneakyThrows
-    private void response401(ServletResponse response) {
+    private void response401(ServletResponse response, String message) throws IOException {
         var error = new ErrorResponse<>(
                 401,
                 "Unauthorized",
-                List.of("Token is missing or invalid")
+                List.of(message)
         );
-
         ResponseUtil.writeJson((HttpServletResponse) response, 401, error);
     }
+
 
     // CORS
     @Override

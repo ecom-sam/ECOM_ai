@@ -13,6 +13,7 @@ public enum SystemRole implements Role {
     SUPER_ADMIN("system super admin", "", Set.of(
             SystemPermission.SYSTEM_SUPER_ADMIN)
     ),
+    USER("user", "", Set.of()),
 
     TEAM_ADMIN("system team admin", "",  Set.of(
             SystemPermission.SYSTEM_TEAM_ADMIN,
@@ -30,7 +31,12 @@ public enum SystemRole implements Role {
             SystemPermission.SYSTEM_USER_VIEW,
             SystemPermission.SYSTEM_USER_INVITE
     )),
-    USER("user", "", Set.of());
+
+    DATASET_ADMIN("system dataset admin", "", Set.of(
+            SystemPermission.SYSTEM_DATASET_ADMIN
+    ));
+
+
 
     private final String displayName;
     private final String description;

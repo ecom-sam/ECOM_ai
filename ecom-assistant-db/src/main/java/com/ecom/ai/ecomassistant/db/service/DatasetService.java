@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 public class DatasetService extends CrudService<Dataset, String, DatasetRepository> {
 
@@ -14,12 +16,16 @@ public class DatasetService extends CrudService<Dataset, String, DatasetReposito
         super(repository);
     }
 
-    public Page<Dataset> search(String name, Pageable pageable) {
+    public Page<Dataset> searchAll(String name, Pageable pageable) {
         if (StringUtils.isEmpty(name)) {
             return repository.findAll(pageable);
         } else {
             return repository.searchByCriteria(name, pageable);
         }
+    }
+
+    public Page<Dataset> findVisibleDatasets(String name, String userId, Set<String> userTeamIds, Pageable pageable) {
+        return repository.findVisibleDatasets(name, userId, userTeamIds, pageable);
     }
 
     public Dataset createDataset(Dataset dataset) {
@@ -38,7 +44,6 @@ public class DatasetService extends CrudService<Dataset, String, DatasetReposito
     }
 
     public boolean deleteDataset(String id) {
-
         if (repository.existsById(id)) {
             repository.deleteById(id);
             return true;

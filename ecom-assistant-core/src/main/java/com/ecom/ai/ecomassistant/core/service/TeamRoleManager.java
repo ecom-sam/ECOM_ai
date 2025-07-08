@@ -4,9 +4,11 @@ import com.ecom.ai.ecomassistant.core.dto.command.TeamRoleCreateCommand;
 import com.ecom.ai.ecomassistant.core.dto.command.TeamRoleUpdateCommand;
 import com.ecom.ai.ecomassistant.core.dto.mapper.TeamRoleMapper;
 import com.ecom.ai.ecomassistant.core.exception.EntityNotFoundException;
+import com.ecom.ai.ecomassistant.db.model.auth.TeamMembership;
 import com.ecom.ai.ecomassistant.db.model.dto.TeamRoleDto;
 import com.ecom.ai.ecomassistant.db.model.auth.TeamRole;
 import com.ecom.ai.ecomassistant.db.model.dto.TeamRoleUserCountDto;
+import com.ecom.ai.ecomassistant.db.service.auth.TeamMembershipService;
 import com.ecom.ai.ecomassistant.db.service.auth.TeamRoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 public class TeamRoleManager {
 
     private final TeamRoleService teamRoleService;
+
+    private final TeamMembershipService teamMembershipService;
 
     public record TeamRolesResponse(
             List<TeamRoleDto> system,
@@ -78,8 +82,14 @@ public class TeamRoleManager {
     }
 
     public void deleteTeamRole(String roleId) {
-        //TODO check can delete, is used...?
         teamRoleService.delete(roleId);
+
+        // remote related membership
+        List<TeamMembership> teamMemberships = teamMembershipService.findAllContainsTeamRole(roleId);
+        for (TeamMembership teamMembership : teamMemberships) {
+            teamMembership.getTeamRoles().remove(roleId);
+        }
+        teamMembershipService.saveAll(teamMemberships);
     }
 
     protected TeamRole getRole(String roleId) {
