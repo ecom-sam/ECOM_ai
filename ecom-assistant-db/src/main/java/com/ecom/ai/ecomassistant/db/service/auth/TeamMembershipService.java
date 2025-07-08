@@ -45,6 +45,14 @@ public class TeamMembershipService extends CrudService<TeamMembership, String, T
         return repository.findAllByTeamIdAndUserIdIn(teamId, userIds.stream().toList());
     }
 
+    public List<TeamMembership> findAllContainsTeamRole(String teamRoleId) {
+        return repository.findAllContainsTeamRole(teamRoleId);
+    }
+
+    public void delete(TeamMembership membership) {
+        repository.delete(membership);
+    }
+
     public void deleteAll(List<TeamMembership> memberships) {
         repository.deleteAll(memberships);
     }

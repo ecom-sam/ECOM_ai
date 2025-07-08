@@ -2,6 +2,7 @@ package com.ecom.ai.ecomassistant.core.service;
 
 import com.ecom.ai.ecomassistant.core.dto.command.TeamMembersInviteCommand;
 import com.ecom.ai.ecomassistant.core.dto.response.TeamInviteCandidateDto;
+import com.ecom.ai.ecomassistant.core.dto.response.UserDto;
 import com.ecom.ai.ecomassistant.core.exception.EntityExistException;
 import com.ecom.ai.ecomassistant.core.exception.EntityNotFoundException;
 import com.ecom.ai.ecomassistant.db.model.auth.TeamMembership;
@@ -13,11 +14,14 @@ import com.ecom.ai.ecomassistant.db.service.auth.TeamMembershipService;
 import com.ecom.ai.ecomassistant.db.service.auth.TeamRoleService;
 import com.ecom.ai.ecomassistant.db.service.auth.UserService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,6 +32,7 @@ public class TeamMemberManager {
     private final TeamMembershipService teamMembershipService;
     private final TeamRoleService teamRoleService;
     private final UserService userService;
+    private final UserManager userManager;
 
     public List<TeamMemberDto> getTeamMembers(String teamId) {
         return teamMembershipService.findAllByTeamId(teamId);
@@ -36,10 +41,23 @@ public class TeamMemberManager {
     public List<TeamMembership> inviteMembers(TeamMembersInviteCommand inviteCommand) {
 
         String teamId = inviteCommand.teamId();
-        Set<String> userIds = inviteCommand.userIds();
+        Set<String> userIds = Optional.ofNullable(inviteCommand.userIds()).orElse(new HashSet<>());
         Set<String> roleIds = inviteCommand.roleIds();
+        Set<String> inviteEmails = Optional.ofNullable(inviteCommand.inviteEmails()).orElse(new HashSet<>());
 
-        // check if user is ab member
+        if (CollectionUtils.isNotEmpty(inviteEmails)) {
+            Set<String> invitedUserIds = userManager
+                    .inviteUser(inviteEmails).stream()
+                    .map(UserDto::id)
+                    .collect(Collectors.toSet());
+            userIds.addAll(invitedUserIds);
+        }
+
+        if (userIds.isEmpty()) {
+            return List.of();
+        }
+
+        // check if user is a member
         List<String> existUsers = teamMembershipService
                 .findAllByTeamIdAndUserId(teamId, userIds).stream()
                 .map(TeamMembership::getUserId)
@@ -103,13 +121,11 @@ public class TeamMemberManager {
         }
     }
 
-    public int removeMember(String teamId, Set<String> userIds) {
-        var teamMemberships = teamMembershipService.findAllByTeamIdAndUserId(teamId, userIds);
-        if (teamMemberships.isEmpty()) {
-            return 0;
-        }
-        teamMembershipService.deleteAll(teamMemberships);
-        return teamMemberships.size();
+    public void removeMember(String teamId, String userId) {
+        var teamMembership = teamMembershipService
+                .findByTeamIdAndUserId(teamId, userId)
+                .orElseThrow(() -> new EntityNotFoundException("teamMembership not found."));
+        teamMembershipService.delete(teamMembership);
     }
 
     public void updateTeamMemberRoles(String teamId, String userId, Set<String> roleIds) {

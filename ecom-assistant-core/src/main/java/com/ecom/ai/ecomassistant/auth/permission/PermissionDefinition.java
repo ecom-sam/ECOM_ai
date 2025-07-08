@@ -8,4 +8,11 @@ import lombok.Getter;
 public class PermissionDefinition {
     private String code;
     private String label;
+    private String description;
+
+    public PermissionDefinition(Permission permission) {
+        this.code = permission.getCode();
+        this.label = permission.getLabel();
+        this.description = permission.getDescription();
+    }
 }

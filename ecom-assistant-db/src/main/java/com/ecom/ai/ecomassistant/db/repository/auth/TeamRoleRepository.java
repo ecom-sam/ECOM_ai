@@ -44,8 +44,7 @@ public interface TeamRoleRepository extends CouchbaseRepository<TeamRole, String
 
 
     @Query("""
-               SELECT '' AS __id,
-                  META(r).id AS id,
+               SELECT META(r).id AS __id,
                   r.name AS name,
                   r.description AS description,
                   r.permissions AS permissions,

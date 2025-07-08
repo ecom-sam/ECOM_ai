@@ -6,6 +6,7 @@ import com.ecom.ai.ecomassistant.model.dto.request.TeamRoleCreateRequest;
 import com.ecom.ai.ecomassistant.model.dto.request.TeamRoleUpdateRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
@@ -17,7 +18,8 @@ public interface TeamRoleRequestMapper {
     @Mapping(source = "teamId", target = "teamId")
     TeamRoleCreateCommand toCreateTeamRoleCommand(TeamRoleCreateRequest createRequest, String teamId);
 
-    @Mapping(source = "teamId", target = "teamId")
+    @Mapping(source = "teamId", target = "teamId",
+    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     TeamRoleUpdateCommand toTeamRoleUpdateCommand(TeamRoleUpdateRequest updateRequest, String teamId);
 
 }

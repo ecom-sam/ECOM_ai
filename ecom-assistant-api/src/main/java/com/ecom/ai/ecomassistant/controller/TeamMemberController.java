@@ -59,27 +59,27 @@ public class TeamMemberController {
         return teamMemberManager.searchInviteCandidates(teamId, filter, limit);
     }
 
-    @PatchMapping("/{userId}/role")
+    @PatchMapping("/{userId}/roles")
     public List<TeamMemberDto> updateMemberRole(
             @PathVariable String teamId,
             @PathVariable String userId,
-            @RequestBody TeamMemberRoleUpdateRequest updateRequest
+            @RequestBody @Valid TeamMemberRoleUpdateRequest updateRequest
     ) {
-        teamMemberManager.updateTeamMemberRoles(teamId, userId, updateRequest.roleIds());
+        teamMemberManager.updateTeamMemberRoles(teamId, userId, updateRequest.roles());
         return teamMembershipService.findDtoByTeamIdAndUserId(teamId, userId);
     }
 
 
-    @DeleteMapping
-    public int removeMembers(
+    @DeleteMapping("/{userId}")
+    public void removeMembers(
             @PathVariable String teamId,
-            @RequestBody TeamMemberRemoveRequest removeRequest
+            @PathVariable String userId
     ) {
         PermissionUtil.checkAnyPermission(Set.of(
                 SYSTEM_TEAM_MANAGE.getCode(),
                 TEAM_MEMBERS_MANAGE.getCodeWithTeamId(teamId)
         ));
-        return teamMemberManager.removeMember(teamId, removeRequest.userIds());
+        teamMemberManager.removeMember(teamId, userId);
     }
 
 

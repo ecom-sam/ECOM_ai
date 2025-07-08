@@ -36,8 +36,7 @@ public interface TeamMembershipRepository extends CouchbaseRepository<TeamMember
             WHERE #{#n1ql.filter}
             AND tm.teamId IN $teamIds
             GROUP BY tm.teamId
-            """
-    )
+    """)
     List<TeamUserCount> countGroupedByTeamId(Set<String> teamIds);
 
     @Query(teamMemberDtoQuery)
@@ -51,4 +50,11 @@ public interface TeamMembershipRepository extends CouchbaseRepository<TeamMember
     Optional<TeamMembership> findByTeamIdAndUserId(String teamId, String userId);
 
     List<TeamMembership> findAllByTeamIdAndUserIdIn(String teamId, List<String> userIds);
+
+    @Query("""
+    #{#n1ql.selectEntity}
+    WHERE #{#n1ql.filter}
+    AND ANY `role` IN teamRoles SATISFIES `role` = $teamRoleId END
+    """)
+    List<TeamMembership> findAllContainsTeamRole(String teamRoleId);
 }

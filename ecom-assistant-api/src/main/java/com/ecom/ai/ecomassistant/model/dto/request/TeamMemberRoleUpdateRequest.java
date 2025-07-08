@@ -5,8 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import java.util.Set;
 
 public record TeamMemberRoleUpdateRequest(
-
         @NotEmpty
-        Set<String> roleIds
+        Set<String> roles
 ) {
 }

@@ -3,6 +3,7 @@ package com.ecom.ai.ecomassistant.db.model.auth;
 import com.ecom.ai.ecomassistant.common.UserStatus;
 import com.ecom.ai.ecomassistant.db.model.AuditableDocument;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -16,6 +17,7 @@ import java.util.Set;
 
 @Getter
 @Setter
+@Builder
 @Document
 @Collection("user")
 public class User extends AuditableDocument {
@@ -31,9 +33,12 @@ public class User extends AuditableDocument {
 
         private String password;
 
+        @Builder.Default
         private UserStatus status = UserStatus.INVITED;
 
+        @Builder.Default
         private Set<String> systemRoles = new HashSet<>();
 
+        @Builder.Default
         private Set<String> teamMembershipIds = new HashSet<>();
 }
