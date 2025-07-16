@@ -79,19 +79,31 @@ docker run -d \
 ```
 
 ### 3. 初始化資料庫
-執行資料庫 schema 初始化：
+執行資料庫 schema 初始化，提供兩種方式：
 
+#### 方法一：命令列執行 (推薦)
 ```bash
-# 詳細的資料庫設定步驟請參考：
-# schema/setup_database.md
+# 1. 複製 schema 檔案到容器
+docker cp schema/ couchbase-ai:/tmp/schema/
 
-# 快速初始化（按順序執行）：
-cbq -e "couchbase://localhost" -u admin -p couchbase < schema/v0.0_init
-cbq -e "couchbase://localhost" -u admin -p couchbase < schema/v0.1_user_rbac
-cbq -e "couchbase://localhost" -u admin -p couchbase < schema/v0.1_user_rbac_test_data
-cbq -e "couchbase://localhost" -u admin -p couchbase < schema/v0.2_team_role
-cbq -e "couchbase://localhost" -u admin -p couchbase < schema/v0.3_system_role_init
+# 2. 執行初始化腳本（按順序執行）
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase < /tmp/schema/v0.0_init
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase < /tmp/schema/v0.1_user_rbac
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase < /tmp/schema/v0.1_user_rbac_test_data
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase < /tmp/schema/v0.2_team_role
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase < /tmp/schema/v0.3_system_role_init
 ```
+
+#### 方法二：圖形化介面執行
+1. 訪問 Couchbase Web Console：http://localhost:8091
+2. 使用帳密登入：`admin` / `couchbase`
+3. 進入 **Query Workbench**
+4. 依序複製每個 schema 檔案的內容並執行：
+   - `schema/v0.0_init`
+   - `schema/v0.1_user_rbac`
+   - `schema/v0.1_user_rbac_test_data`
+   - `schema/v0.2_team_role`
+   - `schema/v0.3_system_role_init`
 
 📋 **完整的資料庫設定指南**：請參考 [`schema/setup_database.md`](schema/setup_database.md) 了解：
 - 詳細的執行步驟說明

@@ -2,32 +2,42 @@
 
 Execute the schema files in the following order:
 
-## 1. Initial Setup
+## Prerequisites
+確保 Couchbase 容器已經啟動：
 ```bash
-# Run in Couchbase Query Workbench or via cbq
-cbq -e "couchbase://localhost" -u admin -p couchbase < v0.0_init
+docker ps | grep couchbase-ai
 ```
 
-## 2. User & RBAC Setup
-```bash
-# Create user and role collections with indexes
-cbq -e "couchbase://localhost" -u admin -p couchbase < v0.1_user_rbac
+## Setup Steps
 
-# Insert initial test data (users, teams, datasets)
-cbq -e "couchbase://localhost" -u admin -p couchbase < v0.1_user_rbac_test_data
+### 1. 複製 Schema 檔案到容器
+```bash
+# 從專案根目錄執行
+docker cp schema/ couchbase-ai:/tmp/schema/
 ```
 
-## 3. Team Roles Setup
+### 2. 執行初始化腳本
+
+#### 方法一：使用 Docker Exec + cbq
 ```bash
-# Create team role collection, indexes, and insert default roles
-cbq -e "couchbase://localhost" -u admin -p couchbase < v0.2_team_role
+# 1. Initial Setup
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase < /tmp/schema/v0.0_init
+
+# 2. User & RBAC Setup
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase < /tmp/schema/v0.1_user_rbac
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase < /tmp/schema/v0.1_user_rbac_test_data
+
+# 3. Team Roles Setup
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase < /tmp/schema/v0.2_team_role
+
+# 4. System Roles Initialization
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase < /tmp/schema/v0.3_system_role_init
 ```
 
-## 4. System Roles Initialization
-```bash
-# Insert system roles
-cbq -e "couchbase://localhost" -u admin -p couchbase < v0.3_system_role_init
-```
+#### 方法二：使用 Couchbase Query Workbench
+1. 訪問 Couchbase Web Console: http://localhost:8091
+2. 進入 Query Workbench
+3. 複製每個 schema 檔案的內容並依序執行
 
 ## Collections Created
 
