@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
+//@Component
 public class MovieTool implements ChatToolMarker {
     private static final Map<String, String> MOVIE_DATABASE = new HashMap<>();
 

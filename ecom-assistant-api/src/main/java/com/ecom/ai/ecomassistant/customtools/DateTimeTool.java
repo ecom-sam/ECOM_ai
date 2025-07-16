@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 
-@Component
+//@Component
 public class DateTimeTool implements ChatToolMarker {
     @Tool(description = "Get the current date and time in the user's timezone")
     public String getCurrentDateTime() {

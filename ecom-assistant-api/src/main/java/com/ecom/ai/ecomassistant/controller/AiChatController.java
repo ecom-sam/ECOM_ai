@@ -50,7 +50,7 @@ public class AiChatController {
             @CurrentUserId String userId,
             @RequestParam(defaultValue = "") String topic,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "20") int limit,
             @RequestParam(defaultValue = "createdDateTime") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDir
     ) {
