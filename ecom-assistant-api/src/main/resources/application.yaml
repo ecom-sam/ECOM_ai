@@ -29,7 +29,6 @@ spring:
       chat:
 #        base-url: https://api.groq.com/openai
 #        api-key: ${GROK_API_KEY}
-        api-key: ${OPENAI_API_KEY}
         options:
 #          model: ${GROK_CHAT_MODEL:meta-llama/llama-4-maverick-17b-128e-instruct}
            model: gpt-4.1-mini

@@ -18,6 +18,7 @@ import java.util.List;
 import java.time.Instant;
 
 @Hidden
+@Deprecated
 @RestController
 @RequestMapping("/api/v1/chat")
 @RequiredArgsConstructor

@@ -54,3 +54,40 @@ VALUES (
     "_class": "com.ecom.ai.ecomassistant.db.model.auth.User"
   }
 );
+
+-- Insert sample team for testing
+UPSERT INTO `ECOM`.`AI`.`team` (KEY, VALUE)
+VALUES (
+  "default_team",
+  {
+    "id": "default_team",
+    "name": "預設團隊",
+    "description": "系統預設團隊",
+    "ownerId": "super_admin",
+    "active": true,
+    "createdAt": "2024-06-16T10:00:00Z",
+    "createdBy": "system",
+    "updatedAt": "2024-06-16T10:00:00Z",
+    "updatedBy": "system",
+    "_class": "com.ecom.ai.ecomassistant.db.model.auth.Team"
+  }
+);
+
+-- Insert sample dataset for testing
+UPSERT INTO `ECOM`.`AI`.`dataset` (KEY, VALUE)
+VALUES (
+  "sample_dataset",
+  {
+    "id": "sample_dataset",
+    "name": "範例知識庫",
+    "description": "系統範例知識庫",
+    "teamId": "default_team",
+    "accessType": "PRIVATE",
+    "authorizedTeamIds": ["default_team"],
+    "createdAt": "2024-06-16T10:00:00Z",
+    "createdBy": "super_admin",
+    "updatedAt": "2024-06-16T10:00:00Z",
+    "updatedBy": "super_admin",
+    "_class": "com.ecom.ai.ecomassistant.db.model.Dataset"
+  }
+);
