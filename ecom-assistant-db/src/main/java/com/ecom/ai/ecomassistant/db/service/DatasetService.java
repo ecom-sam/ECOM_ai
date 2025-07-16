@@ -4,7 +4,9 @@ import com.ecom.ai.ecomassistant.db.repository.DatasetRepository;
 import com.ecom.ai.ecomassistant.db.model.Dataset;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -17,10 +19,26 @@ public class DatasetService extends CrudService<Dataset, String, DatasetReposito
     }
 
     public Page<Dataset> searchAll(String name, Pageable pageable) {
+        Pageable finalPageable = pageable;
+
+        // 檢查是否已經有 name 排序，如果沒有才加入
+        boolean hasNameSort = pageable.getSort().stream()
+                .anyMatch(order -> "name".equals(order.getProperty()));
+
+        if (!hasNameSort) {
+            Sort nameSort = Sort.by("name").ascending();
+            Sort combinedSort = pageable.getSort().and(nameSort);
+            finalPageable = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    combinedSort
+            );
+        }
+
         if (StringUtils.isEmpty(name)) {
-            return repository.findAll(pageable);
+            return repository.findAll(finalPageable);
         } else {
-            return repository.searchByCriteria(name, pageable);
+            return repository.searchByCriteria(name, finalPageable);
         }
     }
 
