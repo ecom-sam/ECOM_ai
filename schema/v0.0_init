@@ -1,9 +1,14 @@
 CREATE SCOPE `ECOM`.`AI` IF NOT EXISTS;
 
+-- Core application collections
 CREATE COLLECTION `ECOM`.`AI`.`document` IF NOT EXISTS;
 CREATE COLLECTION `ECOM`.`AI`.`dataset` IF NOT EXISTS;
 CREATE COLLECTION `ECOM`.`AI`.`chat-topic` IF NOT EXISTS;
 CREATE COLLECTION `ECOM`.`AI`.`chat-record` IF NOT EXISTS;
+CREATE COLLECTION `ECOM`.`AI`.`chat-message` IF NOT EXISTS;
 
+-- Vector store collection (document-vector for embeddings)
+CREATE COLLECTION `ECOM`.`AI`.`document-vector` IF NOT EXISTS;
 
+-- Cache collection
 CREATE COLLECTION `ECOM`.`AI`.`cache` IF NOT EXISTS;
