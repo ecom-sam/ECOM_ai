@@ -24,15 +24,29 @@ bash generate_schema.sh
 ### 2. 複製產生的 Schema 檔案到容器
 ```bash
 # 從專案根目錄執行
-docker cp schema_generated/ couchbase-ai:/tmp/schema/
+docker cp schema_generated/. couchbase-ai:/tmp/schema/
 ```
 
 ### 3. 執行初始化腳本
 
 #### 方法一：使用 Docker Exec + cbq
+
+**重要：Bucket 必須透過 REST API 建立，無法用 SQL 語句建立**
+
 ```bash
-# 0. Bucket & Scope Setup
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase -f /tmp/schema/v0.0_bucket_init
+# 0. 建立 Bucket (使用 REST API)
+curl -u admin:couchbase -X POST http://localhost:8091/pools/default/buckets \
+  -d name=ECOM \
+  -d bucketType=couchbase \
+  -d ramQuotaMB=512 \
+  -d authType=sasl
+
+# 等待 bucket 建立完成
+sleep 5
+
+# 0.1 建立 Scope
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase \
+  -s "CREATE SCOPE \`ECOM\`.\`AI\` IF NOT EXISTS;"
 
 # 1. Initial Setup
 docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase -f /tmp/schema/v0.0_init
@@ -53,7 +67,8 @@ docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase -f
 2. 使用帳密登入：`admin` / `couchbase`
 3. 進入 Query Workbench
 4. 依序複製每個 `schema_generated/` 資料夾中的檔案內容並執行：
-   - `v0.0_bucket_init` (建立 Bucket 和 Scope)
+   - 手動建立 Bucket (透過 Web UI: Buckets → Add Bucket → 名稱: ECOM, 記憶體: 512MB)
+   - 建立 Scope (透過 Query: `CREATE SCOPE \`ECOM\`.\`AI\` IF NOT EXISTS;`)
    - `v0.0_init` (建立 Collections)
    - `v0.1_user_rbac` (使用者權限系統)
    - `v0.1_user_rbac_test_data` (測試資料)
