@@ -1,6 +1,6 @@
 -- NOTE: Bucket must be created via REST API, not SQL
 -- Use: curl -u admin:couchbase -X POST http://localhost:8091/pools/default/buckets \
---        -d name=ECOM -d bucketType=couchbase -d ramQuotaMB=512 -d authType=sasl
+--        -d name=${COUCHBASE_BUCKET_NAME} -d bucketType=couchbase -d ramQuotaMB=512 -d authType=sasl
 
 -- Create scope
-CREATE SCOPE `ECOM`.`AI` IF NOT EXISTS;
+CREATE SCOPE `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}` IF NOT EXISTS;

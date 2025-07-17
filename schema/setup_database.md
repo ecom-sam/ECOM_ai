@@ -35,8 +35,8 @@ docker cp schema_generated/. couchbase-ai:/tmp/schema/
 
 ```bash
 # 0. 建立 Bucket (使用 REST API)
-curl -u admin:couchbase -X POST http://localhost:8091/pools/default/buckets \
-  -d name=ECOM \
+curl -u ${COUCHBASE_USERNAME}:${COUCHBASE_PASSWORD} -X POST http://localhost:8091/pools/default/buckets \
+  -d name=${COUCHBASE_BUCKET_NAME} \
   -d bucketType=couchbase \
   -d ramQuotaMB=512 \
   -d authType=sasl
@@ -45,21 +45,21 @@ curl -u admin:couchbase -X POST http://localhost:8091/pools/default/buckets \
 sleep 5
 
 # 0.1 建立 Scope
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase \
-  -s "CREATE SCOPE \`ECOM\`.\`AI\` IF NOT EXISTS;"
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u ${COUCHBASE_USERNAME} -p ${COUCHBASE_PASSWORD} \
+  -s "CREATE SCOPE \`${COUCHBASE_BUCKET_NAME}\`.\`${COUCHBASE_SCOPE_NAME}\` IF NOT EXISTS;"
 
 # 1. Initial Setup
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase -f /tmp/schema/v0.0_init
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u ${COUCHBASE_USERNAME} -p ${COUCHBASE_PASSWORD} -f /tmp/schema/v0.0_init
 
 # 2. User & RBAC Setup
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase -f /tmp/schema/v0.1_user_rbac
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase -f /tmp/schema/v0.1_user_rbac_test_data
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u ${COUCHBASE_USERNAME} -p ${COUCHBASE_PASSWORD} -f /tmp/schema/v0.1_user_rbac
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u ${COUCHBASE_USERNAME} -p ${COUCHBASE_PASSWORD} -f /tmp/schema/v0.1_user_rbac_test_data
 
 # 3. Team Roles Setup
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase -f /tmp/schema/v0.2_team_role
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u ${COUCHBASE_USERNAME} -p ${COUCHBASE_PASSWORD} -f /tmp/schema/v0.2_team_role
 
 # 4. System Roles Initialization
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase -f /tmp/schema/v0.3_system_role_init
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u ${COUCHBASE_USERNAME} -p ${COUCHBASE_PASSWORD} -f /tmp/schema/v0.3_system_role_init
 ```
 
 #### 方法二：使用 Couchbase Query Workbench

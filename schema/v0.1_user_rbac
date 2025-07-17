@@ -1,13 +1,13 @@
 -- Authentication and authorization collections
-CREATE COLLECTION `ECOM`.`AI`.`user` IF NOT EXISTS;
-CREATE COLLECTION `ECOM`.`AI`.`team` IF NOT EXISTS;
-CREATE COLLECTION `ECOM`.`AI`.`team-membership` IF NOT EXISTS;
-CREATE COLLECTION `ECOM`.`AI`.`system-role` IF NOT EXISTS;
+CREATE COLLECTION `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`user` IF NOT EXISTS;
+CREATE COLLECTION `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`team` IF NOT EXISTS;
+CREATE COLLECTION `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`team-membership` IF NOT EXISTS;
+CREATE COLLECTION `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`system-role` IF NOT EXISTS;
 
 -- Create indexes for optimal performance
-CREATE INDEX idx_user_email ON `ECOM`.`AI`.`user`(email) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.auth.User";
-CREATE INDEX idx_user_status ON `ECOM`.`AI`.`user`(status) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.auth.User";
-CREATE INDEX idx_team_active ON `ECOM`.`AI`.`team`(active) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.auth.Team";
-CREATE INDEX idx_team_membership_user ON `ECOM`.`AI`.`team-membership`(userId) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.auth.TeamMembership";
-CREATE INDEX idx_team_membership_team ON `ECOM`.`AI`.`team-membership`(teamId) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.auth.TeamMembership";
+CREATE INDEX idx_user_email ON `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`user`(email) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.auth.User";
+CREATE INDEX idx_user_status ON `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`user`(status) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.auth.User";
+CREATE INDEX idx_team_active ON `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`team`(active) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.auth.Team";
+CREATE INDEX idx_team_membership_user ON `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`team-membership`(userId) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.auth.TeamMembership";
+CREATE INDEX idx_team_membership_team ON `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`team-membership`(teamId) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.auth.TeamMembership";
 
