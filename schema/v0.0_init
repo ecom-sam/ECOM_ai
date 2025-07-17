@@ -1,4 +1,5 @@
-CREATE SCOPE `ECOM`.`AI` IF NOT EXISTS;
+-- NOTE: Scope should already be created in v0.0_bucket_init
+-- CREATE SCOPE `ECOM`.`AI` IF NOT EXISTS;
 
 
 -- Core application collections
