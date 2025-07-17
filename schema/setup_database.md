@@ -29,51 +29,27 @@ docker cp schema_generated/. couchbase-ai:/tmp/schema/
 
 ### 3. 執行初始化腳本
 
-#### 方法一：使用 Docker Exec + cbq
+執行 `generate_schema.sh` 後會自動產生 `schema_generated/init_couchbase.sh` 初始化腳本，該腳本包含完整的資料庫初始化流程。
 
-**重要：Bucket 必須透過 REST API 建立，無法用 SQL 語句建立**
-
+#### 自動執行初始化 (推薦)
 ```bash
-# 0. 建立 Bucket (使用 REST API)
-curl -u ${COUCHBASE_USERNAME}:${COUCHBASE_PASSWORD} -X POST http://localhost:8091/pools/default/buckets \
-  -d name=${COUCHBASE_BUCKET_NAME} \
-  -d bucketType=couchbase \
-  -d ramQuotaMB=512 \
-  -d authType=sasl
-
-# 等待 bucket 建立完成
-sleep 5
-
-# 0.1 建立 Scope
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u ${COUCHBASE_USERNAME} -p ${COUCHBASE_PASSWORD} \
-  -s "CREATE SCOPE \`${COUCHBASE_BUCKET_NAME}\`.\`${COUCHBASE_SCOPE_NAME}\` IF NOT EXISTS;"
-
-# 1. Initial Setup
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u ${COUCHBASE_USERNAME} -p ${COUCHBASE_PASSWORD} -f /tmp/schema/v0.0_init
-
-# 2. User & RBAC Setup
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u ${COUCHBASE_USERNAME} -p ${COUCHBASE_PASSWORD} -f /tmp/schema/v0.1_user_rbac
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u ${COUCHBASE_USERNAME} -p ${COUCHBASE_PASSWORD} -f /tmp/schema/v0.1_user_rbac_test_data
-
-# 3. Team Roles Setup
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u ${COUCHBASE_USERNAME} -p ${COUCHBASE_PASSWORD} -f /tmp/schema/v0.2_team_role
-
-# 4. System Roles Initialization
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u ${COUCHBASE_USERNAME} -p ${COUCHBASE_PASSWORD} -f /tmp/schema/v0.3_system_role_init
+# 執行自動產生的初始化腳本
+bash schema_generated/init_couchbase.sh
 ```
 
-#### 方法二：使用 Couchbase Query Workbench
+此腳本會自動執行：
+1. 檢查 Couchbase 容器狀態
+2. 透過 REST API 建立 Bucket
+3. 建立 Scope
+4. 依序執行所有 schema 檔案
+5. 顯示完成狀態和驗證資訊
+
+#### 手動執行 (進階用戶)
+如果需要手動控制，可以：
 1. 訪問 Couchbase Web Console: http://localhost:8091
-2. 使用帳密登入：`admin` / `couchbase`
+2. 使用你的帳密登入 (根據 .env 設定)
 3. 進入 Query Workbench
-4. 依序複製每個 `schema_generated/` 資料夾中的檔案內容並執行：
-   - 手動建立 Bucket (透過 Web UI: Buckets → Add Bucket → 名稱: ECOM, 記憶體: 512MB)
-   - 建立 Scope (透過 Query: `CREATE SCOPE \`ECOM\`.\`AI\` IF NOT EXISTS;`)
-   - `v0.0_init` (建立 Collections)
-   - `v0.1_user_rbac` (使用者權限系統)
-   - `v0.1_user_rbac_test_data` (測試資料)
-   - `v0.2_team_role` (團隊角色)
-   - `v0.3_system_role_init` (系統角色)
+4. 依序複製每個 `schema_generated/` 資料夾中的檔案內容並執行
 
 ## Schema Generation Script
 

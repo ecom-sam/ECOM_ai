@@ -68,122 +68,80 @@ for file in "$TEMPLATE_DIR"/*.sql "$TEMPLATE_DIR"/v*; do
     fi
 done
 
-# Generate setup.md with environment-specific values
-echo "   Generating: setup.md"
-cat > "$OUTPUT_DIR/setup.md" << EOF
-# Database Setup Guide
+# Generate initialization script
+echo "   Generating: init_couchbase.sh"
+cat > "$OUTPUT_DIR/init_couchbase.sh" << 'EOF'
+#!/bin/bash
 
-Execute the schema files in the following order:
+# Couchbase Database Initialization Script
+# This script initializes Couchbase with your environment configuration
 
-## Prerequisites
-確保 Couchbase 容器已經啟動：
-\`\`\`bash
-docker ps | grep couchbase-ai
-\`\`\`
+set -e
 
-## Setup Steps
+echo "🚀 Starting Couchbase Database Initialization"
+echo "============================================="
 
-### 1. 產生對應 .env 設定的 Schema 檔案
-\`\`\`bash
-# 從專案根目錄執行
-bash generate_schema.sh
-\`\`\`
+# Check if Couchbase container is running
+if ! docker ps | grep -q couchbase-ai; then
+    echo "❌ Error: Couchbase container 'couchbase-ai' is not running"
+    echo "Please start the container first: docker run ... couchbase-ai"
+    exit 1
+fi
 
-### 2. 複製產生的 Schema 檔案到容器
-\`\`\`bash
-# 從專案根目錄執行
-docker cp schema_generated/. couchbase-ai:/tmp/schema/
-\`\`\`
+echo "✅ Couchbase container is running"
 
-### 3. 執行初始化腳本
+# Step 1: Create Bucket via REST API
+echo ""
+echo "📦 Step 1: Creating Bucket..."
+EOF
 
-#### 方法一：使用 Docker Exec + cbq
-
-**重要：Bucket 必須透過 REST API 建立，無法用 SQL 語句建立**
-
-\`\`\`bash
-# 0. 建立 Bucket (使用 REST API)
+cat >> "$OUTPUT_DIR/init_couchbase.sh" << EOF
 curl -u $USERNAME:$PASSWORD -X POST http://localhost:8091/pools/default/buckets \\
   -d name=$BUCKET_NAME \\
   -d bucketType=couchbase \\
   -d ramQuotaMB=512 \\
   -d authType=sasl
 
-# 等待 bucket 建立完成
+echo "⏳ Waiting for bucket to be ready..."
 sleep 5
 
-# 0.1 建立 Scope
+# Step 2: Create Scope
+echo ""
+echo "📂 Step 2: Creating Scope..."
 docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD \\
   -s "CREATE SCOPE \\\`$BUCKET_NAME\\\`.\\\`$SCOPE_NAME\\\` IF NOT EXISTS;"
 
-# 1. Initial Setup
+# Step 3: Execute schema files
+echo ""
+echo "📋 Step 3: Executing schema files..."
+
+echo "   Creating collections..."
 docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/v0.0_init
 
-# 2. User & RBAC Setup
+echo "   Setting up user & RBAC..."
 docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/v0.1_user_rbac
 docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/v0.1_user_rbac_test_data
 
-# 3. Team Roles Setup
+echo "   Setting up team roles..."
 docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/v0.2_team_role
 
-# 4. System Roles Initialization
+echo "   Initializing system roles..."
 docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/v0.3_system_role_init
-\`\`\`
 
-#### 方法二：使用 Couchbase Query Workbench
-1. 訪問 Couchbase Web Console: http://localhost:8091
-2. 使用帳密登入：\`$USERNAME\` / \`$PASSWORD\`
-3. 進入 Query Workbench
-4. 依序複製每個 \`schema_generated/\` 資料夾中的檔案內容並執行：
-   - 手動建立 Bucket (透過 Web UI: Buckets → Add Bucket → 名稱: $BUCKET_NAME, 記憶體: 512MB)
-   - 建立 Scope (透過 Query: \`CREATE SCOPE \\\`$BUCKET_NAME\\\`.\\\`$SCOPE_NAME\\\` IF NOT EXISTS;\`)
-   - \`v0.0_init\` (建立 Collections)
-   - \`v0.1_user_rbac\` (使用者權限系統)
-   - \`v0.1_user_rbac_test_data\` (測試資料)
-   - \`v0.2_team_role\` (團隊角色)
-   - \`v0.3_system_role_init\` (系統角色)
-
-## Collections Created
-
-### Core Application
-- \`document\` - File documents and metadata
-- \`dataset\` - Data collections with access control
-- \`chat-topic\` - Chat conversation topics
-- \`chat-record\` - Individual chat interactions
-- \`chat-message\` - Chat messages storage
-- \`document-vector\` - Vector embeddings for AI
-
-### Authentication & Authorization
-- \`user\` - User accounts
-- \`team\` - Teams/organizations
-- \`team-membership\` - User-team relationships
-- \`team-role\` - Team-specific roles
-- \`system-role\` - System-wide roles
-
-### System
-- \`cache\` - AI and application caching
-
-## Default Users Created
-
-| Username | Email | Password | System Role |
-|----------|-------|----------|-------------|
-| super_admin | super_admin@example.com | password123 | SUPER_ADMIN |
-| user_admin | user_admin@example.com | password123 | USER_ADMIN |
-| team_admin | team_admin@example.com | password123 | TEAM_ADMIN |
-
-## Verification
-
-After setup, verify collections exist:
-\`\`\`sql
-SELECT name FROM system:keyspaces 
-WHERE bucket_name = '$BUCKET_NAME' AND scope_name = '$SCOPE_NAME';
-\`\`\`
-
-Verify users exist:
-\`\`\`sql
-SELECT name, email, systemRoles FROM \`$BUCKET_NAME\`.\`$SCOPE_NAME\`.\`user\`;
-\`\`\`
+echo ""
+echo "🎉 Database initialization completed successfully!"
+echo ""
+echo "📊 Configuration Summary:"
+echo "   Bucket: $BUCKET_NAME"
+echo "   Scope: $SCOPE_NAME"
+echo "   Username: $USERNAME"
+echo ""
+echo "🔍 You can verify the setup by accessing:"
+echo "   Couchbase Web Console: http://localhost:8091"
+echo "   Login with: $USERNAME / $PASSWORD"
 EOF
+
+chmod +x "$OUTPUT_DIR/init_couchbase.sh"
 
 echo ""
 echo -e "${GREEN}✅ Schema generation completed!${NC}"
@@ -193,6 +151,7 @@ echo -e "${YELLOW}📋 Next steps:${NC}"
 echo "1. Review generated files in $OUTPUT_DIR/"
 echo "2. Copy schema files to Couchbase container:"
 echo "   docker cp $OUTPUT_DIR/. couchbase-ai:/tmp/schema/"
-echo "3. Execute initialization scripts in order"
+echo "3. Execute the initialization script:"
+echo "   bash $OUTPUT_DIR/init_couchbase.sh"
 echo ""
 echo -e "${GREEN}🎉 Ready to initialize your database!${NC}"

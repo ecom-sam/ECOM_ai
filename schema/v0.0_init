@@ -1,6 +1,3 @@
--- NOTE: Scope should already be created in v0.0_bucket_init
--- CREATE SCOPE `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}` IF NOT EXISTS;
-
 
 -- Core application collections
 CREATE COLLECTION `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`document` IF NOT EXISTS;
