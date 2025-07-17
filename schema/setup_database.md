@@ -95,9 +95,9 @@ bash generate_schema.sh
 
 | Username | Email | Password | System Role |
 |----------|-------|----------|-------------|
-| super_admin | super_admin@example.com | password123 | SUPER_ADMIN |
-| user_admin | user_admin@example.com | password123 | USER_ADMIN |
-| team_admin | team_admin@example.com | password123 | TEAM_ADMIN |
+| super_admin | super_admin@example.com | super_admin | SUPER_ADMIN |
+| user_admin | user_admin@example.com | user_admin | USER_ADMIN |
+| team_admin | team_admin@example.com | team_admin | TEAM_ADMIN |
 
 ## Verification
 
