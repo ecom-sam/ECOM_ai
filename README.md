@@ -83,27 +83,33 @@ docker run -d \
 
 #### 方法一：命令列執行 (推薦)
 ```bash
-# 1. 複製 schema 檔案到容器
-docker cp schema/ couchbase-ai:/tmp/schema/
+# 1. 產生對應 .env 設定的 schema 檔案
+bash generate_schema.sh
 
-# 2. 執行初始化腳本（按順序執行）
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase < /tmp/schema/v0.0_init
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase < /tmp/schema/v0.1_user_rbac
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase < /tmp/schema/v0.1_user_rbac_test_data
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase < /tmp/schema/v0.2_team_role
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase < /tmp/schema/v0.3_system_role_init
+# 2. 複製產生的 schema 檔案到容器
+docker cp schema_generated/ couchbase-ai:/tmp/schema/
+
+# 3. 執行初始化腳本（按順序執行）
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase -f /tmp/schema/v0.0_bucket_init
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase -f /tmp/schema/v0.0_init
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase -f /tmp/schema/v0.1_user_rbac
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase -f /tmp/schema/v0.1_user_rbac_test_data
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase -f /tmp/schema/v0.2_team_role
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase -f /tmp/schema/v0.3_system_role_init
 ```
 
 #### 方法二：圖形化介面執行
-1. 訪問 Couchbase Web Console：http://localhost:8091
-2. 使用帳密登入：`admin` / `couchbase`
-3. 進入 **Query Workbench**
-4. 依序複製每個 schema 檔案的內容並執行：
-   - `schema/v0.0_init`
-   - `schema/v0.1_user_rbac`
-   - `schema/v0.1_user_rbac_test_data`
-   - `schema/v0.2_team_role`
-   - `schema/v0.3_system_role_init`
+1. 先產生對應的 schema 檔案：`bash generate_schema.sh`
+2. 訪問 Couchbase Web Console：http://localhost:8091
+3. 使用帳密登入：`admin` / `couchbase`
+4. 進入 **Query Workbench**
+5. 依序複製每個 `schema_generated/` 資料夾內的檔案內容並執行：
+   - `v0.0_bucket_init` (建立 Bucket 和 Scope)
+   - `v0.0_init` (建立 Collections)
+   - `v0.1_user_rbac` (使用者權限系統)
+   - `v0.1_user_rbac_test_data` (測試資料)
+   - `v0.2_team_role` (團隊角色)
+   - `v0.3_system_role_init` (系統角色)
 
 📋 **完整的資料庫設定指南**：請參考 [`schema/setup_database.md`](schema/setup_database.md) 了解：
 - 詳細的執行步驟說明
