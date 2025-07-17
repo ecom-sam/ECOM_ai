@@ -1,5 +1,7 @@
--- Insert default system roles
-UPSERT INTO `ECOM`.`AI`.`system-role` (KEY, VALUE)
+-- Insert system role data
+-- This file contains UPSERT statements for system-role collection
+
+UPSERT INTO `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`system-role` (KEY, VALUE)
 VALUES (
   "SUPER_ADMIN",
   {
@@ -17,7 +19,7 @@ VALUES (
   }
 );
 
-UPSERT INTO `ECOM`.`AI`.`system-role` (KEY, VALUE)
+UPSERT INTO `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`system-role` (KEY, VALUE)
 VALUES (
   "USER_ADMIN",
   {
@@ -41,7 +43,7 @@ VALUES (
   }
 );
 
-UPSERT INTO `ECOM`.`AI`.`system-role` (KEY, VALUE)
+UPSERT INTO `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`system-role` (KEY, VALUE)
 VALUES (
   "TEAM_ADMIN",
   {
@@ -63,7 +65,7 @@ VALUES (
   }
 );
 
-UPSERT INTO `ECOM`.`AI`.`system-role` (KEY, VALUE)
+UPSERT INTO `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`system-role` (KEY, VALUE)
 VALUES (
   "REGULAR_USER",
   {

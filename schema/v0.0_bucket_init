@@ -1,5 +1,0 @@
--- Create bucket if not exists
-CREATE BUCKET `ECOM` WITH {"bucketType": "couchbase", "ramQuotaMB": 512, "durabilityMinLevel": "none"};
-
--- Create scope
-CREATE SCOPE `ECOM`.`AI` IF NOT EXISTS;

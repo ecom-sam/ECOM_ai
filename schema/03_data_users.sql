@@ -1,4 +1,8 @@
-UPSERT INTO `ECOM`.`AI`.`user` (KEY, VALUE)
+-- Insert user-related initial data
+-- This file contains UPSERT statements for user, team, and dataset collections
+
+-- Insert test users
+UPSERT INTO `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`user` (KEY, VALUE)
 VALUES (
   "super_admin",
   {
@@ -16,8 +20,7 @@ VALUES (
   }
 );
 
-
-UPSERT INTO `ECOM`.`AI`.`user` (KEY, VALUE)
+UPSERT INTO `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`user` (KEY, VALUE)
 VALUES (
   "user_admin",
   {
@@ -35,9 +38,7 @@ VALUES (
   }
 );
 
-
-
-UPSERT INTO `ECOM`.`AI`.`user` (KEY, VALUE)
+UPSERT INTO `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`user` (KEY, VALUE)
 VALUES (
   "team_admin",
   {
@@ -56,7 +57,7 @@ VALUES (
 );
 
 -- Insert sample team for testing
-UPSERT INTO `ECOM`.`AI`.`team` (KEY, VALUE)
+UPSERT INTO `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`team` (KEY, VALUE)
 VALUES (
   "default_team",
   {
@@ -74,7 +75,7 @@ VALUES (
 );
 
 -- Insert sample dataset for testing
-UPSERT INTO `ECOM`.`AI`.`dataset` (KEY, VALUE)
+UPSERT INTO `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`dataset` (KEY, VALUE)
 VALUES (
   "sample_dataset",
   {

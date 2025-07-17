@@ -24,41 +24,32 @@ bash generate_schema.sh
 ### 2. 複製產生的 Schema 檔案到容器
 ```bash
 # 從專案根目錄執行
-docker cp schema_generated/ couchbase-ai:/tmp/schema/
+docker cp schema_generated/. couchbase-ai:/tmp/schema/
 ```
 
 ### 3. 執行初始化腳本
 
-#### 方法一：使用 Docker Exec + cbq
+執行 `generate_schema.sh` 後會自動產生 `schema_generated/init_couchbase.sh` 初始化腳本，該腳本包含完整的資料庫初始化流程。
+
+#### 自動執行初始化 (推薦)
 ```bash
-# 0. Bucket & Scope Setup
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase -f /tmp/schema/v0.0_bucket_init
-
-# 1. Initial Setup
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase -f /tmp/schema/v0.0_init
-
-# 2. User & RBAC Setup
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase -f /tmp/schema/v0.1_user_rbac
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase -f /tmp/schema/v0.1_user_rbac_test_data
-
-# 3. Team Roles Setup
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase -f /tmp/schema/v0.2_team_role
-
-# 4. System Roles Initialization
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u admin -p couchbase -f /tmp/schema/v0.3_system_role_init
+# 執行自動產生的初始化腳本
+bash schema_generated/init_couchbase.sh
 ```
 
-#### 方法二：使用 Couchbase Query Workbench
+此腳本會自動執行：
+1. 檢查 Couchbase 容器狀態
+2. 透過 REST API 建立 Bucket
+3. 建立 Scope
+4. 依序執行所有 schema 檔案
+5. 顯示完成狀態和驗證資訊
+
+#### 手動執行 (進階用戶)
+如果需要手動控制，可以：
 1. 訪問 Couchbase Web Console: http://localhost:8091
-2. 使用帳密登入：`admin` / `couchbase`
+2. 使用你的帳密登入 (根據 .env 設定)
 3. 進入 Query Workbench
-4. 依序複製每個 `schema_generated/` 資料夾中的檔案內容並執行：
-   - `v0.0_bucket_init` (建立 Bucket 和 Scope)
-   - `v0.0_init` (建立 Collections)
-   - `v0.1_user_rbac` (使用者權限系統)
-   - `v0.1_user_rbac_test_data` (測試資料)
-   - `v0.2_team_role` (團隊角色)
-   - `v0.3_system_role_init` (系統角色)
+4. 依序複製每個 `schema_generated/` 資料夾中的檔案內容並執行
 
 ## Schema Generation Script
 
@@ -104,9 +95,9 @@ bash generate_schema.sh
 
 | Username | Email | Password | System Role |
 |----------|-------|----------|-------------|
-| super_admin | super_admin@example.com | password123 | SUPER_ADMIN |
-| user_admin | user_admin@example.com | password123 | USER_ADMIN |
-| team_admin | team_admin@example.com | password123 | TEAM_ADMIN |
+| super_admin | super_admin@example.com | super_admin | SUPER_ADMIN |
+| user_admin | user_admin@example.com | user_admin | USER_ADMIN |
+| team_admin | team_admin@example.com | team_admin | TEAM_ADMIN |
 
 ## Verification
 

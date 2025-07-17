@@ -23,6 +23,8 @@ if [ ! -f ".env" ]; then
     echo -e "${YELLOW}⚠️  Warning: .env file not found. Using default values.${NC}"
     BUCKET_NAME=$DEFAULT_BUCKET_NAME
     SCOPE_NAME=$DEFAULT_SCOPE_NAME
+    USERNAME="admin"
+    PASSWORD="couchbase"
 else
     echo -e "${GREEN}✅ Found .env file${NC}"
     
@@ -32,6 +34,8 @@ else
     # Get bucket and scope names from environment variables
     BUCKET_NAME=${COUCHBASE_BUCKET_NAME:-$DEFAULT_BUCKET_NAME}
     SCOPE_NAME=${COUCHBASE_SCOPE_NAME:-$DEFAULT_SCOPE_NAME}
+    USERNAME=${COUCHBASE_USERNAME:-admin}
+    PASSWORD=${COUCHBASE_PASSWORD:-couchbase}
 fi
 
 echo "📝 Configuration:"
@@ -57,23 +61,100 @@ for file in "$TEMPLATE_DIR"/*.sql "$TEMPLATE_DIR"/v*; do
         filename=$(basename "$file")
         echo "   Processing: $filename"
         
-        # Replace bucket and scope names
-        sed -e "s/\`ECOM\`/\`$BUCKET_NAME\`/g" \
-            -e "s/\`AI\`/\`$SCOPE_NAME\`/g" \
-            -e "s/\"ECOM\"/\"$BUCKET_NAME\"/g" \
-            -e "s/\"AI\"/\"$SCOPE_NAME\"/g" \
+        # Replace environment variable placeholders with actual values
+        sed -e "s/\${COUCHBASE_BUCKET_NAME}/$BUCKET_NAME/g" \
+            -e "s/\${COUCHBASE_SCOPE_NAME}/$SCOPE_NAME/g" \
             "$file" > "$OUTPUT_DIR/$filename"
     fi
 done
 
-# Copy non-SQL files (like .md)
-for file in "$TEMPLATE_DIR"/*.md; do
-    if [ -f "$file" ]; then
-        filename=$(basename "$file")
-        echo "   Copying: $filename"
-        cp "$file" "$OUTPUT_DIR/$filename"
-    fi
-done
+# Generate initialization script
+echo "   Generating: init_couchbase.sh"
+cat > "$OUTPUT_DIR/init_couchbase.sh" << 'EOF'
+#!/bin/bash
+
+# Couchbase Database Initialization Script
+# This script initializes Couchbase with your environment configuration
+
+set -e
+
+echo "🚀 Starting Couchbase Database Initialization"
+echo "============================================="
+
+# Check if Couchbase container is running
+if ! docker ps | grep -q couchbase-ai; then
+    echo "❌ Error: Couchbase container 'couchbase-ai' is not running"
+    echo "Please start the container first: docker run ... couchbase-ai"
+    exit 1
+fi
+
+echo "✅ Couchbase container is running"
+
+# Step 1: Create Bucket via REST API
+echo ""
+echo "📦 Step 1: Creating Bucket..."
+EOF
+
+cat >> "$OUTPUT_DIR/init_couchbase.sh" << EOF
+curl -u $USERNAME:$PASSWORD -X POST http://localhost:8091/pools/default/buckets \\
+  -d name=$BUCKET_NAME \\
+  -d bucketType=couchbase \\
+  -d ramQuotaMB=512 \\
+  -d authType=sasl
+
+echo "⏳ Waiting for bucket to be ready..."
+sleep 5
+
+# Step 2: Create Scope
+echo ""
+echo "📂 Step 2: Creating Scope..."
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD \\
+  -s "CREATE SCOPE \\\`$BUCKET_NAME\\\`.\\\`$SCOPE_NAME\\\` IF NOT EXISTS;"
+
+# Step 3: Execute schema files in proper order
+echo ""
+echo "📋 Step 3: Executing schema files..."
+
+echo "   Creating scopes..."
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/01_scopes.sql
+echo "⏳ Waiting for scopes to be ready..."
+sleep 3
+
+echo "   Creating collections..."
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/02_collections.sql
+echo "⏳ Waiting for collections to be ready..."
+sleep 5
+
+echo "   Inserting initial data..."
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/03_data_users.sql
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/03_data_system_roles.sql
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/03_data_team_roles.sql
+echo "⏳ Waiting for data insertion to complete..."
+sleep 3
+
+echo "   Creating indexes..."
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/04_indexes.sql
+
+echo ""
+echo "🎉 Database initialization completed successfully!"
+echo ""
+echo "📊 Configuration Summary:"
+echo "   Bucket: $BUCKET_NAME"
+echo "   Scope: $SCOPE_NAME"
+echo "   Username: $USERNAME"
+echo ""
+echo "🔍 You can verify the setup by accessing:"
+echo "   Couchbase Web Console: http://localhost:8091"
+echo "   Login with: $USERNAME / $PASSWORD"
+echo ""
+echo "📂 Schema files executed in order:"
+echo "   1. 01_scopes.sql - Database scopes"
+echo "   2. 02_collections.sql - All collections"
+echo "   3. 03_data_*.sql - Initial data (users, system roles, team roles)"
+echo "   4. 04_indexes.sql - Database indexes"
+EOF
+
+chmod +x "$OUTPUT_DIR/init_couchbase.sh"
 
 echo ""
 echo -e "${GREEN}✅ Schema generation completed!${NC}"
@@ -82,7 +163,8 @@ echo ""
 echo -e "${YELLOW}📋 Next steps:${NC}"
 echo "1. Review generated files in $OUTPUT_DIR/"
 echo "2. Copy schema files to Couchbase container:"
-echo "   docker cp $OUTPUT_DIR/ couchbase-ai:/tmp/schema/"
-echo "3. Execute initialization scripts in order"
+echo "   docker cp $OUTPUT_DIR/. couchbase-ai:/tmp/schema/"
+echo "3. Execute the initialization script:"
+echo "   bash $OUTPUT_DIR/init_couchbase.sh"
 echo ""
 echo -e "${GREEN}🎉 Ready to initialize your database!${NC}"
