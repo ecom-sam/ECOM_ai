@@ -1,11 +1,6 @@
--- Team role collection
-CREATE COLLECTION `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`team-role` IF NOT EXISTS;
+-- Insert team role data
+-- This file contains UPSERT statements for team-role collection
 
--- Create indexes for team roles
-CREATE INDEX idx_team_role_class_teamId ON `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`team-role`(`_class`, `teamId`) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.auth.TeamRole";
-CREATE INDEX idx_team_role_system ON `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`team-role`(`isSystemRole`) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.auth.TeamRole";
-
--- Insert default system team roles
 UPSERT INTO `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`team-role` (KEY, VALUE)
 VALUES (
   "team-admin",

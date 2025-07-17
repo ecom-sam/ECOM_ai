@@ -111,22 +111,29 @@ echo "📂 Step 2: Creating Scope..."
 docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD \\
   -s "CREATE SCOPE \\\`$BUCKET_NAME\\\`.\\\`$SCOPE_NAME\\\` IF NOT EXISTS;"
 
-# Step 3: Execute schema files
+# Step 3: Execute schema files in proper order
 echo ""
 echo "📋 Step 3: Executing schema files..."
 
+echo "   Creating scopes..."
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/01_scopes.sql
+echo "⏳ Waiting for scopes to be ready..."
+sleep 3
+
 echo "   Creating collections..."
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/v0.0_init
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/02_collections.sql
+echo "⏳ Waiting for collections to be ready..."
+sleep 5
 
-echo "   Setting up user & RBAC..."
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/v0.1_user_rbac
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/v0.1_user_rbac_test_data
+echo "   Inserting initial data..."
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/03_data_users.sql
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/03_data_system_roles.sql
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/03_data_team_roles.sql
+echo "⏳ Waiting for data insertion to complete..."
+sleep 3
 
-echo "   Setting up team roles..."
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/v0.2_team_role
-
-echo "   Initializing system roles..."
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/v0.3_system_role_init
+echo "   Creating indexes..."
+docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/04_indexes.sql
 
 echo ""
 echo "🎉 Database initialization completed successfully!"
@@ -139,6 +146,12 @@ echo ""
 echo "🔍 You can verify the setup by accessing:"
 echo "   Couchbase Web Console: http://localhost:8091"
 echo "   Login with: $USERNAME / $PASSWORD"
+echo ""
+echo "📂 Schema files executed in order:"
+echo "   1. 01_scopes.sql - Database scopes"
+echo "   2. 02_collections.sql - All collections"
+echo "   3. 03_data_*.sql - Initial data (users, system roles, team roles)"
+echo "   4. 04_indexes.sql - Database indexes"
 EOF
 
 chmod +x "$OUTPUT_DIR/init_couchbase.sh"

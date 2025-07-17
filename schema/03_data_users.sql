@@ -1,3 +1,7 @@
+-- Insert user-related initial data
+-- This file contains UPSERT statements for user, team, and dataset collections
+
+-- Insert test users
 UPSERT INTO `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`user` (KEY, VALUE)
 VALUES (
   "super_admin",
@@ -16,7 +20,6 @@ VALUES (
   }
 );
 
-
 UPSERT INTO `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`user` (KEY, VALUE)
 VALUES (
   "user_admin",
@@ -34,8 +37,6 @@ VALUES (
     "_class": "com.ecom.ai.ecomassistant.db.model.auth.User"
   }
 );
-
-
 
 UPSERT INTO `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`user` (KEY, VALUE)
 VALUES (

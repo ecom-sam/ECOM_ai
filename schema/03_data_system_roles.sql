@@ -1,4 +1,6 @@
--- Insert default system roles
+-- Insert system role data
+-- This file contains UPSERT statements for system-role collection
+
 UPSERT INTO `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`system-role` (KEY, VALUE)
 VALUES (
   "SUPER_ADMIN",

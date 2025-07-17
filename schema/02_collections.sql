@@ -1,3 +1,5 @@
+-- Create all collections
+-- This file should be executed second to create all required collections
 
 -- Core application collections
 CREATE COLLECTION `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`document` IF NOT EXISTS;
@@ -11,3 +13,12 @@ CREATE COLLECTION `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`document
 
 -- Cache collection
 CREATE COLLECTION `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`cache` IF NOT EXISTS;
+
+-- Authentication and authorization collections
+CREATE COLLECTION `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`user` IF NOT EXISTS;
+CREATE COLLECTION `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`team` IF NOT EXISTS;
+CREATE COLLECTION `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`team-membership` IF NOT EXISTS;
+CREATE COLLECTION `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`system-role` IF NOT EXISTS;
+
+-- Team role collection
+CREATE COLLECTION `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`team-role` IF NOT EXISTS;
