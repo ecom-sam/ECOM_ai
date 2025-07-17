@@ -1,5 +1,6 @@
 CREATE SCOPE `ECOM`.`AI` IF NOT EXISTS;
 
+
 -- Core application collections
 CREATE COLLECTION `ECOM`.`AI`.`document` IF NOT EXISTS;
 CREATE COLLECTION `ECOM`.`AI`.`dataset` IF NOT EXISTS;
