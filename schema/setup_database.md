@@ -40,12 +40,9 @@ bash schema_generated/init_couchbase.sh
 此腳本會自動執行：
 1. 檢查 Couchbase 容器狀態
 2. 透過 REST API 建立 Bucket
-3. 在單一 docker exec 指令中依序執行：
-   - 建立 Scope
-   - 執行所有 schema 檔案 (scopes → collections → data → indexes)
-4. 顯示完成狀態和驗證資訊
-
-**優化特色**：使用單一 docker exec 指令執行所有資料庫初始化，減少容器啟動開銷，提升執行效率。
+3. 建立 Scope
+4. 依序執行所有 schema 檔案
+5. 顯示完成狀態和驗證資訊
 
 #### 手動執行 (進階用戶)
 如果需要手動控制，可以：
