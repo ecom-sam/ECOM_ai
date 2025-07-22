@@ -1,6 +1,5 @@
 package com.ecom.ai.ecomassistant.db.model;
 
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,7 +29,6 @@ public class Dataset extends AuditableDocument {
     @NotNull(message = "Name cannot be null")
     private String name;
 
-    @NotEmpty(message = "Description cannot be empty")
     private String description;
 
     private String teamId;
