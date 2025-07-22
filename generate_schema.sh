@@ -105,35 +105,37 @@ curl -u $USERNAME:$PASSWORD -X POST http://localhost:8091/pools/default/buckets 
 echo "⏳ Waiting for bucket to be ready..."
 sleep 5
 
-# Step 2: Create Scope
+# Step 2: Execute all schema initialization in one command
 echo ""
-echo "📂 Step 2: Creating Scope..."
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD \\
-  -s "CREATE SCOPE \\\`$BUCKET_NAME\\\`.\\\`$SCOPE_NAME\\\` IF NOT EXISTS;"
+echo "📋 Step 2: Executing schema initialization..."
 
-# Step 3: Execute schema files in proper order
-echo ""
-echo "📋 Step 3: Executing schema files..."
+docker exec couchbase-ai bash -c '
+echo "📂 Creating scope..."
+cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -s "CREATE SCOPE \\\`$BUCKET_NAME\\\`.\\\`$SCOPE_NAME\\\` IF NOT EXISTS;"
 
-echo "   Creating scopes..."
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/01_scopes.sql
+echo "📂 Creating scopes from file..."
+cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/01_scopes.sql
+
 echo "⏳ Waiting for scopes to be ready..."
 sleep 3
 
-echo "   Creating collections..."
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/02_collections.sql
+echo "📋 Creating collections..."
+cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/02_collections.sql
+
 echo "⏳ Waiting for collections to be ready..."
 sleep 5
 
-echo "   Inserting initial data..."
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/03_data_users.sql
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/03_data_system_roles.sql
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/03_data_team_roles.sql
+echo "📊 Inserting initial data..."
+cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/03_data_users.sql
+cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/03_data_system_roles.sql
+cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/03_data_team_roles.sql
+
 echo "⏳ Waiting for data insertion to complete..."
 sleep 3
 
-echo "   Creating indexes..."
-docker exec couchbase-ai cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/04_indexes.sql
+echo "🔍 Creating indexes..."
+cbq -e "couchbase://localhost" -u $USERNAME -p $PASSWORD -f /tmp/schema/04_indexes.sql
+'
 
 echo ""
 echo "🎉 Database initialization completed successfully!"
