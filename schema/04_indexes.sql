@@ -3,13 +3,16 @@
 -- Note: CREATE INDEX does not support IF NOT EXISTS, so this file should only be run once
 
 -- User collection indexes
+CREATE INDEX adv_class ON `default`:`${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`user`(`_class`)
 CREATE INDEX idx_user_email ON `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`user`(email) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.auth.User";
 CREATE INDEX idx_user_status ON `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`user`(status) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.auth.User";
 
 -- Team collection indexes
+CREATE INDEX adv_class ON `default`:`${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`team`(`_class`)
 CREATE INDEX idx_team_active ON `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`team`(active) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.auth.Team";
 
 -- Team membership collection indexes
+CREATE INDEX adv_teamId ON `default`:`${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`team-membership`(`teamId`)
 CREATE INDEX idx_team_membership_user ON `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`team-membership`(userId) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.auth.TeamMembership";
 CREATE INDEX idx_team_membership_team ON `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`team-membership`(teamId) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.auth.TeamMembership";
 
@@ -21,6 +24,7 @@ CREATE INDEX idx_team_role_system ON `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCO
 CREATE INDEX idx_chat_message_username_topicId ON `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`chat-message`(username, topicId, datetime) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.ChatMessage";
 
 -- Chat record collection indexes
+CREATE INDEX adv_topicId ON `default`:`${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`chat-record`(`topicId`)
 CREATE INDEX idx_chat_record_topicId ON `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`chat-record`(topicId, chatRecordId) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.ChatRecord";
 
 -- Chat topic collection indexes
@@ -28,8 +32,12 @@ CREATE INDEX idx_chat_topic_userId ON `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SC
 CREATE INDEX idx_chat_topic_search ON `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`chat-topic`(userId, lower(topic)) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.ChatTopic";
 
 -- Dataset collection indexes
+CREATE INDEX adv_class ON `default`:`${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`dataset`(`_class`)
 CREATE INDEX idx_dataset_name ON `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`dataset`(lower(name)) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.Dataset";
 CREATE INDEX idx_dataset_visibility ON `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`dataset`(accessType, createdBy, authorizedTeamIds) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.Dataset";
+
+CREATE INDEX adv_accessType_DISTINCT_authorizedTeamIds ON `default`:`${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`dataset`(`accessType`,DISTINCT ARRAY `g` FOR `g` IN `authorizedTeamIds` END)
+
 
 -- Document collection indexes
 CREATE INDEX idx_document_datasetId ON `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`document`(datasetId) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.Document";
