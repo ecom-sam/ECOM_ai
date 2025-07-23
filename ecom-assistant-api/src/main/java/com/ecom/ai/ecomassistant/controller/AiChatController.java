@@ -1,7 +1,7 @@
 package com.ecom.ai.ecomassistant.controller;
 
 import com.ecom.ai.ecomassistant.common.annotation.CurrentUserId;
-import com.ecom.ai.ecomassistant.core.command.SendUserMessageCommand;
+import com.ecom.ai.ecomassistant.core.dto.command.SendUserMessageCommand;
 import com.ecom.ai.ecomassistant.core.service.chat.ChatService;
 import com.ecom.ai.ecomassistant.db.model.ChatRecord;
 import com.ecom.ai.ecomassistant.db.model.ChatTopic;
@@ -11,9 +11,12 @@ import com.ecom.ai.ecomassistant.model.dto.mapper.MessageCommandMapper;
 import com.ecom.ai.ecomassistant.model.dto.request.ChatMessageRequest;
 import com.ecom.ai.ecomassistant.model.dto.request.ChatTopicCreateRequest;
 import com.ecom.ai.ecomassistant.model.dto.request.ChatTopicUpdateRequest;
+import com.ecom.ai.ecomassistant.model.dto.response.PageResponse;
+import com.ecom.ai.ecomassistant.util.PageUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -43,8 +46,17 @@ public class AiChatController {
     }
 
     @GetMapping("/topics")
-    public List<ChatTopic> findAllChatTopicsByUser(@CurrentUserId String userId) {
-        return chatTopicService.findAllByUserId(userId);
+    public PageResponse<ChatTopic> findAllChatTopicsByUser(
+            @CurrentUserId String userId,
+            @RequestParam(defaultValue = "") String topic,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "20") int limit,
+            @RequestParam(defaultValue = "createdDateTime") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ) {
+        Pageable pageable = PageUtil.buildPageable(page, limit, sortBy, sortDir);
+        var pageResult = chatTopicService.search(userId, topic, pageable);
+        return PageResponse.of(pageResult);
     }
 
     @PatchMapping("/topics/{topicId}")

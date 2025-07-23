@@ -19,6 +19,7 @@ public class DefaultPagePdfDocumentReader implements EcomDocumentReader {
                         .withPageTopMargin(0)
                         .withPageExtractedTextFormatter(ExtractedTextFormatter.builder()
                                 .withNumberOfTopTextLinesToDelete(0)
+                                .withLeftAlignment(true)
                                 .build())
                         .withPagesPerDocument(1)
                         .build());

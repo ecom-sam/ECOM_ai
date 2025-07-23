@@ -4,6 +4,7 @@ import com.ecom.ai.ecomassistant.core.chat.memory.CouchbaseChatMemoryRepository;
 import com.ecom.ai.ecomassistant.db.model.ChatMessage;
 import com.ecom.ai.ecomassistant.db.model.ChatRequest;
 import com.ecom.ai.ecomassistant.db.service.ChatMessageService;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
@@ -16,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.time.Instant;
 
+@Hidden
+@Deprecated
 @RestController
 @RequestMapping("/api/v1/chat")
 @RequiredArgsConstructor

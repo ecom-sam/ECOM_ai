@@ -1,20 +1,18 @@
 package com.ecom.ai.ecomassistant.controller;
 
-import com.ecom.ai.ecomassistant.common.resource.StorageType;
-import com.ecom.ai.ecomassistant.common.resource.file.FileInfo;
-import com.ecom.ai.ecomassistant.config.FileStorageProperties;
+import com.ecom.ai.ecomassistant.common.annotation.CurrentUserId;
+import com.ecom.ai.ecomassistant.core.service.DatasetManager;
 import com.ecom.ai.ecomassistant.db.model.Dataset;
-import com.ecom.ai.ecomassistant.db.model.Document;
-import com.ecom.ai.ecomassistant.db.service.DatasetService;
 import com.ecom.ai.ecomassistant.db.service.DocumentService;
-import com.ecom.ai.ecomassistant.ai.event.file.AiFileUploadEvent;
-import com.ecom.ai.ecomassistant.exception.EntityNotFoundException;
+import com.ecom.ai.ecomassistant.model.dto.mapper.DatasetMapper;
 import com.ecom.ai.ecomassistant.model.dto.request.DatasetCreateRequest;
 import com.ecom.ai.ecomassistant.model.dto.request.FileUploadRequest;
 import com.ecom.ai.ecomassistant.model.dto.response.DatasetDetailResponse;
+import com.ecom.ai.ecomassistant.model.dto.response.PageResponse;
+import com.ecom.ai.ecomassistant.util.PageUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,34 +24,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/datasets")
 public class DatasetController {
 
-    private final DatasetService datasetService;
-
+    private final DatasetManager datasetManager;
     private final DocumentService documentService;
 
-    private final FileStorageProperties fileStorageProperties;
-
-    private final ApplicationEventPublisher eventPublisher;
-
     @GetMapping("/{id}")
-    public DatasetDetailResponse getDatasetDetail(@PathVariable String id) {
-        Dataset dataset = datasetService
-                .findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Dataset not found"));
-
+    public DatasetDetailResponse getDatasetDetail(@PathVariable String id, @CurrentUserId String userId) {
+        Dataset dataset = datasetManager.getDatasetDetail(id, userId);
         return DatasetDetailResponse.builder()
                 .dataset(dataset)
                 .documents(documentService.findAllByDatasetId(id))
@@ -62,62 +48,17 @@ public class DatasetController {
 
     @PostMapping
     public Dataset createDataset(@RequestBody @Valid DatasetCreateRequest datasetCreateRequest) {
-
-        Dataset dataset = new Dataset();
-        //TODO get user from header
-        //dataset.setUserId();
-        dataset.setName(datasetCreateRequest.getName());
-        dataset.setDescription(datasetCreateRequest.getDescription());
-        dataset.setPermission(datasetCreateRequest.getPermission());
-
-        return datasetService.createDataset(dataset);
+        Dataset dataset = DatasetMapper.INSTANCE.toEntity(datasetCreateRequest);
+        return datasetManager.createDataset(dataset);
     }
 
-    //@Transactional
     @PostMapping(value = "/{datasetId}/with-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadFile(
+            @CurrentUserId String userId,
             @PathVariable String datasetId,
             @Valid @ModelAttribute FileUploadRequest request
     ) throws IOException {
-
-        if (datasetService.findById(datasetId).isEmpty()) {
-            return ResponseEntity.badRequest().body("Dataset not found");
-        }
-
-        MultipartFile file = request.getFile();
-        String fileName = file.getOriginalFilename();
-
-        //TODO get user from header
-        String userId = "user-123";
-        Path uploadDirPath = Paths.get(fileStorageProperties.getUploadDir(), datasetId, userId);
-        Files.createDirectories(uploadDirPath);
-
-        Path destinationFile = uploadDirPath.resolve(fileName);
-        file.transferTo(destinationFile);
-        String fullPath = destinationFile.toAbsolutePath().toString();
-
-        Document document = Document.builder()
-                .datasetId(datasetId)
-                .fileName(fileName)
-                .fullPath(fullPath)
-                .storageType(StorageType.LOCAL)
-                .build();
-        documentService.save(document);
-
-        AiFileUploadEvent event = AiFileUploadEvent.builder()
-                .datasetId(datasetId)
-                .documentId(document.getId())
-                .userId(null) //TODO
-                .fileInfo(FileInfo.builder()
-                        .fileId(document.getId())
-                        .fileName(fileName)
-                        .fullPath(fullPath)
-                        .build()
-                )
-                .build();
-
-        eventPublisher.publishEvent(event);
-
+        String fullPath = datasetManager.uploadFile(userId, datasetId, request.getFile());
         return ResponseEntity.ok("File uploaded successfully: " + fullPath);
     }
 
@@ -125,12 +66,12 @@ public class DatasetController {
     public Dataset updateDataset(
             @PathVariable String id,
             @Valid @RequestBody Dataset updatedDataset) {
-        return datasetService.updateDataset(id, updatedDataset);
+        return datasetManager.updateDataset(id, updatedDataset);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteDataset(@PathVariable String id) {
-        boolean deleted = datasetService.deleteDataset(id);
+        boolean deleted = datasetManager.deleteDataset(id);
 
         if (deleted) {
             return ResponseEntity.ok("Delete successful");
@@ -140,7 +81,16 @@ public class DatasetController {
     }
 
     @GetMapping
-    public List<Dataset> getAllDatasets() {
-        return datasetService.findAll();
+    public PageResponse<Dataset> findDatasetsByName(
+            @RequestParam(defaultValue = "") String name,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "createdDateTime") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir,
+            @CurrentUserId String userId
+    ) {
+        Pageable pageable = PageUtil.buildPageable(page, limit, sortBy, sortDir);
+        var pageResult = datasetManager.findVisibleDatasets(userId, name, pageable);
+        return PageResponse.of(pageResult);
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.couchbase.config.AbstractCouchbaseConfiguration;
 import org.springframework.data.couchbase.repository.auditing.EnableCouchbaseAuditing;
 import org.springframework.data.couchbase.repository.config.EnableCouchbaseRepositories;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.time.Duration;
 
@@ -21,6 +22,7 @@ import java.time.Duration;
 @Configuration
 @EnableCouchbaseAuditing
 @EnableCouchbaseRepositories
+@EnableTransactionManagement
 public class CouchbaseConfig extends AbstractCouchbaseConfiguration {
 
     @Value("${spring.couchbase.connection-string}")
