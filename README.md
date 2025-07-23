@@ -192,7 +192,6 @@ mvn dependency:tree
 - **批次處理**：非同步文件處理管道
 
 #### ETL 處理流程
-![etl.png](doc/md/etl.png)
 ```mermaid
 flowchart TB
     A[DatasetManager<br/>uploadFile] --> B[Save file to<br/>local storage]
