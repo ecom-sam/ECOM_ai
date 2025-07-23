@@ -112,11 +112,12 @@ docker run --env-file .env -p 8080:8080 --name ecom-assistant ecom-assistant
 # 建立 buildx builder
 docker buildx create --name multiarch-builder --use
 
-# 多平台建置
-docker buildx build \
+# 多平台建置並推送
+ docker buildx build \
   --platform linux/amd64,linux/arm64 \
   -t willyliang/ecom-assistant:latest \
-  .
+  -f docker/Dockerfile \
+  --push .
 ```
 
 ## 📊 資料庫架構

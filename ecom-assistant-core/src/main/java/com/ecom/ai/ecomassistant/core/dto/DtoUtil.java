@@ -20,7 +20,7 @@ public class DtoUtil {
                                    Supplier<String> idGetter,
                                    Consumer<String> nameSetter) {
         String id = idGetter.get();
-        String name = Optional.of(userMap.get(id)).map(User::getName).orElse("");
+        String name = Optional.ofNullable(userMap.get(id)).map(User::getName).orElse("");
         nameSetter.accept(name);
     }
 }
