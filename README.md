@@ -191,6 +191,39 @@ mvn dependency:tree
 - **向量化**：文件自動切分與向量嵌入
 - **批次處理**：非同步文件處理管道
 
+#### ETL 處理流程
+![etl.png](doc/md/etl.png)
+```mermaid
+flowchart TB
+    A[DatasetManager<br/>uploadFile] --> B[Save file to<br/>local storage]
+    B --> C[Publish<br/>AiFileUploadEvent]
+    C --> D[AiFileEventListener<br/>onAiFileUploadEvent]
+    
+    D --> E[EtlService<br/>processFile]
+    J[Documents stored<br/>in Couchbase] --> I[VectorStore<br/>add]
+    I --> H[DocumentTransformer<br/>transform]
+    H --> G[DocumentReader]
+    
+    G --> F[ProcessingRuleResolver<br/>resolve]
+    F --> E
+
+    style A fill:#e1f5fe
+    style C fill:#fff3e0
+    style D fill:#f3e5f5
+    style E fill:#e8f5e8
+    style J fill:#fce4ec
+```
+
+
+**處理步驟說明：**
+1. **DatasetManager.uploadFile** - 檔案上傳入口點，儲存到本地並發布事件
+2. **AiFileEventListener** - 非同步監聽檔案上傳事件，觸發 ETL 流程
+3. **EtlService.processFile** - 核心 ETL 處理服務，協調整個轉換流程
+4. **ProcessingRuleResolver** - 根據檔案類型選擇對應的處理規則
+5. **DocumentReader** - 檔案讀取器（PDF/CSV/JSON），將檔案轉換為文檔物件
+6. **DocumentTransformer** - 文檔轉換器，進行內容處理和元數據增強
+7. **VectorStore.add** - 將處理後的文檔儲存到 Couchbase 向量資料庫
+
 ### 3. 權限管理系統
 - **三層權限**：系統級 → 團隊級 → 資源級
 - **動態角色**：支援自定義團隊角色
