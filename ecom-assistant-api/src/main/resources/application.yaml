@@ -58,8 +58,15 @@ logging:
 
 
 
-#etl:
-#  file-processing:
-#    default:
-#      reader: defaultPagePdfDocumentReader
-#      transformers: []
+etl:
+  file-processing:
+    default:
+      reader: combinedPdfDocumentReader
+      transformers: 
+        - defaultTokenTextSplitter
+      # 新增：位置排序配置
+      enable-position-sorting: true
+      position-tolerance: 5.0
+      # 新增：圖片分析配置（預設關閉以提升效能）
+      enable-image-analysis: true
+      image-analysis-timeout: 120

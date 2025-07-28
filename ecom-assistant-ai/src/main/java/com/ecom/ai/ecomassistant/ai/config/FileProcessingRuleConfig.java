@@ -13,11 +13,23 @@ import java.util.List;
 @ConfigurationProperties(prefix = "etl.file-processing.default")
 public class FileProcessingRuleConfig {
 
-    private String reader = "defaultPagePdfDocumentReader";
+    private String reader = "combinedPdfDocumentReader";
     private List<String> transformers = List.of(
 //            "defaultPdfImageExtractor",
 //            "defaultImageEnricher",
 //            "defaultImageContentRemover",
             "defaultTokenTextSplitter"
     );
+    
+    // 新增：控制是否按位置排序頁面元素
+    private boolean enablePositionSorting = true;
+    
+    // 新增：位置容差值（像素），用於判斷是否在同一行
+    private float positionTolerance = 5.0f;
+    
+    // 新增：控制是否啟用圖片 AI 分析（預設關閉以提升效能）
+    private boolean enableImageAnalysis = false;
+    
+    // 新增：圖片分析超時時間（秒）
+    private int imageAnalysisTimeout = 30;
 }

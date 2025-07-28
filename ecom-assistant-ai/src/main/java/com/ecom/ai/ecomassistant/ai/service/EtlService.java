@@ -5,6 +5,7 @@ import com.ecom.ai.ecomassistant.ai.etl.ProcessingRuleResolver;
 import com.ecom.ai.ecomassistant.ai.etl.reader.EcomDocumentReader;
 import com.ecom.ai.ecomassistant.ai.etl.transformer.EcomDocumentTransformer;
 import com.ecom.ai.ecomassistant.common.resource.file.FileInfo;
+import com.ecom.ai.ecomassistant.db.model.QAPair;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
@@ -23,6 +24,7 @@ public class EtlService {
     private final Map<String, EcomDocumentTransformer> transformerMap;
     private final ProcessingRuleResolver ruleResolver;
     private final VectorStore vectorStore;
+    private final QAGenerationService qaGenerationService;
 
     public List<Document> processFile(FileInfo fileInfo) {
         List<Document> documents;
@@ -47,5 +49,43 @@ public class EtlService {
 
     public void save(List<Document> documents) {
         vectorStore.add(documents);
+    }
+
+    public List<QAPair> processFileWithQA(FileInfo fileInfo, String datasetId, String datasetName, String documentId) {
+        try {
+            log.info("Processing file with Q/A generation: {} (dataset: {})", fileInfo.fileName(), datasetName);
+            
+            // Process documents using existing pipeline
+            List<Document> documents = processFile(fileInfo);
+            
+            // Add datasetId to document metadata for RAG filtering
+            documents.forEach(doc -> {
+                doc.getMetadata().put("datasetId", datasetId);
+                doc.getMetadata().put("datasetName", datasetName);
+                doc.getMetadata().put("documentId", documentId);
+            });
+            
+            // Save to vector store
+            save(documents);
+            
+            // Generate and save Q/A pairs
+            List<QAPair> qaPairs = qaGenerationService.generateAndSaveQAPairs(
+                    documents, 
+                    datasetId, 
+                    datasetName, 
+                    fileInfo.fileName(), 
+                    fileInfo.fileName(), 
+                    documentId
+            );
+            
+            log.info("Successfully processed file {} with {} documents and {} Q/A pairs", 
+                    fileInfo.fileName(), documents.size(), qaPairs.size());
+            
+            return qaPairs;
+            
+        } catch (Exception e) {
+            log.error("Error processing file with Q/A generation {}: {}", fileInfo.fileName(), e.getMessage(), e);
+            throw e;
+        }
     }
 }
