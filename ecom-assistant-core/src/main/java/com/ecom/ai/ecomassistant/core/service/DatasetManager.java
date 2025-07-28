@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -132,5 +133,33 @@ public class DatasetManager {
         eventPublisher.publishEvent(event);
 
         return fullPath;
+    }
+    
+    /**
+     * 獲取用戶有權限的知識庫（供對話頁面使用）
+     * 直接複用現有的 findVisibleDatasets 邏輯，不做任何改動
+     */
+    public List<Dataset> findVisibleDatasetsForChat(String userId) {
+        // 直接使用現有方法，只是回傳 List 而不是 Page
+        Page<Dataset> page = findVisibleDatasets(userId, "", Pageable.unpaged());
+        return page.getContent();
+    }
+    
+    /**
+     * 更新知識庫的 tags
+     */
+    public Dataset updateDatasetTags(String datasetId, Set<String> tags, String userId) {
+        Dataset dataset = datasetService.findById(datasetId)
+            .orElseThrow(() -> new RuntimeException("知識庫不存在"));
+        
+        // 檢查權限：只有創建者或有權限的用戶才能更新
+        if (!dataset.getCreatedBy().equals(userId)) {
+            throw new RuntimeException("您沒有權限更新此知識庫");
+        }
+        
+        // 設置 tags（會自動驗證最多 3 個）
+        dataset.setTags(tags);
+        
+        return datasetService.save(dataset);
     }
 }

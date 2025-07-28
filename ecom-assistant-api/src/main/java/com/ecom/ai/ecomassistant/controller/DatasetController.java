@@ -22,12 +22,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -92,5 +95,47 @@ public class DatasetController {
         Pageable pageable = PageUtil.buildPageable(page, limit, sortBy, sortDir);
         var pageResult = datasetManager.findVisibleDatasets(userId, name, pageable);
         return PageResponse.of(pageResult);
+    }
+    
+    /**
+     * 獲取用戶有權限的所有知識庫（供對話頁面使用）
+     * 直接複用現有的權限檢查邏輯
+     */
+    @GetMapping("/for-chat")
+    public ResponseEntity<List<DatasetDetailResponse>> getDatasetsForChat(
+            @CurrentUserId String userId) {
+        
+        // 直接使用現有的 DatasetManager 方法
+        List<Dataset> datasets = datasetManager.findVisibleDatasetsForChat(userId);
+        List<DatasetDetailResponse> response = datasets.stream()
+            .map(dataset -> DatasetDetailResponse.builder()
+                .dataset(dataset)
+                .documents(documentService.findAllByDatasetId(dataset.getId()))
+                .build())
+            .collect(Collectors.toList());
+            
+        return ResponseEntity.ok(response);
+    }
+    
+    /**
+     * 更新知識庫的 tags
+     */
+    @PutMapping("/{id}/tags")
+    public ResponseEntity<Dataset> updateDatasetTags(
+            @PathVariable String id,
+            @RequestBody @Valid UpdateTagsRequest request,
+            @CurrentUserId String userId) {
+        
+        Dataset updatedDataset = datasetManager.updateDatasetTags(id, request.getTags(), userId);
+        return ResponseEntity.ok(updatedDataset);
+    }
+    
+    // 內部類別：更新 tags 的請求
+    public static class UpdateTagsRequest {
+        @jakarta.validation.constraints.Size(max = 3, message = "最多只能設置 3 個 tags")
+        private java.util.Set<String> tags = new java.util.HashSet<>();
+        
+        public java.util.Set<String> getTags() { return tags; }
+        public void setTags(java.util.Set<String> tags) { this.tags = tags; }
     }
 }

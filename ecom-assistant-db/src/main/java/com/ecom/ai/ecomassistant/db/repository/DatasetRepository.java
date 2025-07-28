@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Repository
@@ -26,4 +28,24 @@ public interface DatasetRepository extends CouchbaseRepository<Dataset, String> 
             "OR (accessType = 'PRIVATE' AND createdBy = $userId)" +
             "AND contains(lower(`name`), $name)")
     Page<Dataset> findVisibleDatasets(String name, String userId, Set<String> userTeamIds, Pageable pageable);
+    
+    // 新增 tags 相關查詢方法（簡化版，不需要複雜的權限查詢）
+    
+    /**
+     * 按 tags 查詢知識庫（供管理員使用）
+     */
+    @Query("#{#n1ql.selectEntity} " +
+            "WHERE #{#n1ql.filter} " +
+            "AND ANY tag IN tags SATISFIES tag IN $tags END")
+    List<Dataset> findByTagsIn(List<String> tags);
+    
+    /**
+     * 查詢所有 tags（供管理員使用）
+     */
+    @Query("SELECT DISTINCT FLATTEN_KEYS(tags, 1) as tag " +
+            "FROM #{#n1ql.bucket}.`#{#n1ql.scope}`.`#{#n1ql.collection}` " +
+            "WHERE #{#n1ql.filter} " +
+            "AND tags IS NOT MISSING " +
+            "AND ARRAY_LENGTH(tags) > 0")
+    List<String> findDistinctTags();
 }

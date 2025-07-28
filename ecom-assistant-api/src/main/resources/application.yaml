@@ -69,4 +69,4 @@ etl:
       position-tolerance: 5.0
       # 新增：圖片分析配置（預設關閉以提升效能）
       enable-image-analysis: true
-      image-analysis-timeout: 120
+      image-analysis-timeout: 360

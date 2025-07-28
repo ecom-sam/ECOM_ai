@@ -35,6 +35,7 @@ CREATE INDEX idx_chat_topic_search ON `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SC
 CREATE INDEX adv_class ON `default`:`${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`dataset`(`_class`)
 CREATE INDEX idx_dataset_name ON `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`dataset`(lower(name)) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.Dataset";
 CREATE INDEX idx_dataset_visibility ON `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`dataset`(accessType, createdBy, authorizedTeamIds) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.Dataset";
+CREATE INDEX idx_dataset_tags ON `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`dataset`(DISTINCT ARRAY tag FOR tag IN tags END) WHERE `_class` = "com.ecom.ai.ecomassistant.db.model.Dataset";
 
 CREATE INDEX adv_accessType_DISTINCT_authorizedTeamIds ON `default`:`${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`dataset`(`accessType`,DISTINCT ARRAY `g` FOR `g` IN `authorizedTeamIds` END)
 
