@@ -18,7 +18,9 @@ public enum DatasetPermission implements Permission {
 
     DATASET_FILE_UPLOAD("dataset:file:upload", "dataset", "上傳檔案", "上傳檔案"),
     DATASET_FILE_DELETE("dataset:file:delete", "dataset", "刪除其他人檔案", "刪除其他人檔案"),
-    DATASET_FILE_APPROVE("dataset:file:approve", "dataset", "放行檔案", "放行檔案");
+    DATASET_FILE_APPROVE("dataset:file:approve", "dataset", "放行檔案", "放行檔案"),
+    
+    DATASET_QA_VERIFICATION("dataset:qa:verification", "dataset", "QA 驗證", "審核 AI 生成的問答對內容");
 
     private final String code;
     private final String group;

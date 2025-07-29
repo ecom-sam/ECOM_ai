@@ -1,6 +1,5 @@
 package com.ecom.ai.ecomassistant.ai.etl.transformer;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
@@ -22,9 +21,10 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
 @Component
 public class DefaultPdfImageExtractor implements EcomDocumentTransformer {
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DefaultPdfImageExtractor.class);
 
     @Override
     public List<Document> transform(List<Document> documents) {

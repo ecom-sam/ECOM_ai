@@ -9,6 +9,7 @@ import org.springframework.data.couchbase.core.mapping.Document;
 import org.springframework.data.couchbase.core.mapping.Field;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 @Builder
@@ -52,4 +53,38 @@ public class QAPair {
 
     @Field
     private LocalDateTime updatedAt;
+
+    // 驗證狀態：PENDING, APPROVED, REJECTED
+    @Field
+    private VerificationStatus verificationStatus = VerificationStatus.PENDING;
+
+    // 驗證者ID
+    @Field
+    private String verifiedBy;
+
+    // 驗證時間
+    @Field
+    private LocalDateTime verifiedAt;
+
+    // 驗證備註
+    @Field
+    private String verificationNote;
+
+    // 是否已向量化
+    @Field
+    private Boolean vectorized = false;
+
+    // 繼承的 dataset tags
+    @Field
+    private Set<String> tags;
+
+    // 向量化ID（在qa-vector collection中的ID）
+    @Field
+    private String vectorId;
+
+    public enum VerificationStatus {
+        PENDING,    // 待驗證
+        APPROVED,   // 已通過
+        REJECTED    // 已拒絕
+    }
 }

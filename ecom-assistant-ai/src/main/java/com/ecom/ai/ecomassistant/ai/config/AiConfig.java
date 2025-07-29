@@ -1,5 +1,6 @@
 package com.ecom.ai.ecomassistant.ai.config;
 
+import com.couchbase.client.java.Cluster;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
@@ -9,15 +10,26 @@ import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.ChatMemoryRepository;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.prompt.ChatOptions;
+import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.rag.advisor.RetrievalAugmentationAdvisor;
 import org.springframework.ai.rag.retrieval.search.VectorStoreDocumentRetriever;
+import org.springframework.ai.vectorstore.CouchbaseSearchVectorStore;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 @Configuration
 @RequiredArgsConstructor
 public class AiConfig {
+
+    @Value("${spring.data.couchbase.bucket-name}")
+    private String bucketName;
+
+    @Value("${spring.data.couchbase.scope-name}")
+    private String scopeName;
 
     @Bean
     ChatClient helperChatClient(ChatClient.Builder builder) {
@@ -73,6 +85,30 @@ public class AiConfig {
                         .build())
                 .build();
     }
+
+    /**
+     * 專用於 QA 向量化的 VectorStore，指向 qa-vector collection
+     */
+    @Bean
+    @Qualifier("qaVectorStore")
+    public VectorStore qaVectorStore(Cluster cluster, EmbeddingModel embeddingModel) {
+        CouchbaseSearchVectorStore vectorStore = CouchbaseSearchVectorStore.builder(cluster, embeddingModel)
+                .bucketName(bucketName)
+                .scopeName(scopeName)
+                .collectionName("qa-vector")
+                .initializeSchema(false)  // 不要自動建立，使用我們手動建立的
+                .build();
+        
+        // 日誌配置資訊
+        System.out.println("QA VectorStore configured:");
+        System.out.println("  - Bucket: " + bucketName);
+        System.out.println("  - Scope: " + scopeName);
+        System.out.println("  - Collection: qa-vector");
+        System.out.println("  - Expected Index: spring-ai-qa-vector-index");
+        
+        return vectorStore;
+    }
+
 }
 
 

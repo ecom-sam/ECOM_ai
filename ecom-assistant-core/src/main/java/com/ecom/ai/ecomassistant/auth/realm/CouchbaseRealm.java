@@ -49,13 +49,19 @@ public class CouchbaseRealm extends AuthorizingRealm {
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        String userId = JwtUtil.getUserId(principals.toString());
+        // 從 principal 中取得 JWT token
+        String jwt = (String) principals.getPrimaryPrincipal();
+        String userId = JwtUtil.getUserId(jwt);
+        
+        log.debug("Getting authorization info for user: {}", userId);
 
         User user = userService.findById(userId).orElseThrow();
 
         SimpleAuthorizationInfo authInfo = new SimpleAuthorizationInfo();
         UserManager.UserRoleContext userRoleContext = userManager.getUserRoleContext(user);
 
+        log.debug("User {} has roles: {} and permissions: {}", userId, userRoleContext.roles(), userRoleContext.permissions());
+        
         authInfo.setRoles(userRoleContext.roles());
         authInfo.setStringPermissions(userRoleContext.permissions());
 

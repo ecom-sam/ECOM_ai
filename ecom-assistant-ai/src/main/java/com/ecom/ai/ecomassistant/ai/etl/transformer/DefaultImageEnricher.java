@@ -1,7 +1,6 @@
 package com.ecom.ai.ecomassistant.ai.etl.transformer;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.content.Media;
@@ -17,10 +16,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class DefaultImageEnricher implements EcomDocumentTransformer {
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DefaultImageEnricher.class);
 
     private final ChatClient helperChatClient;
 

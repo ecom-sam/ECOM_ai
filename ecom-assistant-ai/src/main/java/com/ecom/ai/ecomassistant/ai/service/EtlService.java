@@ -7,18 +7,19 @@ import com.ecom.ai.ecomassistant.ai.etl.transformer.EcomDocumentTransformer;
 import com.ecom.ai.ecomassistant.common.resource.file.FileInfo;
 import com.ecom.ai.ecomassistant.db.model.QAPair;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EtlService {
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(EtlService.class);
 
     private final Map<String, EcomDocumentReader> readerMap;
     private final Map<String, EcomDocumentTransformer> transformerMap;
@@ -51,7 +52,7 @@ public class EtlService {
         vectorStore.add(documents);
     }
 
-    public List<QAPair> processFileWithQA(FileInfo fileInfo, String datasetId, String datasetName, String documentId) {
+    public List<QAPair> processFileWithQA(FileInfo fileInfo, String datasetId, String datasetName, String documentId, Set<String> datasetTags) {
         try {
             log.info("Processing file with Q/A generation: {} (dataset: {})", fileInfo.fileName(), datasetName);
             
@@ -75,7 +76,8 @@ public class EtlService {
                     datasetName, 
                     fileInfo.fileName(), 
                     fileInfo.fileName(), 
-                    documentId
+                    documentId,
+                    datasetTags
             );
             
             log.info("Successfully processed file {} with {} documents and {} Q/A pairs", 

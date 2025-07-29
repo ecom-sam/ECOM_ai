@@ -25,3 +25,6 @@ CREATE COLLECTION `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`team-rol
 
 -- Q/A pairs collection for AI-generated content
 CREATE COLLECTION `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`qa` IF NOT EXISTS;
+
+-- QA vector store collection for verified QA embeddings
+CREATE COLLECTION `${COUCHBASE_BUCKET_NAME}`.`${COUCHBASE_SCOPE_NAME}`.`qa-vector` IF NOT EXISTS;

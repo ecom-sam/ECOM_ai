@@ -1,5 +1,6 @@
 package com.ecom.ai.ecomassistant.core.service.chat;
 
+import com.ecom.ai.ecomassistant.ai.service.TieredRAGService;
 import com.ecom.ai.ecomassistant.core.dto.command.SendUserMessageCommand;
 import com.ecom.ai.ecomassistant.db.model.ChatRecord;
 import com.ecom.ai.ecomassistant.db.service.ChatRecordService;
@@ -36,6 +37,7 @@ public class ChatService {
     private final ChatRecordService chatRecordService;
     private final ChatClient chatClient;
     private final RetrievalAugmentationAdvisor retrievalAugmentationAdvisor;
+    private final TieredRAGService tieredRAGService;
 
     public List<ChatRecord> findRecordsByTopicBefore(String topicId, String chatRecordId, Integer inputLimit) {
         int limit = inputLimit != null ? inputLimit : 10;
@@ -52,15 +54,38 @@ public class ChatService {
 
         List<String> datasetIds = command.datasetIds();
         if (command.withRag() == Boolean.TRUE && !CollectionUtils.isEmpty(datasetIds)) {
-            String datasetIdString = datasetIds.stream()
-                    .map(s -> String.format("'%s'", s))
-                    .collect(Collectors.joining(", "));
-            requestSpec
-                    .advisors(retrievalAugmentationAdvisor)
-                    .advisors(a -> a.param(
-                            VectorStoreDocumentRetriever.FILTER_EXPRESSION,
-                            String.format("datasetId IN [%s]", datasetIdString)
-                    ));
+            log.info("Using Tiered RAG with datasets: {}", datasetIds);
+            
+            // 使用兩層優先級 RAG 檢索（QA-vector 優先，再搜尋 document-vector）
+            List<Document> ragDocuments = tieredRAGService.retrieveWithDatasetFilter(
+                    command.message(), datasetIds);
+            
+            log.info("Tiered RAG retrieved {} documents for query", ragDocuments.size());
+            
+            // 手動添加檢索到的文檔作為上下文
+            if (!ragDocuments.isEmpty()) {
+                StringBuilder contextBuilder = new StringBuilder();
+                contextBuilder.append("以下是相關的參考資料，請根據這些資料回答問題：\n\n");
+                
+                for (int i = 0; i < ragDocuments.size(); i++) {
+                    Document doc = ragDocuments.get(i);
+                    String tier = (String) doc.getMetadata().getOrDefault("searchTier", "unknown");
+                    String priority = (String) doc.getMetadata().getOrDefault("priority", "normal");
+                    
+                    contextBuilder.append(String.format("參考資料 %d (%s - %s):\n", 
+                            i + 1, tier, priority));
+                    contextBuilder.append(doc.getFormattedContent());
+                    contextBuilder.append("\n\n");
+                }
+                
+                contextBuilder.append("請基於以上參考資料回答用戶的問題。如果參考資料中沒有相關信息，請誠實說明。\n\n");
+                contextBuilder.append("用戶問題: ").append(command.message());
+                
+                requestSpec.user(contextBuilder.toString());
+                
+                // 為了保持與現有系統的兼容性，仍然添加 document context
+                requestSpec.advisors(a -> a.param("DOCUMENT_CONTEXT", ragDocuments));
+            }
         }
 
         List<String> responseBuffer = new ArrayList<>();
@@ -133,13 +158,27 @@ public class ChatService {
     ) {
         return Optional.ofNullable(signal.hasValue() ? signal.get() : null)
                 .map(ChatClientResponse::context)
-                .map(ctx -> ctx.get(RetrievalAugmentationAdvisor.DOCUMENT_CONTEXT))
+                .map(ctx -> {
+                    // 先嘗試從 RetrievalAugmentationAdvisor 獲取
+                    Object documents = ctx.get(RetrievalAugmentationAdvisor.DOCUMENT_CONTEXT);
+                    if (documents == null) {
+                        // 如果沒有，嘗試從我們自定義的 DOCUMENT_CONTEXT 獲取
+                        documents = ctx.get("DOCUMENT_CONTEXT");
+                    }
+                    return documents;
+                })
                 .filter(obj -> obj instanceof List<?>)
                 .map(obj -> {
                     List<?> list = (List<?>) obj;
                     return list.stream()
                             .filter(item -> item instanceof Document)
-                            .map(item -> ((Document) item).getId())
+                            .map(item -> {
+                                Document doc = (Document) item;
+                                String tier = (String) doc.getMetadata().getOrDefault("searchTier", "");
+                                String priority = (String) doc.getMetadata().getOrDefault("priority", "");
+                                // 在 context 中包含檢索層級信息
+                                return doc.getId() + (tier.isEmpty() ? "" : ":" + tier + ":" + priority);
+                            })
                             .collect(Collectors.toList());
                 })
                 .map(ids -> String.join(",", ids))

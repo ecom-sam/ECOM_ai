@@ -1,0 +1,114 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------< com.ecom.ai:ecom-assistant-api >-------------------
+[INFO] Building ecom-assistant-api 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.4.5:run (default-cli) > test-compile @ ecom-assistant-api >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ ecom-assistant-api ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ ecom-assistant-api ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ ecom-assistant-api ---
+[INFO] skip non existing resourceDirectory /mnt/e/work/Couchbase/ecom_ai/ecom-assistant/ecom-assistant-api/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ ecom-assistant-api ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] <<< spring-boot:3.4.5:run (default-cli) < test-compile @ ecom-assistant-api <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.4.5:run (default-cli) @ ecom-assistant-api ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.5)
+
+2025-07-29T18:24:12.746+08:00  INFO 23424 --- [ecom-assistant] [           main] c.e.a.e.EcomAssistantApplication         : Starting EcomAssistantApplication using Java 21.0.8 with PID 23424 (/mnt/e/work/Couchbase/ecom_ai/ecom-assistant/ecom-assistant-api/target/classes started by sam in /mnt/e/work/Couchbase/ecom_ai/ecom-assistant/ecom-assistant-api)
+2025-07-29T18:24:12.749+08:00  INFO 23424 --- [ecom-assistant] [           main] c.e.a.e.EcomAssistantApplication         : No active profile set, falling back to 1 default profile: "default"
+2025-07-29T18:24:17.148+08:00  INFO 23424 --- [ecom-assistant] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Couchbase repositories in DEFAULT mode.
+2025-07-29T18:24:17.249+08:00  INFO 23424 --- [ecom-assistant] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 65 ms. Found 0 Couchbase repository interfaces.
+2025-07-29T18:24:19.543+08:00  INFO 23424 --- [ecom-assistant] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Couchbase repositories in DEFAULT mode.
+2025-07-29T18:24:21.552+08:00  INFO 23424 --- [ecom-assistant] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 2003 ms. Found 0 Couchbase repository interfaces.
+2025-07-29T18:24:21.561+08:00  INFO 23424 --- [ecom-assistant] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Couchbase repositories in DEFAULT mode.
+2025-07-29T18:24:22.537+08:00  INFO 23424 --- [ecom-assistant] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 963 ms. Found 11 Couchbase repository interfaces.
+2025-07-29T18:24:23.102+08:00  WARN 23424 --- [ecom-assistant] [           main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanDefinitionStoreException: Could not enhance configuration class [com.ecom.ai.ecomassistant.config.WebConfig]. Consider declaring @Configuration(proxyBeanMethods=false) without inter-bean references between @Bean methods on the configuration class, avoiding the need for CGLIB enhancement.
+2025-07-29T18:24:23.117+08:00  INFO 23424 --- [ecom-assistant] [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-07-29T18:24:23.252+08:00 ERROR 23424 --- [ecom-assistant] [           main] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanDefinitionStoreException: Could not enhance configuration class [com.ecom.ai.ecomassistant.config.WebConfig]. Consider declaring @Configuration(proxyBeanMethods=false) without inter-bean references between @Bean methods on the configuration class, avoiding the need for CGLIB enhancement.
+	at org.springframework.context.annotation.ConfigurationClassEnhancer.enhance(ConfigurationClassEnhancer.java:135) ~[spring-context-6.2.6.jar:6.2.6]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.enhanceConfigurationClasses(ConfigurationClassPostProcessor.java:539) ~[spring-context-6.2.6.jar:6.2.6]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanFactory(ConfigurationClassPostProcessor.java:311) ~[spring-context-6.2.6.jar:6.2.6]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:363) ~[spring-context-6.2.6.jar:6.2.6]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:153) ~[spring-context-6.2.6.jar:6.2.6]
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:791) ~[spring-context-6.2.6.jar:6.2.6]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:609) ~[spring-context-6.2.6.jar:6.2.6]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.4.5.jar:3.4.5]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:753) ~[spring-boot-3.4.5.jar:3.4.5]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.4.5.jar:3.4.5]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.4.5.jar:3.4.5]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1362) ~[spring-boot-3.4.5.jar:3.4.5]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1351) ~[spring-boot-3.4.5.jar:3.4.5]
+	at com.ecom.ai.ecomassistant.EcomAssistantApplication.main(EcomAssistantApplication.java:16) ~[classes/:na]
+Caused by: org.springframework.cglib.core.CodeGenerationException: java.lang.IllegalStateException-->Unable to load cache item
+	at org.springframework.context.annotation.ConfigurationClassEnhancer.createClass(ConfigurationClassEnhancer.java:195) ~[spring-context-6.2.6.jar:6.2.6]
+	at org.springframework.context.annotation.ConfigurationClassEnhancer.enhance(ConfigurationClassEnhancer.java:127) ~[spring-context-6.2.6.jar:6.2.6]
+	... 13 common frames omitted
+Caused by: java.lang.IllegalStateException: Unable to load cache item
+	at org.springframework.cglib.core.internal.LoadingCache.createEntry(LoadingCache.java:75) ~[spring-core-6.2.6.jar:6.2.6]
+	at org.springframework.cglib.core.internal.LoadingCache.get(LoadingCache.java:34) ~[spring-core-6.2.6.jar:6.2.6]
+	at org.springframework.cglib.core.AbstractClassGenerator$ClassLoaderData.get(AbstractClassGenerator.java:129) ~[spring-core-6.2.6.jar:6.2.6]
+	at org.springframework.cglib.core.AbstractClassGenerator.create(AbstractClassGenerator.java:321) ~[spring-core-6.2.6.jar:6.2.6]
+	at org.springframework.cglib.proxy.Enhancer.createHelper(Enhancer.java:562) ~[spring-core-6.2.6.jar:6.2.6]
+	at org.springframework.cglib.proxy.Enhancer.createClass(Enhancer.java:407) ~[spring-core-6.2.6.jar:6.2.6]
+	at org.springframework.context.annotation.ConfigurationClassEnhancer.createClass(ConfigurationClassEnhancer.java:191) ~[spring-context-6.2.6.jar:6.2.6]
+	... 14 common frames omitted
+Caused by: java.lang.NoClassDefFoundError: CurrentUserIdArgumentResolver
+	at java.base/java.lang.Class.getDeclaredConstructors0(Native Method) ~[na:na]
+	at java.base/java.lang.Class.privateGetDeclaredConstructors(Class.java:3549) ~[na:na]
+	at java.base/java.lang.Class.getDeclaredConstructors(Class.java:2727) ~[na:na]
+	at org.springframework.cglib.proxy.Enhancer.generateClass(Enhancer.java:655) ~[spring-core-6.2.6.jar:6.2.6]
+	at org.springframework.cglib.transform.TransformingClassGenerator.generateClass(TransformingClassGenerator.java:35) ~[spring-core-6.2.6.jar:6.2.6]
+	at org.springframework.cglib.core.DefaultGeneratorStrategy.generate(DefaultGeneratorStrategy.java:26) ~[spring-core-6.2.6.jar:6.2.6]
+	at org.springframework.cglib.core.ClassLoaderAwareGeneratorStrategy.lambda$new$0(ClassLoaderAwareGeneratorStrategy.java:41) ~[spring-core-6.2.6.jar:6.2.6]
+	at org.springframework.cglib.core.ClassLoaderAwareGeneratorStrategy.generate(ClassLoaderAwareGeneratorStrategy.java:76) ~[spring-core-6.2.6.jar:6.2.6]
+	at org.springframework.cglib.core.AbstractClassGenerator.generate(AbstractClassGenerator.java:370) ~[spring-core-6.2.6.jar:6.2.6]
+	at org.springframework.cglib.proxy.Enhancer.generate(Enhancer.java:575) ~[spring-core-6.2.6.jar:6.2.6]
+	at org.springframework.cglib.core.AbstractClassGenerator$ClassLoaderData.lambda$new$1(AbstractClassGenerator.java:107) ~[spring-core-6.2.6.jar:6.2.6]
+	at org.springframework.cglib.core.internal.LoadingCache.lambda$createEntry$1(LoadingCache.java:52) ~[spring-core-6.2.6.jar:6.2.6]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317) ~[na:na]
+	at org.springframework.cglib.core.internal.LoadingCache.createEntry(LoadingCache.java:57) ~[spring-core-6.2.6.jar:6.2.6]
+	... 20 common frames omitted
+Caused by: java.lang.ClassNotFoundException: CurrentUserIdArgumentResolver
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641) ~[na:na]
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:188) ~[na:na]
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:526) ~[na:na]
+	... 34 common frames omitted
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  20.128 s
+[INFO] Finished at: 2025-07-29T18:24:23+08:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:3.4.5:run (default-cli) on project ecom-assistant-api: Process terminated with exit code: 1 -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException

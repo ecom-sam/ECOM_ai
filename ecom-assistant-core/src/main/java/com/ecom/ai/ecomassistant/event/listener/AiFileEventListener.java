@@ -40,20 +40,22 @@ public class AiFileEventListener {
         try {
             DatasetContext.setDatasetContextData(datasetId, documentId);
             
-            // Get dataset name for Q/A tagging
+            // Get dataset info for Q/A tagging
             String datasetName = "";
+            java.util.Set<String> datasetTags = new java.util.HashSet<>();
             try {
                 var dataset = datasetService.findById(datasetId);
                 if (dataset.isPresent()) {
                     datasetName = dataset.get().getName();
+                    datasetTags = dataset.get().getTags() != null ? dataset.get().getTags() : new java.util.HashSet<>();
                 }
             } catch (Exception e) {
-                log.warn("Could not retrieve dataset name for {}: {}", datasetId, e.getMessage());
+                log.warn("Could not retrieve dataset info for {}: {}", datasetId, e.getMessage());
                 datasetName = "Unknown Dataset";
             }
             
             // Use enhanced processing with Q/A generation
-            List<QAPair> qaPairs = etlService.processFileWithQA(fileInfo, datasetId, datasetName, documentId);
+            List<QAPair> qaPairs = etlService.processFileWithQA(fileInfo, datasetId, datasetName, documentId, datasetTags);
             
             log.info("Successfully processed file {} with {} Q/A pairs generated", 
                     fileInfo.fileName(), qaPairs.size());

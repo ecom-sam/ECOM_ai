@@ -3,7 +3,6 @@ package com.ecom.ai.ecomassistant.ai.etl.reader.pdf;
 import com.ecom.ai.ecomassistant.ai.config.FileProcessingRuleConfig;
 import com.ecom.ai.ecomassistant.ai.etl.reader.EcomDocumentReader;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -29,10 +28,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.Base64;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CombinedPdfDocumentReader implements EcomDocumentReader {
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CombinedPdfDocumentReader.class);
 
     private final ChatModel chatModel;
     private final FileProcessingRuleConfig config;

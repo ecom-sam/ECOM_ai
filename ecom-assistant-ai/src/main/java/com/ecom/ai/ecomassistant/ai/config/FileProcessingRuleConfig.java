@@ -32,4 +32,17 @@ public class FileProcessingRuleConfig {
     
     // 新增：圖片分析超時時間（秒）
     private int imageAnalysisTimeout = 30;
+    
+    // Getter methods for the new fields
+    public boolean isEnablePositionSorting() {
+        return enablePositionSorting;
+    }
+    
+    public boolean isEnableImageAnalysis() {
+        return enableImageAnalysis;
+    }
+    
+    public int getImageAnalysisTimeout() {
+        return imageAnalysisTimeout;
+    }
 }

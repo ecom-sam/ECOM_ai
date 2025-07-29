@@ -3,7 +3,6 @@ package com.ecom.ai.ecomassistant.ai.service;
 import com.ecom.ai.ecomassistant.db.model.QAPair;
 import com.ecom.ai.ecomassistant.db.service.QAPairService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.document.Document;
@@ -11,11 +10,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class QAGenerationService {
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(QAGenerationService.class);
 
     private final ChatModel chatModel;
     private final QAPairService qaPairService;
@@ -39,7 +40,7 @@ public class QAGenerationService {
     }
 
     public List<QAPair> generateAndSaveQAPairs(List<Document> documents, String datasetId, String datasetName, 
-                                               String documentName, String fileName, String documentId) {
+                                               String documentName, String fileName, String documentId, Set<String> datasetTags) {
         try {
             log.info("Generating Q/A pairs for entire document: {} (dataset: {}, {} pages)", fileName, datasetName, documents.size());
 
@@ -65,6 +66,9 @@ public class QAGenerationService {
                         .documentId(documentId)
                         .questionIndex(i + 1)
                         .contentType("qa_pair")
+                        .tags(datasetTags)  // 繼承 dataset 的 tags
+                        .verificationStatus(QAPair.VerificationStatus.PENDING)  // 設為待驗證狀態
+                        .vectorized(false)  // 未向量化
                         .createdAt(java.time.LocalDateTime.now())
                         .updatedAt(java.time.LocalDateTime.now())
                         .build();
