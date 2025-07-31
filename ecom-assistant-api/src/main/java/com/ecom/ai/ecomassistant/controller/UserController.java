@@ -2,7 +2,9 @@ package com.ecom.ai.ecomassistant.controller;
 
 import com.ecom.ai.ecomassistant.common.annotation.CurrentUserId;
 import com.ecom.ai.ecomassistant.core.dto.response.LoginResponse;
+import com.ecom.ai.ecomassistant.core.dto.response.TeamListDto;
 import com.ecom.ai.ecomassistant.core.dto.response.UserDetailDto;
+import com.ecom.ai.ecomassistant.core.service.TeamManager;
 import com.ecom.ai.ecomassistant.core.service.UserManager;
 import com.ecom.ai.ecomassistant.db.model.dto.UserInfo;
 import com.ecom.ai.ecomassistant.db.repository.auth.UserRepository;
@@ -33,10 +35,16 @@ public class UserController {
 
     private final UserManager userManager;
     private final UserRepository userRepository;
+    private final TeamManager teamManager;
 
     @GetMapping("/me")
     public UserDetailDto me(@CurrentUserId String userId) {
         return userManager.getUserDetail(userId);
+    }
+
+    @GetMapping("/me/teams")
+    public List<TeamListDto> getMyTeams(@CurrentUserId String userId) {
+        return teamManager.list(userId);
     }
 
     @PostMapping("/invite")

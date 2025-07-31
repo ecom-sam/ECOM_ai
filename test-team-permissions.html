@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Team Permissions Test</title>
+</head>
+<body>
+    <h1>Team Permissions Debug Test</h1>
+    <div id="results"></div>
+    
+    <script>
+        // 測試腳本
+        async function testTeamPermissions() {
+            const results = document.getElementById('results');
+            
+            // 1. 檢查 localStorage
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            
+            results.innerHTML += `<h2>Local Storage:</h2>`;
+            results.innerHTML += `<p>Token: ${token ? 'EXISTS' : 'MISSING'}</p>`;
+            results.innerHTML += `<p>User: ${user || 'MISSING'}</p>`;
+            
+            if (!token) {
+                results.innerHTML += `<p style="color: red;">No token found. Please login first.</p>`;
+                return;
+            }
+            
+            // 2. 測試登入狀態
+            try {
+                const loginResponse = await fetch('/api/v1/users/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                results.innerHTML += `<h2>Login Status:</h2>`;
+                results.innerHTML += `<p>Status: ${loginResponse.status}</p>`;
+                
+                if (loginResponse.ok) {
+                    const userData = await loginResponse.json();
+                    results.innerHTML += `<p>User ID: ${userData.id}</p>`;
+                    results.innerHTML += `<p>Roles: ${JSON.stringify(userData.roles)}</p>`;
+                    results.innerHTML += `<p>Permissions: ${JSON.stringify(userData.permissions)}</p>`;
+                } else {
+                    results.innerHTML += `<p style="color: red;">Login check failed</p>`;
+                    return;
+                }
+            } catch (error) {
+                results.innerHTML += `<p style="color: red;">Login check error: ${error.message}</p>`;
+                return;
+            }
+            
+            // 3. 測試團隊 API
+            try {
+                const teamsResponse = await fetch('/api/v1/teams', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                results.innerHTML += `<h2>Teams API:</h2>`;
+                results.innerHTML += `<p>Status: ${teamsResponse.status}</p>`;
+                
+                if (teamsResponse.ok) {
+                    const teamsData = await teamsResponse.json();
+                    results.innerHTML += `<p style="color: green;">Teams loaded successfully!</p>`;
+                    results.innerHTML += `<p>My Teams: ${teamsData.myTeams.length}</p>`;
+                    results.innerHTML += `<p>Managed Teams: ${teamsData.managedTeams.length}</p>`;
+                    results.innerHTML += `<pre>${JSON.stringify(teamsData, null, 2)}</pre>`;
+                } else {
+                    const errorText = await teamsResponse.text();
+                    results.innerHTML += `<p style="color: red;">Teams API failed!</p>`;
+                    results.innerHTML += `<p>Error: ${errorText}</p>`;
+                }
+            } catch (error) {
+                results.innerHTML += `<p style="color: red;">Teams API error: ${error.message}</p>`;
+            }
+        }
+        
+        // 執行測試
+        testTeamPermissions();
+    </script>
+</body>
+</html>

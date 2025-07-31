@@ -27,6 +27,8 @@ import java.util.Set;
 
 import static com.ecom.ai.ecomassistant.auth.permission.SystemPermission.SYSTEM_TEAM_MANAGE;
 import static com.ecom.ai.ecomassistant.auth.permission.TeamPermission.TEAM_MEMBERS_MANAGE;
+import static com.ecom.ai.ecomassistant.auth.permission.TeamPermission.TEAM_MEMBERS_VIEW;
+import static com.ecom.ai.ecomassistant.auth.permission.TeamPermission.TEAM_MEMBERS_INVITE;
 
 @RestController
 @RequestMapping("/api/v1/teams/{teamId}/members")
@@ -38,6 +40,10 @@ public class TeamMemberController {
 
     @GetMapping
     public List<TeamMemberDto> teamMembers(@PathVariable String teamId) {
+        PermissionUtil.checkAnyPermission(Set.of(
+                SYSTEM_TEAM_MANAGE.getCode(),
+                TEAM_MEMBERS_VIEW.getCodeWithTeamId(teamId)
+        ));
         return teamMemberManager.getTeamMembers(teamId);
     }
 
@@ -46,6 +52,10 @@ public class TeamMemberController {
             @PathVariable String teamId,
             @RequestBody @Valid TeamMembersInviteRequest inviteRequest
     ) {
+        PermissionUtil.checkAnyPermission(Set.of(
+                SYSTEM_TEAM_MANAGE.getCode(),
+                TEAM_MEMBERS_INVITE.getCodeWithTeamId(teamId)
+        ));
         var command = TeamMemberRequestMapper.INSTANCE.toInviteCommand(inviteRequest, teamId);
         return teamMemberManager.inviteMembers(command);
     }
@@ -56,6 +66,10 @@ public class TeamMemberController {
             @RequestParam(required = false, defaultValue = "") String filter,
             @RequestParam(required = false, defaultValue = "20") int limit
     ) {
+        PermissionUtil.checkAnyPermission(Set.of(
+                SYSTEM_TEAM_MANAGE.getCode(),
+                TEAM_MEMBERS_INVITE.getCodeWithTeamId(teamId)
+        ));
         return teamMemberManager.searchInviteCandidates(teamId, filter, limit);
     }
 
@@ -65,6 +79,10 @@ public class TeamMemberController {
             @PathVariable String userId,
             @RequestBody @Valid TeamMemberRoleUpdateRequest updateRequest
     ) {
+        PermissionUtil.checkAnyPermission(Set.of(
+                SYSTEM_TEAM_MANAGE.getCode(),
+                TEAM_MEMBERS_MANAGE.getCodeWithTeamId(teamId)
+        ));
         teamMemberManager.updateTeamMemberRoles(teamId, userId, updateRequest.roles());
         return teamMembershipService.findDtoByTeamIdAndUserId(teamId, userId);
     }

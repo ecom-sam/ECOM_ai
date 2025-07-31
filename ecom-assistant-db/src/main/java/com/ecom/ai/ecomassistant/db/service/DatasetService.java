@@ -2,6 +2,7 @@ package com.ecom.ai.ecomassistant.db.service;
 
 import com.ecom.ai.ecomassistant.db.repository.DatasetRepository;
 import com.ecom.ai.ecomassistant.db.model.Dataset;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
+@Slf4j
 public class DatasetService extends CrudService<Dataset, String, DatasetRepository> {
 
     protected DatasetService(DatasetRepository repository) {
@@ -50,7 +52,15 @@ public class DatasetService extends CrudService<Dataset, String, DatasetReposito
     }
 
     public Page<Dataset> findVisibleDatasets(String name, String userId, Set<String> userTeamIds, Pageable pageable) {
-        return repository.findVisibleDatasets(name, userId, userTeamIds, pageable);
+        log.debug("DatasetService.findVisibleDatasets called: name={}, userId={}, userTeamIds={}", name, userId, userTeamIds);
+        try {
+            Page<Dataset> result = repository.findVisibleDatasets(name, userId, userTeamIds, pageable);
+            log.debug("DatasetService.findVisibleDatasets result: {} datasets found", result.getTotalElements());
+            return result;
+        } catch (Exception e) {
+            log.error("Error in DatasetService.findVisibleDatasets: name={}, userId={}, userTeamIds={}, error={}", name, userId, userTeamIds, e.getMessage(), e);
+            throw e;
+        }
     }
 
     public Dataset createDataset(Dataset dataset) {

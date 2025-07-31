@@ -1,0 +1,50 @@
+Controller,API路徑,HTTP方法,權限檢查類型,System級權限,Team級權限,其他限制
+AiChatController,/api/v1/ai/chat/topics,POST,無,-,-,僅需登入
+AiChatController,/api/v1/ai/chat/topics,GET,無,-,-,僅需登入
+AiChatController,/api/v1/ai/chat/topics/{topicId},PATCH,@RequiresPermissions,system:chat:access,-,必須為topic擁有者
+AiChatController,/api/v1/ai/chat/topics/{topicId}/ask,POST,@RequiresPermissions,system:chat:access,-,必須為topic擁有者
+AiChatController,/api/v1/ai/chat/topics/{topicId}/messages,GET,@RequiresPermissions,system:chat:access,-,必須為topic擁有者
+UserController,/api/v1/users/me,GET,無,-,-,僅需登入
+UserController,/api/v1/users/invite,POST,@RequiresPermissions,system:user:invite,-,-
+UserController,/api/v1/users/activate,POST,無,-,-,-
+UserController,/api/v1/users/login,POST,無,-,-,-
+UserController,/api/v1/users/emails,GET,@RequiresPermissions,system:user:list,-,-
+UserController,/api/v1/users,GET,@RequiresPermissions,system:user:list,-,-
+DatasetController,/api/v1/datasets/{id},GET,業務邏輯檢查,system:dataset:*,team:{teamId}:dataset:view,依據資料集可見性
+DatasetController,/api/v1/datasets,POST,業務邏輯檢查,system:dataset:*,team:{teamId}:edit,-
+DatasetController,/api/v1/datasets/{datasetId}/with-file,POST,業務邏輯檢查,system:dataset:*,team:{teamId}:dataset:file:upload,-
+DatasetController,/api/v1/datasets/{id},PATCH,業務邏輯檢查,system:dataset:*,team:{teamId}:dataset:manage,-
+DatasetController,/api/v1/datasets/{id},DELETE,業務邏輯檢查,system:dataset:*,team:{teamId}:dataset:delete,-
+DatasetController,/api/v1/datasets,GET,業務邏輯檢查,system:dataset:*,基於用戶團隊關係,-
+DatasetController,/api/v1/datasets/for-chat,GET,業務邏輯檢查,system:dataset:*,基於用戶團隊關係,-
+DatasetController,/api/v1/datasets/{id}/tags,PUT,業務邏輯檢查,system:dataset:*,team:{teamId}:dataset:manage,-
+TeamController,/api/v1/teams,GET,無,-,-,基於用戶團隊關係過濾
+TeamController,/api/v1/teams,POST,@RequiresPermissions,system:team:manage AND system:team:grant_admin,-,-
+TeamController,/api/v1/teams/{teamId},GET,PermissionUtil OR邏輯,system:team:manage,team:{teamId}:view,-
+TeamRoleController,/api/v1/teams/{teamId}/roles,GET,PermissionUtil OR邏輯,system:team:manage,team:{teamId}:roles:view,-
+TeamRoleController,/api/v1/teams/{teamId}/roles,POST,PermissionUtil OR邏輯,system:team:manage,team:{teamId}:roles:manage,-
+TeamRoleController,/api/v1/teams/{teamId}/roles/{roleId},GET,PermissionUtil OR邏輯,system:team:manage,team:{teamId}:roles:view,-
+TeamRoleController,/api/v1/teams/{teamId}/roles/{roleId},PATCH,PermissionUtil OR邏輯,system:team:manage,team:{teamId}:roles:manage,-
+TeamRoleController,/api/v1/teams/{teamId}/roles/{roleId},DELETE,PermissionUtil OR邏輯,system:team:manage,team:{teamId}:roles:manage,-
+TeamMemberController,/api/v1/teams/{teamId}/members,GET,PermissionUtil OR邏輯,system:team:manage,team:{teamId}:members:view,-
+TeamMemberController,/api/v1/teams/{teamId}/members/invitations,POST,PermissionUtil OR邏輯,system:team:manage,team:{teamId}:members:invite,-
+TeamMemberController,/api/v1/teams/{teamId}/members/invite-candidates,GET,PermissionUtil OR邏輯,system:team:manage,team:{teamId}:members:invite,-
+TeamMemberController,/api/v1/teams/{teamId}/members/{userId}/roles,PATCH,PermissionUtil OR邏輯,system:team:manage,team:{teamId}:members:manage,-
+TeamMemberController,/api/v1/teams/{teamId}/members/{userId},DELETE,PermissionUtil OR邏輯,system:team:manage,team:{teamId}:members:manage,-
+ToolController,/api/tool/message,POST,@RequiresPermissions,system:dataset:*,-,-
+ToolController,/api/tool/tools,GET,@RequiresPermissions,system:dataset:*,-,-
+SystemController,/api/v1/system/team-role-templates,GET,@RequiresPermissions,system:* OR system:team:*,-,-
+PermissionController,/api/v1/permissions/system,GET,@RequiresPermissions,system:*,-,-
+PermissionController,/api/v1/permissions/team,GET,subject.isPermitted + 自定義,system:* OR system:team:*,或任何團隊的roles:manage權限,-
+QAController,/api/v1/qa/document/{documentId},GET,自定義權限檢查,system:* OR system:team:*,team:{teamId}:dataset:qa:verification,-
+QAVerificationController,/api/v1/qa-verification/pending,GET,自定義權限檢查,system:* OR system:team:*,team:{teamId}:dataset:qa:verification,-
+QAVerificationController,/api/v1/qa-verification/{qaId}/approve,POST,自定義權限檢查,system:* OR system:team:*,team:{teamId}:dataset:qa:verification,-
+QAVerificationController,/api/v1/qa-verification/{qaId}/reject,POST,自定義權限檢查,system:* OR system:team:*,team:{teamId}:dataset:qa:verification,-
+QAVerificationController,/api/v1/qa-verification/batch/approve,POST,自定義權限檢查,system:* OR system:team:*,team:{teamId}:dataset:qa:verification,-
+QAVerificationController,/api/v1/qa-verification/batch/reject,POST,自定義權限檢查,system:* OR system:team:*,team:{teamId}:dataset:qa:verification,-
+QAVerificationController,/api/v1/qa-verification/pending/count,GET,自定義權限檢查,system:* OR system:team:*,team:{teamId}:dataset:qa:verification,-
+QAController,/api/v1/qa/document/{documentId}/stats,GET,自定義權限檢查,system:* OR system:team:*,team:{teamId}:dataset:qa:verification,-
+QAController,/api/v1/qa/batch/update-status,POST,自定義權限檢查,system:* OR system:team:*,team:{teamId}:dataset:qa:verification,-
+QAController,/api/v1/qa/document/{documentId}/vectorize,POST,自定義權限檢查,system:* OR system:team:*,team:{teamId}:dataset:qa:verification,-
+QAController,/api/v1/qa/{qaId}/vector,DELETE,自定義權限檢查,system:* OR system:team:*,team:{teamId}:dataset:qa:verification,-
+ChatController (已廢棄),/api/v1/chat/ai/{username}/{topicId},POST,無,-,-,已標記為@Deprecated

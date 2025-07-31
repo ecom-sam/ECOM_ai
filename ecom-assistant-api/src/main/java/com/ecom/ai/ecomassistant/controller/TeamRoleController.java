@@ -35,6 +35,10 @@ public class TeamRoleController {
      */
     @GetMapping
     public TeamRoleManager.TeamRolesResponse getRoles(@PathVariable String teamId) {
+        PermissionUtil.checkAnyPermission(Set.of(
+                SYSTEM_TEAM_MANAGE.getCode(),
+                TEAM_ROLES_VIEW.getCodeWithTeamId(teamId)
+        ));
         return teamRoleManager.getRoles(teamId);
     }
 
@@ -50,6 +54,10 @@ public class TeamRoleController {
 
     @GetMapping("/{roleId}")
     public TeamRoleDto getTeamRole(@PathVariable String teamId, @PathVariable String roleId) {
+        PermissionUtil.checkAnyPermission(Set.of(
+                SYSTEM_TEAM_MANAGE.getCode(),
+                TEAM_ROLES_VIEW.getCodeWithTeamId(teamId)
+        ));
         return teamRoleManager.getTeamRole(roleId);
     }
 

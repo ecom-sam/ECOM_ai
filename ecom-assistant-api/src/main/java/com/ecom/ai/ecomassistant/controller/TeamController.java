@@ -1,5 +1,7 @@
 package com.ecom.ai.ecomassistant.controller;
 
+import com.ecom.ai.ecomassistant.auth.permission.TeamPermission;
+import com.ecom.ai.ecomassistant.auth.util.PermissionUtil;
 import com.ecom.ai.ecomassistant.common.annotation.CurrentUserId;
 import com.ecom.ai.ecomassistant.db.model.dto.TeamDetailDto;
 import com.ecom.ai.ecomassistant.core.dto.response.TeamListDto;
@@ -19,7 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.ecom.ai.ecomassistant.auth.permission.SystemPermission.SYSTEM_TEAM_MANAGE;
 
 @RestController
 @RequestMapping("/api/v1/teams")
@@ -32,6 +37,8 @@ public class TeamController {
 
     @GetMapping
     public TeamListGroupDto list(@CurrentUserId String currentUserId) {
+        // 團隊列表查詢：用戶查看自己的團隊不需要額外權限檢查
+        // 因為 teamManager.list(currentUserId) 已經過濾了用戶有權限的團隊
         List<TeamListDto> allTeams = teamManager.list(currentUserId);
 
         Map<Boolean, List<TeamListDto>> partitioned = allTeams.stream()
@@ -52,6 +59,10 @@ public class TeamController {
 
     @GetMapping("/{teamId}")
     public TeamDetailDto teamDetail(@PathVariable String teamId) {
+        PermissionUtil.checkAnyPermission(Set.of(
+                SYSTEM_TEAM_MANAGE.getCode(),
+                TeamPermission.TEAM_VIEW.getCodeWithTeamId(teamId)
+        ));
         return teamManager.getTeamDetail(teamId);
     }
 }

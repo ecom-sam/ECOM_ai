@@ -19,6 +19,8 @@ public class DatasetCreateRequest {
     @NotNull
     private Dataset.AccessType accessType;
     
+    private String teamId;
+    
     @Size(max = 3, message = "最多只能設置 3 個 tags")
     private Set<String> tags = new HashSet<>();
 }

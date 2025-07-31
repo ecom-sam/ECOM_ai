@@ -11,9 +11,9 @@ import java.util.Optional;
 @AllArgsConstructor
 public enum TeamPermission implements Permission {
 
-    TEAM_VIEW("team:view", "team", "檢視團隊資訊", "檢視團隊資訊"),
-    TEAM_EDIT("team:edit", "team", "編輯團隊", "編輯團隊"),
-    //TEAM_DELETE("team:delete", "team", "刪除團隊"),
+    TEAM_VIEW("view", "team", "檢視團隊資訊", "檢視團隊資訊"),
+    TEAM_EDIT("edit", "team", "編輯團隊", "編輯團隊"),
+    //TEAM_DELETE("delete", "team", "刪除團隊"),
 
     TEAM_MEMBERS_VIEW("members:view", "team", "查看團隊成員", "查看團隊成員"),
     TEAM_MEMBERS_INVITE("members:invite", "team", "邀請團隊成員", "邀請團隊成員"),

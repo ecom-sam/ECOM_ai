@@ -50,9 +50,9 @@ public class DatasetController {
     }
 
     @PostMapping
-    public Dataset createDataset(@RequestBody @Valid DatasetCreateRequest datasetCreateRequest) {
+    public Dataset createDataset(@RequestBody @Valid DatasetCreateRequest datasetCreateRequest, @CurrentUserId String userId) {
         Dataset dataset = DatasetMapper.INSTANCE.toEntity(datasetCreateRequest);
-        return datasetManager.createDataset(dataset);
+        return datasetManager.createDataset(dataset, userId);
     }
 
     @PostMapping(value = "/{datasetId}/with-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

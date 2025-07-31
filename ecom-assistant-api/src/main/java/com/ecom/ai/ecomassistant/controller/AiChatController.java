@@ -16,8 +16,10 @@ import com.ecom.ai.ecomassistant.util.PageUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -60,32 +63,58 @@ public class AiChatController {
     }
 
     @PatchMapping("/topics/{topicId}")
-    public ChatTopic updateChatTopic(@CurrentUserId String userId, @RequestBody @Valid ChatTopicUpdateRequest updateRequest) {
+    @RequiresPermissions({"system:chat:access"})
+    public ResponseEntity<ChatTopic> updateChatTopic(
+            @CurrentUserId String userId, 
+            @PathVariable String topicId,
+            @RequestBody @Valid ChatTopicUpdateRequest updateRequest) {
+        
+        // 檢查使用者是否為聊天主題的擁有者
+        Optional<ChatTopic> existingTopic = chatTopicService.findById(topicId);
+        if (existingTopic.isEmpty() || !existingTopic.get().getCreatedBy().equals(userId)) {
+            return ResponseEntity.status(403).build();
+        }
+        
         ChatTopic chatTopic = ChatTopicMapper.INSTANCE.toChatTopic(updateRequest, userId);
-        return chatTopicService.save(chatTopic);
+        chatTopic.setId(topicId);  // 確保使用正確的 ID
+        return ResponseEntity.ok(chatTopicService.save(chatTopic));
     }
 
     @PostMapping(value = "/topics/{topicId}/ask", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @RequiresPermissions({"system:chat:access"})
     public Flux<String> sendMessageToBot(
             @CurrentUserId String userId,
             @PathVariable String topicId,
             @RequestBody @Valid ChatMessageRequest request
     ) {
+        // 檢查使用者是否為聊天主題的擁有者
+        Optional<ChatTopic> existingTopic = chatTopicService.findById(topicId);
+        if (existingTopic.isEmpty() || !existingTopic.get().getCreatedBy().equals(userId)) {
+            return Flux.error(new RuntimeException("Access denied: Not topic owner"));
+        }
+        
         SendUserMessageCommand command = MessageCommandMapper.INSTANCE.toSendUserMessageCommand(request, topicId, userId);
         return chatService.performAiChatFlow(command);
     }
 
     @GetMapping("/topics/{topicId}/messages")
-    public List<ChatRecord> findRecentChatRecord(
+    @RequiresPermissions({"system:chat:access"})
+    public ResponseEntity<List<ChatRecord>> findRecentChatRecord(
             @CurrentUserId String userId,
             @PathVariable String topicId,
             @RequestParam(required = false) String lastChatRecordId,
             @RequestParam(required = false) Integer limit
     ) {
-        //check user is topic owner??
-        return chatService
+        // 檢查使用者是否為聊天主題的擁有者
+        Optional<ChatTopic> existingTopic = chatTopicService.findById(topicId);
+        if (existingTopic.isEmpty() || !existingTopic.get().getCreatedBy().equals(userId)) {
+            return ResponseEntity.status(403).build();
+        }
+        
+        List<ChatRecord> records = chatService
                 .findRecordsByTopicBefore(topicId, lastChatRecordId, limit)
                 .reversed();
+        return ResponseEntity.ok(records);
     }
 
 }

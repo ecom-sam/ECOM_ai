@@ -6,8 +6,17 @@
       "Bash(curl:*)",
       "Bash(rm:*)",
       "Bash(find:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(ls:*)",
+      "Bash(time npx tsc --noEmit)",
+      "Bash(docker exec:*)",
+      "Bash(kill:*)",
+      "Bash(mvn clean:*)",
+      "Bash(npx tsc:*)"
     ],
-    "deny": []
+    "deny": [],
+    "additionalDirectories": [
+      "/mnt/e/work/Couchbase/ecom_ai/ecom-assistant-frontend-main"
+    ]
   }
 }

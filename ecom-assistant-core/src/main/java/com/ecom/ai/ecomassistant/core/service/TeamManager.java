@@ -14,6 +14,7 @@ import com.ecom.ai.ecomassistant.db.service.auth.TeamMembershipService;
 import com.ecom.ai.ecomassistant.db.service.auth.TeamService;
 import com.ecom.ai.ecomassistant.db.service.auth.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TeamManager {
 
     private final TeamService teamService;
@@ -38,11 +40,50 @@ public class TeamManager {
         UserTeamContext context = getUserTeamContext(userId);
         Set<String> userTeamIds = context.teamMembershipMap().keySet();
 
-        // 判斷權限
+        // 判斷權限 - 檢查系統級權限或任何團隊級權限
         Subject subject = SecurityUtils.getSubject();
-        List<Team> teams = subject.isPermitted("system:team:view")
+        boolean hasSystemTeamPermission = subject.isPermitted("system:team:*") || 
+                                         subject.isPermitted("system:team:view") ||
+                                         subject.isPermitted("system:*");
+        
+        log.debug("User {} system team permissions: system:team:* = {}, system:team:view = {}, system:* = {}", 
+                userId, 
+                subject.isPermitted("system:team:*"),
+                subject.isPermitted("system:team:view"),
+                subject.isPermitted("system:*"));
+        
+        // 檢查是否有任何團隊的檢視權限
+        // 支援兩種權限格式：
+        // 1. team:{teamId}:view (標準格式)
+        // 2. team:view (自定義角色格式)
+        boolean hasAnyTeamPermission = false;
+        for (String teamId : userTeamIds) {
+            boolean teamSpecific = subject.isPermitted("team:" + teamId + ":view") || subject.isPermitted("team:" + teamId + ":*");
+            boolean generic = subject.isPermitted("team:view") || subject.isPermitted("team:*");
+            log.debug("User {} team permissions for {}: team:{}:view = {}, team:{}:* = {}, team:view = {}, team:* = {}", 
+                    userId, teamId, teamId, 
+                    subject.isPermitted("team:" + teamId + ":view"),
+                    teamId,
+                    subject.isPermitted("team:" + teamId + ":*"),
+                    subject.isPermitted("team:view"), 
+                    subject.isPermitted("team:*"));
+            if (teamSpecific || generic) {
+                hasAnyTeamPermission = true;
+                break;
+            }
+        }
+        
+        log.info("User {} permission check result: hasSystemTeamPermission = {}, hasAnyTeamPermission = {}", 
+                userId, hasSystemTeamPermission, hasAnyTeamPermission);
+        
+        List<Team> teams = (hasSystemTeamPermission || hasAnyTeamPermission)
                 ? teamService.findAllWithSort()
                 : context.teams(); // 無權限時，只能看自己加入的團隊
+                
+        log.info("User {} will see {} teams (all teams: {}, context teams: {})", 
+                userId, teams.size(), 
+                hasSystemTeamPermission || hasAnyTeamPermission ? "YES" : "NO",
+                context.teams().size());
 
         // 抓出所有 teamId 以查人數
         Set<String> teamIds = teams.stream()

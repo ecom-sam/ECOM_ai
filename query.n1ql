@@ -1,0 +1,1 @@
+SELECT tm.*, tr.permissions FROM `ECOM`.`AI`.`team-membership` tm LEFT JOIN `ECOM`.`AI`.`team-role` tr ON tm.teamRoleIds[0] = tr.id WHERE tm.userId = "sam0219mm";

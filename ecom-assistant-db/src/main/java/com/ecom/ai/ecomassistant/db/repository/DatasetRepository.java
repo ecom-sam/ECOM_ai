@@ -7,6 +7,7 @@ import org.springframework.data.couchbase.repository.Query;
 import org.springframework.data.couchbase.repository.ScanConsistency;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,11 +24,11 @@ public interface DatasetRepository extends CouchbaseRepository<Dataset, String> 
     Page<Dataset> searchByCriteria(String name, Pageable pageable);
 
     @Query("#{#n1ql.selectEntity} " +
-            "WHERE accessType = 'PUBLIC' " +
-            "OR (accessType = 'GROUP' AND ANY g IN authorizedTeamIds SATISFIES g IN $userTeamIds END) " +
-            "OR (accessType = 'PRIVATE' AND createdBy = $userId)" +
-            "AND contains(lower(`name`), $name)")
-    Page<Dataset> findVisibleDatasets(String name, String userId, Set<String> userTeamIds, Pageable pageable);
+            "WHERE (accessType = 'PUBLIC' " +
+            "OR (accessType = 'GROUP' AND teamId IN $userTeamIds) " +
+            "OR (accessType = 'PRIVATE' AND createdBy = $userId)) " +
+            "AND ($name = '' OR contains(lower(`name`), lower($name)))")
+    Page<Dataset> findVisibleDatasets(@Param("name") String name, @Param("userId") String userId, @Param("userTeamIds") Set<String> userTeamIds, Pageable pageable);
     
     // 新增 tags 相關查詢方法（簡化版，不需要複雜的權限查詢）
     

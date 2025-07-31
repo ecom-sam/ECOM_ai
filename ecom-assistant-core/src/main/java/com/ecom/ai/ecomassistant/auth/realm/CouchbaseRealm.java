@@ -44,14 +44,13 @@ public class CouchbaseRealm extends AuthorizingRealm {
             throw new AuthenticationException("JWT token does not contain userId");
         }
 
-        return new SimpleAuthenticationInfo(jwt, jwt, getName());
+        return new SimpleAuthenticationInfo(userId, jwt, getName());
     }
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        // 從 principal 中取得 JWT token
-        String jwt = (String) principals.getPrimaryPrincipal();
-        String userId = JwtUtil.getUserId(jwt);
+        // 從 principal 中取得用戶ID (已經從JWT解析)
+        String userId = (String) principals.getPrimaryPrincipal();
         
         log.debug("Getting authorization info for user: {}", userId);
 
